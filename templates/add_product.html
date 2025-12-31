@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Product | Supplier</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<!-- HEADER (same as dashboard) -->
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
+
+        <div class="nav-links">
+            <a href="{% url 'product_list' %}">PRODUCTS</a>
+            <a href="{% url 'supplier_dashboard' %}">DASHBOARD</a>
+        </div>
+    </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Add New <span class="highlight">Product</span></h1>
+        <p>Create and publish your product from your supplier dashboard.</p>
+    </div>
+</section>
+
+<!-- SECTION HEADER -->
+<div class="section-header">
+    <h2>Product Details</h2>
+</div>
+
+<!-- FORM SECTION (uses dashboard layout styles) -->
+<section class="features">
+    <div class="feature" style="width:100%; max-width:900px; margin:auto;">
+        <div style="width:100%;">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <label><strong>Product Name</strong></label><br>
+                {{ form.name }}<br><br>
+
+                <label><strong>Category</strong></label><br>
+                {{ form.category }}<br><br>
+
+                <label><strong>Price</strong></label><br>
+                {{ form.price }}<br><br>
+
+                <label><strong>Product Image</strong></label><br>
+                {{ form.image }}<br><br>
+
+                <label><strong>Description</strong></label><br>
+                {{ form.description }}<br><br>
+
+                <button type="submit" class="cta-button">
+                    ADD PRODUCT
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

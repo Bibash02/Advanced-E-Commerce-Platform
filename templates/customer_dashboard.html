@@ -1,0 +1,231 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clothique - Fashion E-commerce</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/customer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icon.css' %}">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">Clothique</div>
+            <div class="search-bar">
+                <select name="category">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+                <input type="text" placeholder="Find your choice of clothing">
+                <button>🔍</button>
+            </div>
+            <div class="nav-links">
+                <a href="#">ABOUT</a>
+                <a href="#">CONTACT</a>
+                <a href="">SHOP</a>
+                <a href="{% url 'signout' %}">SIGNOUT</a>
+            </div>
+            <a href="{% url 'customer_profile' %}">
+                <div class="icons">
+                    <button class="icon-btn">👤</button>
+                </div>
+            </a>
+            <a href="">
+                <div class="icons">
+                    <button class="icon-btn">🛒</button>
+                </div>
+            </a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Discover The Latest<br><span class="highlight">Fashion Trends</span></h1>
+            <p>Whether you're looking for casual wear, formal attire, or seasonal outfits, we have something for everyone.</p>
+            <button class="cta-button">START SHOPPING</button>
+        </div>
+        <div class="hero-image">
+            <svg width="400" height="400" viewBox="0 0 400 400">
+                <rect x="150" y="50" width="100" height="300" fill="#daa899" rx="50"/>
+                <rect x="130" y="50" width="100" height="300" fill="#8ba888" rx="50"/>
+                <rect x="170" y="50" width="100" height="300" fill="#c4a5a0" rx="50"/>
+                <line x1="100" y1="30" x2="300" y2="30" stroke="#666" stroke-width="8"/>
+                <line x1="100" y1="30" x2="120" y2="50" stroke="#666" stroke-width="6"/>
+                <line x1="300" y1="30" x2="280" y2="50" stroke="#666" stroke-width="6"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="feature">
+            <div class="feature-icon">🛍️</div>
+            <div>
+                <h3>Product Varieties</h3>
+                <p>Explore a diverse range of clothing styles, from trendy casual wears.</p>
+            </div>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">⭐</div>
+            <div>
+                <h3>Happy Customers</h3>
+                <p>Join thousands of satisfied customers who love shopping with us!</p>
+            </div>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">🚚</div>
+            <div>
+                <h3>Free delivery</h3>
+                <p>Enjoy hassle-free shopping with our free delivery service!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Section -->
+    <div class="section-header">
+        <h2>Category</h2>
+        <a href="{% url 'customer_category_list' %}" class="view-all">View All</a>
+    </div>
+
+    <section class="category-grid">
+        {% for category in categories %}
+            <div class="category-card">
+                <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                <div class="category-name">{{ category.name }}</div>
+            </div>
+        {% empty %}
+            <p>No categories available.</p>
+        {% endfor %}
+    </section>
+
+    <!-- Best Selling Products -->
+    <div class="section-header">
+        <h2>Best Selling Products</h2>
+        <button class="view-all">View All</button>
+    </div>
+    <section class="product-grid">
+        <div class="product-card">
+            <div class="product-image" style="background: linear-gradient(180deg, #d5e5f0 0%, #c8d8e5 100%);">
+                <svg width="100%" height="100%" viewBox="0 0 300 350">
+                    <ellipse cx="150" cy="250" rx="60" ry="15" fill="#ccc"/>
+                    <rect x="100" y="150" width="100" height="120" fill="#3a5f4a" rx="50"/>
+                </svg>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Product Item Name</div>
+                <div class="price-container">
+                    <span class="original-price">$24.00</span>
+                    <span class="sale-price">$18.00</span>
+                    <span class="discount">10% OFF</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter">
+        <h2>Get 25% Discount On<br>Your First Purchase</h2>
+        <p>Just Sign Up & Register it now to become member.</p>
+        <form class="newsletter-form">
+            <input type="text" placeholder="Name">
+            <input type="email" placeholder="Email Address">
+            <button type="submit">Submit</button>
+        </form>
+    </section>
+
+    <!-- Featured Products -->
+    <div class="section-header">
+        <h2>Featured Products</h2>
+        <button class="view-all">View All →</button>
+    </div>
+    <section class="product-grid">
+        <div class="product-card">
+            <div class="product-image" style="background: linear-gradient(180deg, #5a6a5a 0%, #4a5a4a 100%);">
+                <svg width="100%" height="100%" viewBox="0 0 300 350">
+                    <ellipse cx="150" cy="280" rx="40" ry="12" fill="#3a4a3a"/>
+                    <path d="M120,120 Q120,90 150,90 Q180,90 180,120 L175,240 Q175,250 150,250 Q125,250 125,240 Z" fill="#f5f5f5"/>
+                </svg>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Product Item Name</div>
+                <div class="price-container">
+                    <span class="original-price">$24.00</span>
+                    <span class="sale-price">$18.00</span>
+                    <span class="discount">10% OFF</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Clothique</h3>
+                <p>Your one-stop shop for the latest fashion trends. Quality clothing at affordable prices.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/YourPage" target="_blank" class="social-icon">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Information</h3>
+                <ul>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#terms">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Customer Service</h3>
+                <ul>
+                    <li><a href="#shipping">Shipping Policy</a></li>
+                    <li><a href="#returns">Returns & Exchanges</a></li>
+                    <li><a href="#faq">FAQs</a></li>
+                    <li><a href="#support">Support Center</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#newarrivals">New Arrivals</a></li>
+                    <li><a href="#bestSellers">Best Sellers</a></li>
+                    <li><a href="#sale">Sale Items</a></li>
+                    <li><a href="#giftcards">Gift Cards</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Subscribe</h3>
+                <p>Get the latest updates and offers.</p>
+                <form class="subscribe-form">
+                    <input type="email" placeholder="Enter your email">
+                    <button type="submit">SUBSCRIBE</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© Clothique...</p>
+            <a href="#clothique">Clothique.com</a>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>

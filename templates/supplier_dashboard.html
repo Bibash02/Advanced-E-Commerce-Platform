@@ -1,0 +1,226 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clothique - Fashion E-commerce</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icon.css' %}">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">Clothique</div>
+            <div class="search-bar">
+                <input type="text" placeholder="Find your choice of clothing">
+                <button>🔍</button>
+            </div>
+            <div class="nav-links">
+                <a href="{% url 'category_list' %}">CATEGORY</a>
+                <a href="{% url 'product_list' %}">PRODUCTS</a>
+                <a href="{% url 'blog_list' %}">BLOGS</a>
+                <a href="{% url 'signout' %}">SIGNOUT</a>
+            </div>
+            <a href="{% url 'supplier_profile' %}">
+                <div class="icons">
+                    <button class="icon-btn">👤</button>
+                </div>
+            </a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Discover The Latest<br><span class="highlight">Fashion Trends</span></h1>
+            <p>Whether you're looking for casual wear, formal attire, or seasonal outfits, we have something for everyone.</p>
+            <a href="{% url 'add_product' %}">
+                <button class="cta-button">ADD PRODUCTS</button>
+            </a>
+
+            <a href="{% url 'add_blog' %}">
+                <button class="cta-button">ADD BLOGS</button>
+            </a>
+        </div>
+        <div class="hero-image">
+            <svg width="400" height="400" viewBox="0 0 400 400">
+                <rect x="150" y="50" width="100" height="300" fill="#daa899" rx="50"/>
+                <rect x="130" y="50" width="100" height="300" fill="#8ba888" rx="50"/>
+                <rect x="170" y="50" width="100" height="300" fill="#c4a5a0" rx="50"/>
+                <line x1="100" y1="30" x2="300" y2="30" stroke="#666" stroke-width="8"/>
+                <line x1="100" y1="30" x2="120" y2="50" stroke="#666" stroke-width="6"/>
+                <line x1="300" y1="30" x2="280" y2="50" stroke="#666" stroke-width="6"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="feature">
+            <div class="feature-icon">🛍️</div>
+            <div>
+                <h3>Product Varieties</h3>
+                <p>Explore a diverse range of clothing styles, from trendy casual wears.</p>
+            </div>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">⭐</div>
+            <div>
+                <h3>Happy Customers</h3>
+                <p>Join thousands of satisfied customers who love shopping with us!</p>
+            </div>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">🚚</div>
+            <div>
+                <h3>Free delivery</h3>
+                <p>Enjoy hassle-free shopping with our free delivery service!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Section -->
+    <div class="section-header">
+        <h2>Category</h2>
+        <a href="{% url 'supplier_category_list' %}" class="view-all">View All</a>
+    </div>
+
+    <section class="category-grid">
+        {% for category in categories %}
+            <div class="category-card">
+                <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                <div class="category-name">{{ category.name }}</div>
+            </div>
+        {% empty %}
+            <p>No categories available.</p>
+        {% endfor %}
+    </section>
+
+    <!-- Best Selling Products -->
+    <div class="section-header">
+        <h2>Products</h2>
+        <a href="{% url 'product_list' %}" class="view-all">View All</a>
+    </div>
+    <section class="product-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            </div>
+
+            <div class="product-info">
+                <div class="product-name">{{ product.name }}</div>
+                <div class="price-container">Rs.{{ product.price }}</div>
+                
+                <div class="price-container">
+                    <a href="{% url 'edit_product' product.id %}">✏ Edit</a>
+                    <a href="{% url 'delete_product' product.id %}"
+                    onclick="return confirm('Are you sure?')">🗑 Delete</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <p>No products created yet.</p>
+        {% endfor %}
+    </section>
+
+    <!-- Blog Section -->
+    <div class="section-header">
+        <h2>Blogs</h2>
+        <a href="{% url 'blog_list' %}" class="view-all">View All</a>
+    </div>
+    <section class="blog-grid">
+        {% for blog in blogs %}
+        <div class="blog-card">
+            <div class="blog-image">
+                <img src="{{ blog.image.url }}" alt="{{ blog.title }}">
+            </div>
+
+            <div class="blog-content">
+                <div class="blog-meta">
+                    <span>By {{ blog.supplier.username }}</span>
+                    <span>•</span>
+                    <span>{{ blog.created_at|date:"M d, Y" }}</span>
+                </div>
+
+                <div class="blog-title">{{ blog.title }}</div>
+                <div class="blog-excerpt">
+                    {{ blog.content|truncatechars:120 }}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <p>No blogs created yet.</p>
+        {% endfor %}
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Clothique</h3>
+                <p>Your one-stop shop for the latest fashion trends. Quality clothing at affordable prices.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/YourPage" target="_blank" class="social-icon">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Information</h3>
+                <ul>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#terms">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Customer Service</h3>
+                <ul>
+                    <li><a href="#shipping">Shipping Policy</a></li>
+                    <li><a href="#returns">Returns & Exchanges</a></li>
+                    <li><a href="#faq">FAQs</a></li>
+                    <li><a href="#support">Support Center</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#newarrivals">New Arrivals</a></li>
+                    <li><a href="#bestSellers">Best Sellers</a></li>
+                    <li><a href="#sale">Sale Items</a></li>
+                    <li><a href="#giftcards">Gift Cards</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Subscribe</h3>
+                <p>Get the latest updates and offers.</p>
+                <form class="subscribe-form">
+                    <input type="email" placeholder="Enter your email">
+                    <button type="submit">SUBSCRIBE</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© Clothique...</p>
+            <a href="#clothique">Clothique.com</a>
+        </div>
+    </footer>
+    </style>
+</body>
+</html>

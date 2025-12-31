@@ -1,0 +1,37 @@
+from django.urls import path
+from .views import *
+from django.contrib.auth.views import *
+
+urlpatterns = [
+    path('dashboard', dashboard, name='dashboard'),
+    path('', home, name='home'),
+    path('signin', signin, name='signin'),
+    path('signup/', signup, name='signup'),
+    path('signout/', signout, name='signout'),
+    path('about/', about, name='about'),
+
+    path('forgot-password/', PasswordResetView.as_view(), name='password_reset'),
+    path('reset-password-sent/', PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset-complete/', PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+
+    path('customer/dashboard/', customer_dashboard, name='customer_dashboard'),
+    path('supplier/dashboard/', supplier_dashboard, name='supplier_dashboard'),
+
+    path('supplier/profile', supplier_profile, name='supplier_profile'),
+    path('supplier/profile/edit', edit_supplier_profile, name='edit_supplier_profile'),
+    path('supplier/category/list', supplier_category_list, name='supplier_category_list'),
+    path('supplier/product/list', supplier_products, name='product_list'),
+    path('supplier/product/add', add_product, name='add_product'),
+    path('supplier/product/edit/<int:pk>', edit_product, name='edit_product'),
+    path('supplier/product/delete/<int:pk>', delete_product, name='delete_product'),
+
+    path('supplier/blog/list', supplier_blogs, name='blog_list'),
+    path('supplier/blog/add', add_blog, name='add_blog'),
+    path('supplier/blog/edit/<int:pk>', edit_blog, name='edit_blog'),
+    path('supplier/blog/delete/<int:pk>', delete_blog, name='delete_blog'),
+
+    path('customer/profile', customer_profile, name='customer_profile'),
+    path('customer/profile/edit', edit_customer_profile, name='edit_customer_profile'),
+    path('customer/category/list', category_list_customer, name='customer_category_list')
+]

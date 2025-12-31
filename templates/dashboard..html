@@ -1,0 +1,326 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clothique - Fashion E-commerce</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">Clothique</div>
+            <div class="search-bar">
+                <select>
+                    <option>All Categories</option>
+                    <option>Hoodies</option>
+                    <option>Sweaters</option>
+                    <option>Kids</option>
+                </select>
+                <input type="text" placeholder="Find your choice of clothing">
+                <button>🔍</button>
+            </div>
+            <div class="nav-links">
+                <a href="#home">HOME</a>
+                <a href="#sale">SALE</a>
+            </div>
+            <div class="icons">
+                <button class="icon-btn">👤</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Discover The Latest<br><span class="highlight">Fashion Trends</span></h1>
+            <p>Whether you're looking for casual wear, formal attire, or seasonal outfits, we have something for everyone.</p>
+            <button class="cta-button">START SHOPPING</button>
+        </div>
+        <div class="hero-image">
+            <svg width="400" height="400" viewBox="0 0 400 400">
+                <rect x="150" y="50" width="100" height="300" fill="#daa899" rx="50"/>
+                <rect x="130" y="50" width="100" height="300" fill="#8ba888" rx="50"/>
+                <rect x="170" y="50" width="100" height="300" fill="#c4a5a0" rx="50"/>
+                <line x1="100" y1="30" x2="300" y2="30" stroke="#666" stroke-width="8"/>
+                <line x1="100" y1="30" x2="120" y2="50" stroke="#666" stroke-width="6"/>
+                <line x1="300" y1="30" x2="280" y2="50" stroke="#666" stroke-width="6"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="feature">
+            <div class="feature-icon">🛍️</div>
+            <div>
+                <h3>Product Varieties</h3>
+                <p>Explore a diverse range of clothing styles, from trendy casual wears.</p>
+            </div>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">⭐</div>
+            <div>
+                <h3>Happy Customers</h3>
+                <p>Join thousands of satisfied customers who love shopping with us!</p>
+            </div>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">🚚</div>
+            <div>
+                <h3>Free delivery</h3>
+                <p>Enjoy hassle-free shopping with our free delivery service!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Section -->
+    <div class="section-header">
+        <h2>Category</h2>
+        <button class="view-all">View All →</button>
+    </div>
+
+    <section class="category-grid">
+        <div class="category-card">
+            <img src="{% static 'images/hoddie.jpg' %}" alt="Hoodies">
+            <div class="category-name">Hoodies</div>
+        </div>
+
+        <div class="category-card">
+            <img src="{% static 'images/sweater.jpg' %}" alt="Sweaters">
+            <div class="category-name">Sweaters</div>
+        </div>
+
+        <div class="category-card">
+            <img src="{% static 'images/Shoe.jpg' %}" alt="Kids">
+            <div class="category-name">Shoes</div>
+        </div>
+    </section>
+
+    <!-- Best Selling Products -->
+    <div class="section-header">
+        <h2>Best Selling Products</h2>
+        <button class="view-all">View All</button>
+    </div>
+    <section class="product-grid">
+        <div class="product-card">
+            <div class="product-image" style="background: linear-gradient(180deg, #d5e5f0 0%, #c8d8e5 100%);">
+                <svg width="100%" height="100%" viewBox="0 0 300 350">
+                    <ellipse cx="150" cy="250" rx="60" ry="15" fill="#ccc"/>
+                    <rect x="100" y="150" width="100" height="120" fill="#3a5f4a" rx="50"/>
+                </svg>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Product Item Name</div>
+                <div class="price-container">
+                    <span class="original-price">$24.00</span>
+                    <span class="sale-price">$18.00</span>
+                    <span class="discount">10% OFF</span>
+                </div>
+            </div>
+        </div>
+        <div class="product-card">
+            <div class="product-image" style="background: linear-gradient(180deg, #f5f5f5 0%, #e8e8e8 100%);">
+                <svg width="100%" height="100%" viewBox="0 0 300 350">
+                    <ellipse cx="150" cy="280" rx="40" ry="12" fill="#ccc"/>
+                    <path d="M120,120 Q120,80 150,80 Q180,80 180,120 L180,220 Q180,240 160,240 L140,240 Q120,240 120,220 Z" fill="#1a1a1a"/>
+                </svg>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Product Item Name</div>
+                <div class="price-container">
+                    <span class="original-price">$24.00</span>
+                    <span class="sale-price">$18.00</span>
+                    <span class="discount">10% OFF</span>
+                </div>
+            </div>
+        </div>
+        <div class="product-card">
+            <div class="product-image" style="background: linear-gradient(180deg, #e8e8e8 0%, #d5d5d5 100%);">
+                <svg width="100%" height="100%" viewBox="0 0 300 350">
+                    <ellipse cx="150" cy="280" rx="45" ry="13" fill="#ccc"/>
+                    <rect x="110" y="120" width="80" height="140" fill="#f5f5f5" rx="40"/>
+                </svg>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Product Item Name</div>
+                <div class="price-container">
+                    <span class="original-price">$24.00</span>
+                    <span class="sale-price">$18.00</span>
+                    <span class="discount">10% OFF</span>
+                </div>
+            </div>
+        </div>
+        <div class="product-card">
+            <div class="product-image" style="background: linear-gradient(180deg, #e8e8f0 0%, #d5d5e0 100%);">
+                <svg width="100%" height="100%" viewBox="0 0 300 350">
+                    <ellipse cx="150" cy="280" rx="50" ry="14" fill="#ccc"/>
+                    <rect x="100" y="100" width="100" height="160" fill="#1a1a1a" rx="50"/>
+                </svg>
+            </div>
+            <div class="product-info">
+                <div class="product-name">Product Item Name</div>
+                <div class="price-container">
+                    <span class="original-price">$24.00</span>
+                    <span class="sale-price">$18.00</span>
+                    <span class="discount">10% OFF</span>
+                </div>
+            </div>
+        </div>  
+    </section>
+
+    <!-- Promo Banners -->
+    <section class="promo-section">
+        <div class="promo-banner" style="background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.3)), #8a7a6a;">
+            <div class="promo-content">
+                <h3>Items on SALE</h3>
+                <p>Discounts up to 30%</p>
+                <button class="shop-now">SHOP NOW</button>
+            </div>
+        </div>
+        <div class="promo-banner" style="background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.3)), #a8b8a8;">
+            <div class="promo-content">
+                <h3>Combo offers</h3>
+                <p>Discounts up to 50%</p>
+                <button class="shop-now">SHOP NOW</button>
+            </div>
+        </div>
+    </section>
+    <!-- Newsletter -->
+    <section class="newsletter">
+        <h2>Get 25% Discount On<br>Your First Purchase</h2>
+        <p>Just Sign Up & Register it now to become member.</p>
+        <form class="newsletter-form">
+            <input type="text" placeholder="Name">
+            <input type="email" placeholder="Email Address">
+            <button type="submit">Submit</button>
+        </form>
+    </section>
+    <!-- Blog Section -->
+    <div class="section-header">
+        <h2>From The Blog</h2>
+        <button class="view-all">View All</button>
+
+    </div>
+    <section class="blog-grid">
+        <div class="blog-card">
+            <div class="blog-image" style="background: linear-gradient(180deg, #e8e0d5 0%, #d5c8b8 100%);">
+                <svg width="100%" height="100%" viewBox="0 0 400 250">
+                    <rect x="100" y="50" width="80" height="150" fill="#c4a888" rx="40"/>
+                    <rect x="150" y="50" width="80" height="150" fill="#e8d5c8" rx="40"/>
+                    <rect x="200" y="50" width="80" height="150" fill="#d4b8a0" rx="40"/>
+                </svg>
+            </div>
+            <div class="blog-content">
+                <div class="blog-meta">
+                    <span>By Admin</span>
+                    <span>•</span>
+                    <span>Jan 1, 2024</span>
+                    <span>•</span>
+                    <span>5 Comments</span>
+                </div>
+                <div class="blog-title
+">Top 10 Fashion Trends of 2024</div>
+                <div class="blog-excerpt">Discover the hottest fashion trends that are set to dominate 2024. From bold colors to sustainable fabrics, stay ahead in style.</div>
+            </div>
+        </div>
+        <div class="blog-card">
+            <div class="blog-image" style="background: linear-gradient(180deg, #d5e8f0 0%, #b8d5e0 100%);">
+                <svg width="100%" height="100%" viewBox="0 0 400 250">
+                    <rect x="120" y="60" width="80" height="150" fill="#a8c4d8" rx="40"/>
+                </svg>
+            </div>
+            <div class="blog-content">
+                <div class="blog-meta">
+                    <span>By Admin</span>
+                    <span>•</span>
+                    <span>Feb 15, 2024</span>
+                    <span>•</span>
+                    <span>8 Comments</span>
+                </div>
+                <div class="blog-title
+">Sustainable Fashion: A Growing Trend</div>
+                <div class="blog-excerpt">Learn about the rise of sustainable fashion and how you can make eco-friendly choices without compromising on style.</div>
+            </div>
+        </div>
+        <div class="blog-card">
+            <div class="blog-image" style="background: linear-gradient(180deg, #f0e8d5 0%, #e0d5b8 100%);">
+                <svg width="100%" height="100%" viewBox="0 0 400 250">
+                    <rect x="100" y="50" width="80" height="150" fill="#d4b888" rx="40"/>
+                    <rect x="150" y="50" width="80" height="150" fill="#e8c8a8" rx="40"/>
+                    <rect x="200" y="50" width="80" height="150" fill="#d4a890" rx="40"/>
+                </svg>  
+            </div>
+            <div class="blog-content">
+                <div class="blog-meta">
+                    <span>By Admin</span>
+                    <span>•</span>
+                    <span>Mar 10, 2024</span>
+                    <span>•</span>
+                    <span>12 Comments</span>
+                </div>
+                <div class="blog-title
+">How to Style Hoodies for Any Occasion</div>
+                <div class="blog-excerpt">Hoodies are versatile pieces that can be dressed up or down. Discover tips and tricks to style hoodies for casual outings, work, and more.</div>
+            </div>  
+        </div>
+    </section>
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Clothique</h3>
+                <p>Your one-stop shop for the latest fashion trends. Quality clothing at affordable prices.</p>
+                <div class="social-icons">
+                    <div class="social-icon">👍</div>
+                    <div class="social-icon">🐦</div>
+                    <div class="social-icon">📸</div>
+                    <div class="social-icon">💼</div>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Information</h3>
+                <ul>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#terms">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Customer Service</h3>
+                <ul>
+                    <li><a href="#shipping">Shipping Policy</a></li>
+                    <li><a href="#returns">Returns & Exchanges</a></li>
+                    <li><a href="#faq">FAQs</a></li>
+                    <li><a href="#support">Support Center</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#newarrivals">New Arrivals</a></li>
+                    <li><a href="#bestSellers">Best Sellers</a></li>
+                    <li><a href="#sale">Sale Items</a></li>
+                    <li><a href="#giftcards">Gift Cards</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Subscribe</h3>
+                <p>Get the latest updates and offers.</p>
+                <form class="subscribe-form">
+                    <input type="email" placeholder="Enter your email">
+                    <button type="submit">SUBSCRIBE</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 Clothique. All rights reserved.</p>
+            <a href="#clothique">Clothique.com</a>
+        </div>
+    </footer>
+    </style>
+</body>
+</html>

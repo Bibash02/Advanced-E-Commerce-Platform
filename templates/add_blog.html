@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Blog | Supplier</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<!-- HEADER (same as dashboard) -->
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
+
+        <div class="nav-links">
+            <a href="{% url 'blog_list' %}">BLOGS</a>
+            <a href="{% url 'supplier_dashboard' %}">DASHBOARD</a>
+        </div>
+    </nav>
+</header>
+
+<!-- HERO (same class) -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Add New <span class="highlight">Blog</span></h1>
+        <p>Create and publish your blog directly from your supplier dashboard.</p>
+    </div>
+</section>
+
+<!-- FORM HEADER -->
+<div class="section-header">
+    <h2>Blog Details</h2>
+</div>
+
+<!-- FORM SECTION (uses existing spacing styles) -->
+<section class="features">
+    <div class="feature" style="width:100%; max-width:800px; margin:auto;">
+        <div style="width:100%;">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <label><strong>Blog Title</strong></label><br>
+                {{ form.title }}<br><br>
+
+                <label><strong>Blog Image</strong></label><br>
+                {{ form.image }}<br><br>
+
+                <label><strong>Content</strong></label><br>
+                {{ form.content }}<br><br>
+
+                <button type="submit" class="cta-button">
+                    PUBLISH BLOG
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

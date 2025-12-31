@@ -1,0 +1,147 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Clothique</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icon.css' %}">
+</head>
+<body>
+
+<!-- Header -->
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
+        <div class="nav-links">
+            <a href="{% url 'home' %}">DASHBOARD</a>
+            <a href="{% url 'signin' %}">SIGN IN</a>
+        </div>
+    </nav>
+</header>
+
+<!-- Hero Section -->
+<section class="hero about-hero">
+    <div class="hero-content">
+        <h1>About <span class="highlight">Clothique</span></h1>
+        <p>We are passionate about bringing the latest fashion trends to your doorstep. Quality, style, and affordability are our core principles.</p>
+    </div>
+    <div class="hero-image">
+        <img src="{% static 'images/pic1.jpg' %}" alt="About Clothique" style="width: 100%; border-radius: 10px;">
+    </div>
+</section>
+
+<!-- Our Story Section -->
+<section class="about-section">
+    <div class="section-header">
+        <h2>Our Story</h2>
+    </div>
+    <p>
+        Founded in 2024, Clothique is a one-stop online fashion store committed to delivering stylish clothing to customers worldwide. Our goal is to make trendy fashion accessible to everyone, combining quality fabrics with affordable pricing.
+    </p>
+</section>
+
+<!-- Mission & Vision -->
+<section class="about-section mission-vision">
+    <div class="section-header">
+        <h2>Mission & Vision</h2>
+    </div>
+    <div class="mission-vision-grid">
+        <div class="mission-card">
+            <h3>Our Mission</h3>
+            <p>To provide high-quality, stylish clothing at prices everyone can afford while offering a seamless shopping experience.</p>
+        </div>
+        <div class="mission-card">
+            <h3>Our Vision</h3>
+            <p>To become the leading online fashion destination for customers seeking style, quality, and convenience.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Meet the Team -->
+<section class="about-section team">
+    <div class="section-header">
+        <h2>Meet The Team</h2>
+    </div>
+    <div class="team-grid">
+        <div class="team-member">
+            <img src="{% static 'images/pic1.jpg' %}" alt="Team Member 1">
+            <h4>Nikesh Shrestha</h4>
+            <p>Founder & CEO</p>
+        </div>
+        <div class="team-member">
+            <img src="{% static 'images/pic1.jpg' %}" alt="Team Member 2">
+            <h4>Bibash Bayalkoti</h4>
+            <p>Head of Design</p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Clothique</h3>
+                <p>Your one-stop shop for the latest fashion trends. Quality clothing at affordable prices.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/YourPage" target="_blank" class="social-icon">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Information</h3>
+                <ul>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#terms">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Customer Service</h3>
+                <ul>
+                    <li><a href="#shipping">Shipping Policy</a></li>
+                    <li><a href="#returns">Returns & Exchanges</a></li>
+                    <li><a href="#faq">FAQs</a></li>
+                    <li><a href="#support">Support Center</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#newarrivals">New Arrivals</a></li>
+                    <li><a href="#bestSellers">Best Sellers</a></li>
+                    <li><a href="#sale">Sale Items</a></li>
+                    <li><a href="#giftcards">Gift Cards</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Subscribe</h3>
+                <p>Get the latest updates and offers.</p>
+                <form class="subscribe-form">
+                    <input type="email" placeholder="Enter your email">
+                    <button type="submit">SUBSCRIBE</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© Clothique...</p>
+            <a href="#clothique">Clothique.com</a>
+        </div>
+    </footer>
+
+</body>
+</html>

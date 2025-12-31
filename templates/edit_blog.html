@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Blog</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
+        <div class="nav-links">
+            <a href="{% url 'supplier_dashboard' %}">DASHBOARD</a>
+        </div>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Edit <span class="highlight">Blog</span></h1>
+    </div>
+</section>
+
+<section style="padding:40px; max-width:700px; margin:auto;">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <label>Blog Title</label>
+        {{ form.title }}
+
+        <label>Current Image</label><br>
+        <img src="{{ blog.image.url }}" width="150"><br><br>
+
+        <label>Change Image</label>
+        {{ form.image }}
+
+        <label>Content</label>
+        {{ form.content }}
+
+        <button class="cta-button" type="submit">UPDATE BLOG</button>
+    </form>
+</section>
+
+</body>
+</html>

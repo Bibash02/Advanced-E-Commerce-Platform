@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Profile</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">Clothique</div>
+            <div class="nav-links">
+                <a href="{% url 'customer_dashboard' %}">Dashboard</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Supplier Profile Section -->
+    <section class="profile-section" style="padding: 50px;">
+        <div class="profile-card" style="max-width: 600px; margin: auto; background: #f8f8f8; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+            
+            <div style="text-align:center;">
+                {% if profile.profile_image %}
+                    <img src="{{ profile.profile_image.url }}" alt="Profile Image" style="width:150px; height:150px; border-radius:50%; object-fit:cover;">
+                {% else %}
+                    <img src="{% static 'images/default_profile.jpg' %}" alt="Profile Image" style="width:150px; height:150px; border-radius:50%; object-fit:cover;">
+                {% endif %}
+            </div>
+
+            <h2 style="text-align:center; margin-top: 15px;">{{ request.user.get_full_name }}</h2>
+            <p style="text-align:center; color: gray;">{{ profile.get_role_display }}</p>
+
+            <div class="profile-info" style="margin-top: 30px;">
+                <p><strong>Username:</strong> {{ request.user.username }}</p>
+                <p><strong>Email:</strong> {{ request.user.email }}</p>
+                <p><strong>Phone:</strong> {{ profile.phone|default:"Not Provided" }}</p>
+                <p><strong>Role:</strong> {{ profile.get_role_display }}</p>
+            </div>
+
+            <div style="text-align:center; margin-top:20px;">
+                <a href="{% url 'edit_customer_profile' %}" class="cta-button">Edit Profile</a>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

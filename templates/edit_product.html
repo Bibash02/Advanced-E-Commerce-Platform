@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Product</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
+        <div class="nav-links">
+            <a href="{% url 'product_list' %}">Products</a>
+            <a href="{% url 'supplier_dashboard' %}">Dashboard</a>
+        </div>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Edit Product</h1>
+    </div>
+</section>
+
+<section class="features">
+    <form method="POST" enctype="multipart/form-data" class="subscribe-form">
+        {% csrf_token %}
+
+        <input type="text" name="name" value="{{ product.name }}" required>
+
+        <select name="category" required>
+            {% for cat in categories %}
+            <option value="{{ cat.id }}"
+                {% if product.category.id == cat.id %}selected{% endif %}>
+                {{ cat.name }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <input type="number" name="price" value="{{ product.price }}" required>
+
+        <input type="number" name="discount_price" value="{{ product.discount_price }}">
+
+        <input type="file" name="image">
+
+        <button type="submit">Update Product</button>
+    </form>
+</section>
+
+</body>
+</html>
