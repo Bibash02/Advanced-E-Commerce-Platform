@@ -1,0 +1,242 @@
+/* 
+   BUY PRODUCT PAGE STYLES
+*/
+
+/* Page container */
+.buy-product-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+/* Product card layout */
+.buy-product-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* Product image */
+.buy-product-image {
+    width: 100%;
+    height: 420px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f4f4f4;
+}
+
+.buy-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Product info */
+.buy-product-info h2 {
+    font-size: 26px;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.buy-product-info p {
+    font-size: 15px;
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 15px;
+}
+
+/* Price */
+.buy-product-price {
+    font-size: 22px;
+    font-weight: 600;
+    color: #000;
+    margin: 15px 0;
+}
+
+/* Buttons */
+.buy-btn-primary {
+    display: inline-block;
+    padding: 12px 26px;
+    background: #7c7fad;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: 0.3s ease;
+}
+
+.buy-btn-primary:hover {
+    background: #898aa4;
+}
+
+/* Review section */
+.review-section {
+    max-width: 1000px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.review-section h3 {
+    margin-bottom: 15px;
+}
+
+/* Form fields */
+.review-section select,
+.review-section textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.review-section textarea {
+    resize: none;
+    height: 120px;
+}
+
+/* Submit button */
+.review-submit-btn {
+    padding: 10px 22px;
+    background: #7c7fad;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.review-submit-btn:hover {
+    background: #898aa4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .buy-product-card {
+        grid-template-columns: 1fr;
+    }
+
+    .buy-product-image {
+        height: 320px;
+    }
+}
+
+/* 
+   RATINGS & COMMENTS
+ */
+
+.review-section {
+    margin-top: 40px;
+}
+
+/* Review Card */
+.review-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+/* Reviewer info */
+.review-user {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.review-user span {
+    font-size: 14px;
+    font-weight: 600;
+    color: #222;
+}
+
+/* Stars */
+.review-stars {
+    color: #f5b50a; /* ⭐ gold */
+    font-size: 14px;
+}
+
+/* Comment text */
+.review-text {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    margin-top: 6px;
+}
+
+/* ===== Review Form ===== */
+
+.review-form {
+    margin-top: 30px;
+    background: #fff;
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.review-form h3 {
+    margin-bottom: 15px;
+}
+
+/* Star select */
+.review-form select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+/* Comment box */
+.review-form textarea {
+    width: 100%;
+    height: 120px;
+    resize: none;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+/* Submit button */
+.review-submit-btn {
+    margin-top: 10px;
+    padding: 10px 26px;
+    background: #7c7fad;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.review-submit-btn:hover {
+    background: #898aa4;
+}
+
+/* Empty reviews */
+.no-reviews {
+    text-align: center;
+    color: #777;
+    font-size: 15px;
+    margin-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .review-card {
+        padding: 15px;
+    }
+}

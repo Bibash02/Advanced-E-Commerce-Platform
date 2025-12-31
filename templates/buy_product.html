@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ product.name }} | Clothique</title>
+    <link rel="stylesheet" href="{% static 'css/buy_product.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
+        <div class="nav-links">
+            <a href="{% url 'customer_dashboard' %}">DASHBOARD</a>
+        </div>
+    </nav>
+</header>
+
+<!-- PRODUCT DETAIL -->
+<section class="product-grid" style="max-width: 900px; margin: auto;">
+    <div class="buy-product-container">
+    <div class="buy-product-card">
+
+        <div class="buy-product-image">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        </div>
+
+        <div class="buy-product-info">
+            <h2>{{ product.name }}</h2>
+            <p>{{ product.description }}</p>
+
+            <div class="buy-product-price">
+                Rs. {{ product.price }}
+            </div>
+
+            <a href="#" class="buy-btn-primary">Add to Cart</a>
+        </div>
+
+    </div>
+</div>
+
+</section>
+
+<!-- RATING & COMMENT -->
+<div class="review-section">
+
+    <h3>Customer Reviews</h3>
+
+    {% for review in reviews %}
+        <div class="review-card">
+            <div class="review-user">
+                <span>{{ review.user.username }}</span>
+                <div class="review-stars">
+                    {% for i in "12345"|slice:":review.rating" %}
+                        ⭐
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="review-text">
+                {{ review.comment }}
+            </div>
+        </div>
+    {% empty %}
+        <p class="no-reviews">No reviews yet.</p>
+    {% endfor %}
+
+</div>
+
+<!-- REVIEW FORM -->
+<div class="review-form">
+    <h3>Leave a Review</h3>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <select name="rating" required>
+            <option value="">Rate this product</option>
+            <option value="5">★★★★★ (5)</option>
+            <option value="4">★★★★ (4)</option>
+            <option value="3">★★★ (3)</option>
+            <option value="2">★★ (2)</option>
+            <option value="1">★ (1)</option>
+        </select>
+
+        <textarea name="comment" placeholder="Write your review..." required></textarea>
+
+        <button type="submit" class="review-submit-btn">
+            Submit Review
+        </button>
+    </form>
+</div>
+
+
+</body>
+</html>

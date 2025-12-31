@@ -5,6 +5,8 @@ from .models import UserProfile
 from django.contrib.auth.models import User
 from .models import *
 from .forms import *
+from django.contrib.auth.decorators import login_required
+
 
 # Create your views here.
 def dashboard(request):
@@ -106,10 +108,12 @@ def signout(request):
     return redirect('home')
 
 def customer_dashboard(request):
+    products = Product.objects.all().order_by('-created_at')[:4]
     categories = Category.objects.all().order_by('-created_at')[:3]
 
     context = {
-        'categories': categories
+        'categories': categories,
+        'products': products
     }
     return render(request, 'customer_dashboard.html', context)   
 
@@ -266,3 +270,26 @@ def edit_customer_profile(request):
 def category_list_customer(request):
     categories = Category.objects.all().order_by('created_at')
     return render(request, 'category_list_customer.html', {'categories': categories})
+
+def buy_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    reviews = product.reviews.select_related('user').order_by('-created_at')
+
+    if request.method == 'POST' and request.user.is_authenticated:
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+
+        if rating:
+            ProductReview.objects.create(
+                product=product,
+                user=request.user,
+                rating=rating,
+                comment=comment
+            )
+            return redirect('buy_product', product_id=product.id)
+
+    context = {
+        'product': product,
+        'reviews': reviews
+    }
+    return render(request, 'buy_product.html', context)
