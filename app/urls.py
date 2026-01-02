@@ -35,4 +35,5 @@ urlpatterns = [
     path('customer/profile/edit', edit_customer_profile, name='edit_customer_profile'),
     path('customer/category/list', category_list_customer, name='customer_category_list'),
     path('customer/product/buy/<int:product_id>', buy_product, name='buy_product'),
+    path('customer/product/all', all_products, name='all_products'),
 ]

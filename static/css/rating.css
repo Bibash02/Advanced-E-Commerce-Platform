@@ -1,0 +1,29 @@
+/* PRODUCT RATING */
+.product-rating {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3px;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.star {
+    color: #ccc;
+    font-size: 16px;
+}
+
+.star.filled {
+    color: #f1c40f; /* gold */
+}
+
+.rating-value {
+    font-size: 13px;
+    color: #555;
+    margin-left: 4px;
+}
+
+.no-rating {
+    font-size: 13px;
+    color: #888;
+}

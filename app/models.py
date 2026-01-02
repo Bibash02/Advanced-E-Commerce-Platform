@@ -40,6 +40,7 @@ class Blog(models.Model):
     image = models.ImageField(upload_to='blogs/')
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    
 
     def __str__(self):
         return self.title
@@ -51,5 +52,8 @@ class ProductReview(models.Model):
     comment = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('product', 'user') 
+
     def __str__(self):
-        return self.product
+        return self.product.name

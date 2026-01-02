@@ -27,7 +27,7 @@
             </div>
             <div class="nav-links">
                 <a href="#">CONTACT</a>
-                <a href="">SHOP</a>
+                <a href="{% url 'all_products' %}">SHOP</a>
                 <a href="{% url 'signout' %}">SIGNOUT</a>
             </div>
             <a href="{% url 'customer_profile' %}">
@@ -48,7 +48,9 @@
         <div class="hero-content">
             <h1>Discover The Latest<br><span class="highlight">Fashion Trends</span></h1>
             <p>Whether you're looking for casual wear, formal attire, or seasonal outfits, we have something for everyone.</p>
-            <button class="cta-button">START SHOPPING</button>
+            <a href="{% url 'all_products' %}">
+                <button class="cta-button">START SHOPPING</button>
+            </a>
         </div>
         <div class="hero-image">
             <svg width="400" height="400" viewBox="0 0 400 400">
@@ -110,34 +112,52 @@
         <button class="view-all">View All</button>
     </div>
     <section class="product-grid">
-    {% for product in products %}
-    <div class="product-card">
+        {% for product in products %}
+        <div class="product-card">
 
-        <div class="product-image">
-            {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}">
-            {% else %}
-                <img src="{% static 'images/no-image.png' %}" alt="No image">
-            {% endif %}
-        </div>
-
-        <div class="product-info">
-            <div class="product-name">{{ product.name }}</div>
-
-            <div class="price-container">
-                Rs. {{ product.price }}
+            <div class="product-image">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <img src="{% static 'images/no-image.png' %}" alt="No image">
+                {% endif %}
             </div>
 
-            <a href="{% url 'buy_product' product.id %}" class="buy-btn">
-                Buy Now
-            </a>
-        </div>
+            <div class="product-info">
+                <div class="product-name">{{ product.name }}</div>
 
-    </div>
-    {% empty %}
-        <p>No products available.</p>
-    {% endfor %}
-</section>
+                <!-- ⭐ RATING -->
+                <div class="product-rating">
+                    {% if product.avg_rating %}
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= product.avg_rating|floatformat:0 %}
+                                ⭐
+                            {% else %}
+                                ☆
+                            {% endif %}
+                        {% endfor %}
+                        <span class="rating-number">
+                            ({{ product.avg_rating|floatformat:1 }})
+                        </span>
+                    {% else %}
+                        <span class="no-rating">No ratings</span>
+                    {% endif %}
+                </div>
+
+                <div class="price-container">
+                    Rs. {{ product.price }}
+                </div>
+
+                <a href="{% url 'buy_product' product.id %}" class="buy-btn">
+                    Buy Now
+                </a>
+            </div>
+
+        </div>
+        {% empty %}
+            <p>No products available.</p>
+        {% endfor %}
+    </section>
 
     <!-- Newsletter -->
     <section class="newsletter">
@@ -150,28 +170,54 @@
         </form>
     </section>
 
-    <!-- Featured Products -->
+    <!-- Leatest Products -->
     <div class="section-header">
-        <h2>Featured Products</h2>
+        <h2>Leatest Products</h2>
         <button class="view-all">View All →</button>
     </div>
     <section class="product-grid">
+        {% for product in productss %}
         <div class="product-card">
-            <div class="product-image" style="background: linear-gradient(180deg, #5a6a5a 0%, #4a5a4a 100%);">
-                <svg width="100%" height="100%" viewBox="0 0 300 350">
-                    <ellipse cx="150" cy="280" rx="40" ry="12" fill="#3a4a3a"/>
-                    <path d="M120,120 Q120,90 150,90 Q180,90 180,120 L175,240 Q175,250 150,250 Q125,250 125,240 Z" fill="#f5f5f5"/>
-                </svg>
+
+            <div class="product-image"
+                style="background: linear-gradient(180deg, #5a6a5a 0%, #4a5a4a 100%);">
+
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <!-- fallback SVG if no image -->
+                    <svg width="100%" height="100%" viewBox="0 0 300 350">
+                        <ellipse cx="150" cy="280" rx="40" ry="12" fill="#3a4a3a"/>
+                        <path d="M120,120 Q120,90 150,90 Q180,90 180,120
+                                L175,240 Q175,250 150,250
+                                Q125,250 125,240 Z"
+                            fill="#f5f5f5"/>
+                    </svg>
+                {% endif %}
             </div>
+
             <div class="product-info">
-                <div class="product-name">Product Item Name</div>
+                <div class="product-name">{{ product.name }}</div>
+
                 <div class="price-container">
-                    <span class="original-price">$24.00</span>
-                    <span class="sale-price">$18.00</span>
-                    <span class="discount">10% OFF</span>
+                    {% if product.original_price %}
+                        <span class="original-price">Rs. {{ product.original_price }}</span>
+                    {% endif %}
+                    <span class="sale-price">Rs. {{ product.price }}</span>
+
+                    {% if product.discount %}
+                        <span class="discount">{{ product.discount }}% OFF</span>
+                    {% endif %}
                 </div>
+                <a href="{% url 'buy_product' product.id %}" class="buy-btn">
+                    Buy Now
+                </a>
             </div>
+
         </div>
+        {% empty %}
+            <p>No products available.</p>
+        {% endfor %}
     </section>
 
     <!-- Footer -->

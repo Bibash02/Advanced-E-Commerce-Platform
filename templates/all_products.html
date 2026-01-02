@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Products | Clothique</title>
+    <link rel="stylesheet" href="{% static 'css/customer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+    <link rel="stylesheet" href="{% static 'css/rating.css' %}">
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
+        <div class="nav-links">
+            <a href="{% url 'customer_dashboard' %}">DASHBOARD</a>
+        </div>
+    </nav>
+</header>
+
+<!-- PAGE TITLE -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>All <span class="highlight">Products</span></h1>
+        <p>Products created by suppliers...</p>
+    </div>
+</section>
+
+<!-- PRODUCT GRID -->
+<section class="product-grid">
+    {% for product in products %}
+    <div class="product-card">
+
+        <div class="product-image">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+                <img src="{% static 'images/no-image.png' %}" alt="No image">
+            {% endif %}
+        </div>
+
+        <div class="product-info">
+            <div class="product-name">{{ product.name }}</div>
+
+            <!-- ⭐ RATING -->
+            <div class="product-rating">
+                {% if product.avg_rating %}
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= product.avg_rating|floatformat:0 %}
+                            <span class="star filled">★</span>
+                        {% else %}
+                            <span class="star">★</span>
+                        {% endif %}
+                    {% endfor %}
+                    <span class="rating-value">
+                        ({{ product.avg_rating|floatformat:1 }})
+                    </span>
+                {% else %}
+                    <span class="no-rating">No ratings yet</span>
+                {% endif %}
+            </div>
+
+            <div class="price-container">
+                Rs. {{ product.price }}
+            </div>
+
+            <a href="{% url 'buy_product' product.id %}" class="buy-btn">
+                Buy Now
+            </a>
+        </div>
+
+    </div>
+    {% empty %}
+        <p>No products available.</p>
+    {% endfor %}
+</section>
+
+
+</body>
+</html>

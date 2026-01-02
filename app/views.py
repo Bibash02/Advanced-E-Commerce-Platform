@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from .models import *
 from .forms import *
 from django.contrib.auth.decorators import login_required
+from django.db.models import Avg
 
 
 # Create your views here.
@@ -108,12 +109,18 @@ def signout(request):
     return redirect('home')
 
 def customer_dashboard(request):
-    products = Product.objects.all().order_by('-created_at')[:4]
     categories = Category.objects.all().order_by('-created_at')[:3]
+    products = (
+        Product.objects
+        .annotate(avg_rating=Avg('reviews__rating'))
+        .order_by('-created_at')[:4]
+    )
+    productss = Product.objects.order_by('-created_at')[:4]
 
     context = {
         'categories': categories,
-        'products': products
+        'products': products,
+        'productss': productss
     }
     return render(request, 'customer_dashboard.html', context)   
 
@@ -293,3 +300,29 @@ def buy_product(request, product_id):
         'reviews': reviews
     }
     return render(request, 'buy_product.html', context)
+
+def all_products(request):
+    products = (
+        Product.objects
+        .all()
+        .annotate(avg_rating=Avg('reviews__rating'))
+        .order_by('-created_at')
+    )
+
+    return render(request, 'all_products.html', {
+        'products': products
+    })
+
+def rate_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+
+    if request.method == "POST":
+        rating = int(request.POST.get("rating"))
+
+        ProductReview.objects.update_or_create(
+            product=product,
+            user=request.user,
+            defaults={'rating': rating}
+        )
+
+        return redirect('product_detail', product_id=product.id)

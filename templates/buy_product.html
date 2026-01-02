@@ -53,12 +53,13 @@
             <div class="review-user">
                 <span>{{ review.user.username }}</span>
                 <div class="review-stars">
-                    {% for i in "12345"|slice:":review.rating" %}
-                        ⭐
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                            ⭐
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>
-
             <div class="review-text">
                 {{ review.comment }}
             </div>

@@ -24,3 +24,9 @@ class BlogAdmin(admin.ModelAdmin):
     list_display = ['id', 'supplier', 'title', 'image', 'content', 'created_at']
     list_filter = ['supplier', 'title']
     search_fields = ['supplier', 'title']
+
+@admin.register(ProductReview)
+class ProductReviewAdmin(admin.ModelAdmin):
+    list_display = ['product', 'user', 'rating', 'comment', 'created_at']
+    list_filter = ['product', 'user', 'rating']
+    search_fields = ['product', 'user']
