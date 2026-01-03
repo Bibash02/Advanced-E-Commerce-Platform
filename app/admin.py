@@ -30,3 +30,15 @@ class ProductReviewAdmin(admin.ModelAdmin):
     list_display = ['product', 'user', 'rating', 'comment', 'created_at']
     list_filter = ['product', 'user', 'rating']
     search_fields = ['product', 'user']
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'created_at')
+    list_filter = ('user',)
+    search_fields = ('user',)
+
+@admin.register(CartItem)
+class CartItemAdmin(admin.ModelAdmin):
+    list_display = ['cart', 'product', 'quantity']
+    list_filter = ['cart', 'product']
+    search_fields = ['product']

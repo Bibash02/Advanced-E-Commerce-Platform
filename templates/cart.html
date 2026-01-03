@@ -1,0 +1,295 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Cart | Clothique</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* ===========================
+   CART PAGE WRAPPER
+    =========================== */
+    .cart-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .cart-container h1 {
+        font-size: 28px;
+        margin-bottom: 25px;
+        color: #7c7fad;
+    }
+
+    /* ===========================
+    CART TABLE
+    =========================== */
+    .cart-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+
+    .cart-table thead {
+        background: #7c7fad;
+        color: #fff;
+    }
+
+    .cart-table th,
+    .cart-table td {
+        padding: 16px;
+        text-align: center;
+    }
+
+    .cart-table th {
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .cart-table tbody tr {
+        border-bottom: 1px solid #eee;
+    }
+
+    .cart-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    /* ===========================
+    PRODUCT INFO
+    =========================== */
+    .product-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .product-info img {
+        width: 70px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 6px;
+        background: #f5f5f5;
+    }
+
+    .product-info span {
+        font-weight: 500;
+        color: #222;
+    }
+
+    /* ===========================
+    REMOVE BUTTON
+    =========================== */
+    .remove-btn {
+        display: inline-block;
+        padding: 6px 10px;
+        background: #e74c3c;
+        color: #fff;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background 0.2s ease;
+    }
+
+    .remove-btn:hover {
+        background: #c0392b;
+    }
+
+    /* ===========================
+    CART SUMMARY
+    =========================== */
+    .cart-summary {
+        margin-top: 30px;
+        max-width: 350px;
+        margin-left: auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+
+    .cart-summary h3 {
+        font-size: 20px;
+        margin-bottom: 15px;
+        color: #222;
+    }
+
+    /* SUMMARY ROWS */
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 15px;
+    }
+
+    .summary-row.total {
+        font-weight: 600;
+        font-size: 17px;
+        border-top: 1px solid #ddd;
+        padding-top: 10px;
+    }
+
+    /* ===========================
+    CHECKOUT BUTTON
+    =========================== */
+    .checkout-btn {
+        display: block;
+        width: 100%;
+        margin-top: 20px;
+        padding: 12px;
+        background: #7c7fad;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.3s ease;
+    }
+
+    .checkout-btn:hover {
+        background: #757791;
+    }
+
+    /* ===========================
+    EMPTY CART
+    =========================== */
+    .empty-cart {
+        text-align: center;
+        font-size: 18px;
+        margin-top: 50px;
+        color: #555;
+    }
+
+    .shop-btn {
+        display: inline-block;
+        margin-top: 15px;
+        padding: 10px 20px;
+        background: #111;
+        color: #fff;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .shop-btn:hover {
+        background: #000;
+    }
+
+    /* ===========================
+    RESPONSIVE
+    =========================== */
+    @media (max-width: 768px) {
+        .product-info {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .cart-summary {
+            width: 100%;
+            margin-left: 0;
+        }
+
+        .cart-table th,
+        .cart-table td {
+            padding: 10px;
+            font-size: 14px;
+        }
+    }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
+        <div class="nav-links">
+            <a href="{% url 'customer_dashboard' %}">DASHBOARD</a>
+            <a href="{% url 'all_products' %}">SHOP</a>
+        </div>
+    </nav>
+</header>
+
+<section class="cart-container">
+    <h1>Your Shopping Cart</h1>
+
+    {% if cart.items.all %}
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Total</th>
+                    <th>Remove</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in cart.items.all %}
+                <tr>
+                    <!-- PRODUCT -->
+                    <td class="product-info">
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                        <span>{{ item.product.name }}</span>
+                    </td>
+
+                    <!-- PRICE -->
+                    <td>Rs. {{ item.product.price }}</td>
+
+                    <!-- QUANTITY -->
+                    <td>
+                        {{ item.quantity }}
+                    </td>
+
+                    <!-- TOTAL (NO ()) -->
+                    <td>
+                        Rs. {{ item.total_price }}
+                    </td>
+
+                    <!-- REMOVE -->
+                    <td>
+                        <a href="{% url 'remove_from_cart' item.id %}"
+                           class="remove-btn"
+                           onclick="return confirm('Remove this item?')">
+                            ✖
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- CART SUMMARY -->
+        <div class="cart-summary">
+            <h3>Cart Summary</h3>
+
+            <div class="summary-row">
+                <span>Total Items</span>
+                <span>{{ cart.items.count }}</span>
+            </div>
+
+            <div class="summary-row total">
+                <span>Grand Total</span>
+                <span>Rs. {{ cart.grand_total }}</span>
+            </div>
+
+            <a href="" class="checkout-btn">
+                Proceed to Checkout
+            </a>
+        </div>
+
+    {% else %}
+        <p class="empty-cart">Your cart is empty 😕</p>
+        <a href="" class="shop-btn">
+            Continue Shopping
+        </a>
+    {% endif %}
+</section>
+
+</body>
+</html>

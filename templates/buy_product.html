@@ -35,7 +35,7 @@
                 Rs. {{ product.price }}
             </div>
 
-            <a href="#" class="buy-btn-primary">Add to Cart</a>
+            <a href="{% url 'add_to_cart' product.id %}" class="buy-btn-primary">Add to Cart</a>
         </div>
 
     </div>
