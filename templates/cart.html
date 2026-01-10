@@ -278,14 +278,14 @@
                 <span>Rs. {{ cart.grand_total }}</span>
             </div>
 
-            <a href="" class="checkout-btn">
+            <a href="{% url 'checkout' %}" class="checkout-btn">
                 Proceed to Checkout
             </a>
         </div>
 
     {% else %}
         <p class="empty-cart">Your cart is empty 😕</p>
-        <a href="" class="shop-btn">
+        <a href="{% url 'all_products' %}" class="shop-btn">
             Continue Shopping
         </a>
     {% endif %}

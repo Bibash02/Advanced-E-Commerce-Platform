@@ -74,13 +74,23 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': 'ecommerce',
+    'USER': 'postgres',
+    'PASSWORD': 'postgres',
+    'HOST': 'localhost', # Or your database server's IP
+    'PORT': '5432', # Default PostgreSQL port
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -128,3 +138,9 @@ EMAIL_HOST_PASSWORD = '43e89d38974a58'
 EMAIL_PORT = '2525'
 
 DEFAULT_FROM_EMAIL = 'testing@lms.com'
+
+# eSewa Payment Gateway Settings
+ESEWA_PRODUCT_CODE = "EPAYTEST"         # test product code
+ESEWA_SECRET_KEY = "8gBm/:&EnhH.1/q"   # replace with eSewa sandbox secret key
+ESEWA_SUCCESS_URL = "http://127.0.0.1:8000/esewa/success/"   # change to your domain
+ESEWA_FAILURE_URL = "http://127.0.0.1:8000/esewa/failure/"

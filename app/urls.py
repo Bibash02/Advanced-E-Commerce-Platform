@@ -39,4 +39,9 @@ urlpatterns = [
     path('customer/cart/add/<int:product_id>', add_to_cart, name='add_to_cart'),
     path('customer/cart/', cart_page, name='cart_page'),
     path('customer/cart/remove/<int:item_id>', remove_from_cart, name='remove_from_cart'),
+
+    path('customer/chekout', checkout, name='checkout'),
+    path('customer/esewa/process', process_payment, name='process_payment'),
+    path('customer/esewa/success', payment_success, name='payment_success'),
+    path('customer/esewa/failed', payment_fail, name='payment_failed'),
 ]

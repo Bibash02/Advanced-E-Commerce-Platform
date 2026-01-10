@@ -42,3 +42,9 @@ class CartItemAdmin(admin.ModelAdmin):
     list_display = ['cart', 'product', 'quantity']
     list_filter = ['cart', 'product']
     search_fields = ['product']
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['user', 'full_name', 'email', 'phone', 'address', 'city', 'country', 'amount', 'payment_type', 'transaction_uuid', 'status', 'created_at']
+    

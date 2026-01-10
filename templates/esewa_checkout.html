@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+</head>
+<body>
+
+<div class="checkout-container">
+
+    <!-- BILLING DETAILS -->
+    <div class="billing">
+        <h2>Billing Details</h2>
+
+        <form method="POST" action="{% url 'process_payment' %}">
+            {% csrf_token %}
+
+            <input name="name" value="{{ request.user.get_full_name }}" required>
+            <input name="email" value="{{ request.user.email }}" required>
+            <input name="phone" required>
+            <input name="address" required>
+            <input name="city" required>
+
+            <select name="payment_type" required>
+                <option value="">Select Payment</option>
+                <option value="cod">Cash On Delivery</option>
+                <option value="esewa">eSewa</option>
+            </select>
+
+            <button type="submit">Proceed</button>
+        </form>
+
+        <h3>Total: Rs. {{ total_amount }}</h3>
+    </div>
+
+    <!-- ORDER SUMMARY -->
+    <div class="summary">
+        <h2>Order Summary</h2>
+
+        {% for item in cart_items %}
+            <div class="summary-item">
+                <span>{{ item.product.name }} × {{ item.quantity }}</span>
+                <span>Rs. {{ item.product.price|floatformat:2 }}</span>
+            </div>
+        {% endfor %}
+
+        <hr>
+
+        <div class="summary-total">
+            <strong>Total</strong>
+            <strong>Rs. {{ total_amount }}</strong>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

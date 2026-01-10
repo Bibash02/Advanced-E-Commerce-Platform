@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment success</title>
+</head>
+<body>
+    <h1>Payment Successful 🎉</h1>
+    <p>Order ID: {{ order.id }}</p>
+    <p>Amount Paid: Rs {{ order.total_amount }}</p>
+
+    <a href="{% url 'customer_dashboard' %}">Go to Dashboard</a>
+</body>
+</html>

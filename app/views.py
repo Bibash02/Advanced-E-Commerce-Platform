@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -7,6 +8,11 @@ from .models import *
 from .forms import *
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg
+import uuid
+from django.urls import reverse
+from decimal import Decimal
+from django.conf import settings
+from .utils import generate_signature
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -366,3 +372,100 @@ def remove_from_cart(request, item_id):
     item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
     item.delete()
     return redirect('cart_page')
+
+@login_required
+def checkout(request):
+    cart = Cart.objects.get(user=request.user)
+    total_amount = cart.grand_total
+
+    return render(request, 'esewa_checkout.html', {
+        'cart': cart,
+        'total_amount': total_amount
+     })
+
+@login_required
+def process_payment(request):
+    if request.method != "POST":
+        return redirect("checkout")
+
+    cart = Cart.objects.filter(user=request.user).first()
+    if not cart or not cart.items.exists():
+        return redirect("cart_page")
+
+    total_amount = cart.grand_total
+    payment_type = request.POST.get("payment_type")
+
+    transaction_uuid = str(uuid.uuid4())
+
+    order = Order.objects.create(
+        user=request.user,
+        full_name=request.POST.get("name"),
+        email=request.POST.get("email"),
+        phone=request.POST.get("phone"),
+        address=request.POST.get("address"),
+        city=request.POST.get("city"),
+        country="Nepal",
+        amount=total_amount,
+        payment_type=payment_type,
+        transaction_uuid=transaction_uuid,
+        status="Pending"
+    )
+
+    request.session["current_order_id"] = order.id
+
+    # ✅ CASH ON DELIVERY (same pattern as second code)
+    if payment_type == "cod":
+        cart.items.all().delete()
+        return render(request, "payment_success.html", {"order": order})
+
+    # ✅ ESEWA (FIXED — copied from working example)
+    if payment_type == "esewa":
+        product_code = getattr(settings, "ESEWA_PRODUCT_CODE", "EPAYTEST")
+        secret_key = getattr(settings, "ESEWA_SECRET_KEY", "")
+
+        signature = generate_signature(
+            total_amount,
+            transaction_uuid,
+            product_code,
+            secret_key
+        )
+
+        context = {
+            "order": order,
+            "total_amount": total_amount,
+            "transaction_uuid": transaction_uuid,
+            "product_code": product_code,
+            "signature": signature,
+            "success_url": request.build_absolute_uri(reverse("payment_success")),
+            "failure_url": request.build_absolute_uri(reverse("payment_failed")),
+        }
+
+        return render(request, "esewa_payment.html", context)
+
+    return redirect("checkout")
+
+
+@login_required
+def payment_success(request):
+    order_id = request.session.get('order_id')
+    order = get_object_or_404(Order, id=order_id)
+
+    order.status = "Paid"
+    order.save()
+
+    # clear cart (assuming you have a Cart model linked to User)
+    if hasattr(order.user, 'cart'):
+        order.user.cart.items.all().delete()
+
+    return render(request, 'payment_success.html', {'order': order})
+
+
+@login_required
+def payment_fail(request):
+    order_id = request.session.get('order_id')
+    order = get_object_or_404(Order, id=order_id)
+
+    order.status = "Failed"
+    order.save()
+
+    return render(request, 'payment_fail.html', {'order': order})
