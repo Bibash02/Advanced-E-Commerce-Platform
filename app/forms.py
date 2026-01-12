@@ -10,3 +10,8 @@ class BlogForm(forms.ModelForm):
     class Meta:
         model = Blog
         fields = ['title', 'image', 'content']
+
+class DeliveryDocumentForm(forms.ModelForm): 
+    class Meta:
+        model = DeliveryDocument
+        exclude = ['user']

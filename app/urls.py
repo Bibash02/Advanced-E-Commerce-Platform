@@ -3,7 +3,6 @@ from .views import *
 from django.contrib.auth.views import *
 
 urlpatterns = [
-    path('dashboard', dashboard, name='dashboard'),
     path('', home, name='home'),
     path('signin', signin, name='signin'),
     path('signup/', signup, name='signup'),
@@ -17,6 +16,7 @@ urlpatterns = [
 
     path('customer/dashboard/', customer_dashboard, name='customer_dashboard'),
     path('supplier/dashboard/', supplier_dashboard, name='supplier_dashboard'),
+    path('delivery_personnel/dashboard', delivery_personnel_dashboard, name='delivery_personnel_dashboard'),
 
     path('supplier/profile', supplier_profile, name='supplier_profile'),
     path('supplier/profile/edit', edit_supplier_profile, name='edit_supplier_profile'),
@@ -44,4 +44,7 @@ urlpatterns = [
     path('customer/esewa/process', process_payment, name='process_payment'),
     path('customer/esewa/success', payment_success, name='payment_success'),
     path('customer/esewa/failed', payment_fail, name='payment_failed'),
+
+    path('delivery/documents/', document_form, name='document_form'),
+    path('delivery/documents/view/', document_view, name='document_view'),
 ]

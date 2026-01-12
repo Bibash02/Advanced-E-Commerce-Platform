@@ -13,13 +13,11 @@ from django.urls import reverse
 from decimal import Decimal
 from django.conf import settings
 from .utils import generate_signature
+from django.http import HttpResponseForbidden
+
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
-
-# Create your views here.
-def dashboard(request):
-    return render(request, 'dashboard.html')
 
 def home(request):
     latest_products = Product.objects.order_by('-created_at')[:4]
@@ -40,7 +38,8 @@ def signup(request):
         last_name = request.POST.get('last_name')
         email = request.POST.get('email')
         username = request.POST.get('username')
-        password = request.POST.get('password')  # ✅ FIXED
+        phone = request.POST.get('phone')
+        password = request.POST.get('password')  
         confirm_password = request.POST.get('confirm_password')
         role = request.POST.get('role')
         profile_image = request.FILES.get('profile_image')
@@ -57,7 +56,13 @@ def signup(request):
             messages.error(request, "Email already registered.")
             return redirect('signup')
 
-        if role not in ['supplier', 'customer', 'delivery_personnel']:
+        role_map = {
+            'supplier': 'SUPPLIER',
+            'customer': 'CUSTOMER',
+            'delivery_personnel': 'DELIVERY'
+        }
+
+        if role not in role_map:
             messages.error(request, "Invalid role selected.")
             return redirect('signup')
 
@@ -71,7 +76,7 @@ def signup(request):
 
         UserProfile.objects.create(
             user=user,
-            role=role,
+            role=role_map[role],
             profile_image=profile_image
         )
 
@@ -85,37 +90,48 @@ def signin(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        user = None
-
         try:
-            user_obj = User.objects.get(email = email)
-            user = authenticate(request, username = user_obj.username, password = password)
+            user_obj = User.objects.get(email=email)
+            user = authenticate(request, username=user_obj.username, password=password)
         except User.DoesNotExist:
             user = None
 
         if user is not None:
             login(request, user)
 
-            # get role from userprofile
-            role = user.userprofile.role
-            if role == 'customer':
+            role = user.userprofile.role  # SUPPLIER / CUSTOMER / DELIVERY
+
+            if role == 'CUSTOMER':
                 return redirect('customer_dashboard')
-            elif role == 'supplier':
+
+            elif role == 'SUPPLIER':
                 return redirect('supplier_dashboard')
-            elif role == 'delivery_personnel':
-                return redirect('delivery_personnel_dashboard')
+
+            elif role == 'DELIVERY':
+                # check document
+                if DeliveryDocument.objects.filter(user=user).exists():
+                    return redirect('delivery_personnel_dashboard')
+                else:
+                    return redirect('document_form')
+
+            # fallback
             else:
                 return redirect('signup')
+
         else:
             messages.error(request, "Invalid email or password!")
             return redirect('signin')
-    return render(request, 'signin.html')
 
+    return render(request, 'signin.html')
 
 def signout(request):
     logout(request)
     return redirect('home')
 
+def delivery_personnel_dashboard(request):
+    return render(request, 'delivery_dashboard.html')
+
+@login_required
 def customer_dashboard(request):
     categories = Category.objects.all().order_by('-created_at')[:3]
     products = (
@@ -132,6 +148,7 @@ def customer_dashboard(request):
     }
     return render(request, 'customer_dashboard.html', context)   
 
+@login_required
 def supplier_dashboard(request):
     products = Product.objects.filter(supplier = request.user).order_by('-created_at')[:4]
     blogs = Blog.objects.filter(supplier = request.user).order_by('-created_at')[:3]
@@ -144,6 +161,7 @@ def supplier_dashboard(request):
     }
     return render(request, 'supplier_dashboard.html', context)
 
+@login_required
 def supplier_profile(request):
     try:
         profile = request.user.userprofile
@@ -154,6 +172,7 @@ def supplier_profile(request):
     }
     return render(request, 'supplier_profile.html', context)
 
+@login_required
 def edit_supplier_profile(request):
     try:
         profile = request.user.userprofile
@@ -188,14 +207,17 @@ def edit_supplier_profile(request):
     }
     return render(request, 'edit_supplier_profile.html', context)
 
+@login_required
 def supplier_category_list(request):
     categories = Category.objects.all().order_by('created_at')
     return render(request, 'category_list.html', {'categories': categories})
 
+@login_required
 def supplier_products(request):
     products = Product.objects.filter(supplier = request.user)
     return render(request, 'product_list.html', {'products': products})
 
+@login_required
 def add_product(request):
     form = ProductForm(request.POST or None, request.FILES or None)
 
@@ -209,6 +231,7 @@ def add_product(request):
         'form': form
     })
 
+@login_required
 def edit_product(request, pk):
     product = get_object_or_404(
         Product,
@@ -231,15 +254,18 @@ def edit_product(request, pk):
         'product': product
     })
 
+@login_required
 def delete_product(request, pk):
     product = get_object_or_404(Product, pk = pk, supplier = request.user)
     product.delete()
     return redirect('supplier_dashboard')
 
+@login_required
 def supplier_blogs(request):
     blogs = Blog.objects.filter(supplier = request.user)
     return render(request, 'blog_list.html', {'blogs': blogs})
 
+@login_required
 def add_blog(request):  
     form = BlogForm(request.POST or None, request.FILES or None)
 
@@ -252,6 +278,7 @@ def add_blog(request):
         'form': form
     })
 
+@login_required
 def edit_blog(request, pk):
     blog = get_object_or_404(Blog, pk = pk, supplier = request.user)
     form = BlogForm(request.POST or None, request.FILES or None)
@@ -264,11 +291,13 @@ def edit_blog(request, pk):
         'blog': blog
     })
 
+@login_required
 def delete_blog(request, pk):
     blog = get_object_or_404(Blog, pk = pk, supplier = request.user)
     blog.delete()
     return redirect('supplier_dashboard')
 
+@login_required
 def customer_profile(request):
     try:
         profile = request.user.userprofile
@@ -279,13 +308,16 @@ def customer_profile(request):
     }
     return render(request, 'customer_profile.html', context)
 
+@login_required
 def edit_customer_profile(request):
     return render(request, 'edit_customer_profile.html')
 
+@login_required
 def category_list_customer(request):
     categories = Category.objects.all().order_by('created_at')
     return render(request, 'category_list_customer.html', {'categories': categories})
 
+@login_required
 def buy_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     reviews = product.reviews.select_related('user').order_by('-created_at')
@@ -309,6 +341,7 @@ def buy_product(request, product_id):
     }
     return render(request, 'buy_product.html', context)
 
+@login_required
 def all_products(request):
     products = (
         Product.objects
@@ -321,6 +354,7 @@ def all_products(request):
         'products': products
     })
 
+@login_required
 def rate_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
@@ -413,12 +447,12 @@ def process_payment(request):
 
     request.session["current_order_id"] = order.id
 
-    # ✅ CASH ON DELIVERY (same pattern as second code)
+    # CASH ON DELIVERY 
     if payment_type == "cod":
         cart.items.all().delete()
         return render(request, "payment_success.html", {"order": order})
 
-    # ✅ ESEWA (FIXED — copied from working example)
+    # ESEWA (FIXED 
     if payment_type == "esewa":
         product_code = getattr(settings, "ESEWA_PRODUCT_CODE", "EPAYTEST")
         secret_key = getattr(settings, "ESEWA_SECRET_KEY", "")
@@ -469,3 +503,48 @@ def payment_fail(request):
     order.save()
 
     return render(request, 'payment_fail.html', {'order': order})
+
+@login_required
+def document_form(request):
+    if request.user.userprofile.role != 'DELIVERY':
+        return redirect('signin')
+
+    try:
+        document = DeliveryDocument.objects.get(user=request.user)
+        form = DeliveryDocumentForm(instance=document)
+    except DeliveryDocument.DoesNotExist:
+        document = None
+        initial_data = {
+            'full_name': f"{request.user.first_name} {request.user.last_name}",
+            'phone': request.user.userprofile.phone,
+        }
+        form = DeliveryDocumentForm(initial=initial_data)
+
+    if request.method == 'POST':
+        if document:
+            form = DeliveryDocumentForm(request.POST, request.FILES, instance=document)
+        else:
+            form = DeliveryDocumentForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            doc = form.save(commit=False)
+            doc.user = request.user
+            doc.save()
+            return redirect('delivery_personnel_dashboard')
+        else:
+            print("FORM ERRORS:", form.errors)  # DEBUG
+
+    return render(request, 'document_form.html', {'form': form})
+
+
+@login_required
+def document_view(request):
+    try:
+        document = DeliveryDocument.objects.get(user=request.user)
+    except DeliveryDocument.DoesNotExist:
+        messages.error(request, "No document found. Please upload first.")
+        return redirect('document_form')
+
+    return render(request, 'document_view.html', {
+        'document': document
+    })

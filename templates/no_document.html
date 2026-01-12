@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>No Documents Found</title>
+    <link rel="stylesheet" href="{% static 'css/customer.css' %}">
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
+        <div class="nav-links">
+            <a href="{% url 'delivery_documents' %}">UPLOAD DOCUMENTS</a>
+            <a href="{% url 'signout' %}">SIGNOUT</a>
+        </div>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>No <span class="highlight">Documents Found</span></h1>
+        <p>You have not submitted your delivery verification documents yet.</p>
+        <a href="{% url 'delivery_documents' %}" class="cta-button">
+            UPLOAD DOCUMENTS
+        </a>
+    </div>
+</section>
+
+</body>
+</html>

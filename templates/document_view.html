@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Documents | Delivery Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/customer.css' %}">
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
+
+        <div class="nav-links">
+            <a href="{% url 'delivery_dashboard' %}">DASHBOARD</a>
+            <a href="#">DOCUMENT</a>
+            <a href="{% url 'signout' %}">SIGNOUT</a>
+        </div>
+    </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>My <span class="highlight">Documents</span></h1>
+        <p>View or update your submitted verification details.</p>
+    </div>
+</section>
+
+<!-- SECTION HEADER -->
+<div class="section-header">
+    <h2>Submitted Information</h2>
+</div>
+
+<!-- DOCUMENT VIEW / EDIT -->
+<section class="features">
+    <div class="feature" style="width:100%; max-width:900px; margin:auto;">
+        <div style="width:100%;">
+
+            <p><strong>Verification Status:</strong>
+                <span style="color:#007bff;">
+                    {{ document.status|upper }}
+                </span>
+            </p>
+            <br>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <h3>Personal Information</h3>
+                {{ form.full_name }}<br><br>
+                {{ form.phone }}<br><br>
+                {{ form.address }}<br><br>
+
+                <h3>Vehicle Details</h3>
+                {{ form.vehicle_type }}<br><br>
+                {{ form.vehicle_number }}<br><br>
+
+                <h3>Documents</h3>
+                {{ form.government_id }}<br><br>
+                {{ form.driving_license }}<br><br>
+                {{ form.vehicle_document }}<br><br>
+                {{ form.cv }}<br><br>
+
+                <button type="submit" class="cta-button">
+                    UPDATE DOCUMENTS
+                </button>
+            </form>
+
+        </div>
+    </div>
+</section>
+
+</body>
+</html>
