@@ -47,4 +47,6 @@ urlpatterns = [
 
     path('delivery/documents/', document_form, name='document_form'),
     path('delivery/documents/view/', document_view, name='document_view'),
+    path('delivery/profile', delivery_profile, name='delivery_profile'),
+    path('delivery/profile/edit', edit_delivery_profile, name='edit_delivery_profile'),
 ]

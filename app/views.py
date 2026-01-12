@@ -92,35 +92,45 @@ def signin(request):
 
         try:
             user_obj = User.objects.get(email=email)
-            user = authenticate(request, username=user_obj.username, password=password)
+            user = authenticate(
+                request,
+                username=user_obj.username,
+                password=password
+            )
         except User.DoesNotExist:
             user = None
 
-        if user is not None:
-            login(request, user)
-
-            role = user.userprofile.role  # SUPPLIER / CUSTOMER / DELIVERY
-
-            if role == 'CUSTOMER':
-                return redirect('customer_dashboard')
-
-            elif role == 'SUPPLIER':
-                return redirect('supplier_dashboard')
-
-            elif role == 'DELIVERY':
-                # check document
-                if DeliveryDocument.objects.filter(user=user).exists():
-                    return redirect('delivery_personnel_dashboard')
-                else:
-                    return redirect('document_form')
-
-            # fallback
-            else:
-                return redirect('signup')
-
-        else:
+        if user is None:
             messages.error(request, "Invalid email or password!")
             return redirect('signin')
+
+        login(request, user)
+
+        # SAFE UserProfile access
+        try:
+            profile = user.userprofile
+        except UserProfile.DoesNotExist:
+            messages.error(request, "User profile not found. Contact admin.")
+            return redirect('signin')
+
+        role = profile.role
+
+        if role == 'CUSTOMER':
+            return redirect('customer_dashboard')
+
+        elif role == 'SUPPLIER':
+            return redirect('supplier_dashboard')
+
+        elif role == 'DELIVERY':
+            # document check
+            if DeliveryDocument.objects.filter(user=user).exists():
+                return redirect('delivery_personnel_dashboard')
+            else:
+                return redirect('document_form')
+
+        # final fallback
+        messages.error(request, "Invalid user role.")
+        return redirect('signin')
 
     return render(request, 'signin.html')
 
@@ -129,7 +139,11 @@ def signout(request):
     return redirect('home')
 
 def delivery_personnel_dashboard(request):
-    return render(request, 'delivery_dashboard.html')
+    orders = Order.objects.filter(
+        status='Paid'   # orders ready to deliver
+    ).prefetch_related('items__product')
+
+    return render(request, 'delivery_dashboard.html', {'orders': orders})
 
 @login_required
 def customer_dashboard(request):
@@ -548,3 +562,49 @@ def document_view(request):
     return render(request, 'document_view.html', {
         'document': document
     })
+
+@login_required
+def delivery_profile(request):
+    try:
+        profile = request.user.userprofile
+    except UserProfile.DoesNotExist:
+        profile = None
+    context = {
+        'profile': profile
+    }
+    return render(request, 'delivery_profile.html', context)
+
+@login_required
+def edit_delivery_profile(request):
+    try:
+        profile = request.user.userprofile
+    except UserProfile.DoesNotExist:
+        profile = None
+
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        profile_image = request.FILES.get('profile_image')
+
+        # Update User fields
+        user = request.user
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.save()
+
+        # Update UserProfile fields
+        profile.phone = phone
+        if profile_image:
+            profile.profile_image = profile_image
+        profile.save()
+
+        messages.success(request, "Profile updated successfully!")
+        return redirect('delivery_profile')
+
+    context = {
+        'profile': profile
+    }
+    return render(request, 'edit_delivery_profile.html', context)

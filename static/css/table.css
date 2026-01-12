@@ -1,0 +1,147 @@
+/* ================================
+   ORDER LIST (DELIVERY DASHBOARD)
+================================ */
+
+.section-header {
+    max-width: 1100px;
+    margin: 40px auto 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-header h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #222;
+}
+
+.section-header .view-all {
+    background: none;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #444;
+}
+
+.section-header .view-all:hover {
+    color: #000;
+}
+
+/* TABLE CONTAINER */
+.features {
+    padding-bottom: 60px;
+}
+
+.feature {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+thead tr {
+    background: #f5f5f5;
+}
+
+thead th {
+    padding: 14px;
+    text-align: left;
+    font-weight: 700;
+    color: #333;
+}
+
+tbody td {
+    padding: 14px;
+    vertical-align: middle;
+    color: #444;
+}
+
+/* ROW HOVER */
+tbody tr:hover {
+    background: #fafafa;
+}
+
+/* CUSTOMER COLUMN */
+td:nth-child(2) {
+    font-weight: 600;
+}
+
+/* PRODUCT LIST */
+td:nth-child(3) {
+    line-height: 1.6;
+}
+
+/* QUANTITY COLUMN */
+td:nth-child(4) {
+    text-align: center;
+    font-weight: 600;
+}
+
+/* ACTION BUTTON */
+.cta-button {
+    background: #7c7fad;
+    color: #fff;
+    padding: 7px 16px;
+    font-size: 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.25s ease;
+}
+
+.cta-button:hover {
+    background: #757795;
+    transform: translateY(-2px);
+}
+
+/* EMPTY STATE */
+tbody tr td[colspan] {
+    font-size: 16px;
+    color: #777;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tbody tr {
+        margin-bottom: 18px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 12px;
+    }
+
+    tbody td {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 14px;
+    }
+
+    tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #222;
+    }
+}
