@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Clothique</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/customer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/contact.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icon.css' %}">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">Clothique</div>
+            <div class="nav-links">
+                <a href="{% url 'home' %}">DASHBOARD</a>
+                <a href="{% url 'signin' %}">SIGNIN</a>
+                <a href="{% url 'about' %}">ABOUT</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="contact-hero">
+        <h1>Get In Touch With Us</h1>
+        <p>We'd love to hear from you! Whether you have a question about our products, orders, or anything else, our team is ready to answer all your questions.</p>
+    </section>
+
+    <div class="contact-container">
+        <!-- About Section -->
+        <section class="about-section">
+            <h2>About Clothique</h2>
+            <p>
+                Clothique is your premier destination for the latest fashion trends and timeless style. Founded with a passion for quality clothing and exceptional customer service, we've been serving fashion enthusiasts with carefully curated collections that blend comfort, style, and affordability. Our mission is to make high-quality fashion accessible to everyone, offering a diverse range of clothing from casual wear to formal attire. With thousands of satisfied customers and a commitment to excellence, we continue to grow as a trusted name in online fashion retail.
+            </p>
+        </section>
+
+        <!-- Contact Information Cards -->
+        <section class="contact-content">
+            <div class="contact-info-card">
+                <div class="contact-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h3>Our Location</h3>
+                <p>123 Fashion Street<br>Kathmandu, Nepal<br>Postal Code: 44600</p>
+            </div>
+
+            <div class="contact-info-card">
+                <div class="contact-icon">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <h3>Phone Number</h3>
+                <p>
+                    <a href="tel:+9779812345678">+977 981-2345678</a><br>
+                    <a href="tel:+9771234567">+977 1-234567</a><br>
+                    Mon-Sat: 9AM - 6PM
+                </p>
+            </div>
+
+            <div class="contact-info-card">
+                <div class="contact-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h3>Email Address</h3>
+                <p>
+                    <a href="mailto:info@clothique.com">info@clothique.com</a><br>
+                    <a href="mailto:support@clothique.com">support@clothique.com</a><br>
+                    24/7 Email Support
+                </p>
+            </div>
+        </section>
+
+        <!-- Map Section -->
+        <section class="map-section">
+            <h2>Find Us Here</h2>
+            <div class="map-container">
+                <!-- Replace the src with your actual location coordinates -->
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7066.99436782089!2d85.27571259370674!3d27.671024354813454!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb180fba4f969b%3A0xd2bca90cc1064726!2z4KSq4KS-4KSB4KSX4KS-LCDgpJXgpYDgpLDgpY3gpKTgpL_gpKrgpYHgpLAgNDQ2MDA!5e0!3m2!1sne!2snp!4v1768277931632!5m2!1sne!2snp" width="800" height="600" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </section>
+
+        <!-- Contact Form -->
+        <section class="contact-form-section">
+            <h2>Send Us a Message</h2>
+            <form class="contact-form" method="POST" action="{% url 'contact' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="name">Full Name </label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address </label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone">
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">Subject </label>
+                    <input type="text" id="subject" name="subject" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Message </label>
+                    <textarea id="message" name="message" required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">SEND MESSAGE</button>
+            </form>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Clothique</h3>
+                <p>Your one-stop shop for the latest fashion trends. Quality clothing at affordable prices.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/YourPage" target="_blank" class="social-icon">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Information</h3>
+                <ul>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#terms">Terms & Conditions</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Customer Service</h3>
+                <ul>
+                    <li><a href="#shipping">Shipping Policy</a></li>
+                    <li><a href="#returns">Returns & Exchanges</a></li>
+                    <li><a href="#faq">FAQs</a></li>
+                    <li><a href="#support">Support Center</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#newarrivals">New Arrivals</a></li>
+                    <li><a href="#bestSellers">Best Sellers</a></li>
+                    <li><a href="#sale">Sale Items</a></li>
+                    <li><a href="#giftcards">Gift Cards</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Subscribe</h3>
+                <p>Get the latest updates and offers.</p>
+                <form class="subscribe-form">
+                    <input type="email" placeholder="Enter your email">
+                    <button type="submit">SUBSCRIBE</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© Clothique...</p>
+            <a href="#clothique">Clothique.com</a>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

@@ -608,3 +608,41 @@ def edit_delivery_profile(request):
         'profile': profile
     }
     return render(request, 'edit_delivery_profile.html', context)
+
+@login_required
+def document_edit(request):
+    document = DeliveryDocument.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        form = DeliveryDocumentForm(
+            request.POST,
+            request.FILES,
+            instance=document
+        )
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Documents updated successfully.")
+            return redirect('document_view')
+    else:
+        form = DeliveryDocumentForm(instance=document)
+
+    return render(request, 'document_edit.html', {'form': form})
+
+def contact(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+
+        ContactMessage.objects.create(
+            name = name,
+            email = email,
+            phone = phone,
+            subject = subject,
+            message = message,
+        )
+        messages.success(request, "Your message has been sent successfully.")
+        return redirect('contnact')
+    return render(request, 'contact.html')

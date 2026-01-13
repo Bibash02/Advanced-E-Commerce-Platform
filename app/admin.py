@@ -47,3 +47,14 @@ class CartItemAdmin(admin.ModelAdmin):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['user', 'full_name', 'email', 'phone', 'address', 'city', 'country', 'amount', 'payment_type', 'transaction_uuid', 'status', 'created_at']
 
+@admin.register(DeliveryDocument)
+class DeliveryDocumentAdmin(admin.ModelAdmin):
+    list_display = ['user', 'full_name', 'phone', 'address', 'vehicle_type', 'vehicle_number', 'government_id', 'driving_license', 'vehicle_document', 'cv', 'created_at']
+    list_filter = ['user', 'address', 'vehicle_type']
+    search_fields = ['address', 'vehicle_type']
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'email', 'phone', 'subject', 'message', 'created_at']
+    list_filter = ['name', 'subject']
+    search_fields = ['name', 'subject']

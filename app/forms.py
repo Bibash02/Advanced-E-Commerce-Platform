@@ -14,4 +14,4 @@ class BlogForm(forms.ModelForm):
 class DeliveryDocumentForm(forms.ModelForm): 
     class Meta:
         model = DeliveryDocument
-        exclude = ['user']
+        exclude = ['user', 'created_at', 'status']

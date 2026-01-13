@@ -8,6 +8,7 @@ urlpatterns = [
     path('signup/', signup, name='signup'),
     path('signout/', signout, name='signout'),
     path('about/', about, name='about'),
+    path('contact/', contact, name='contact'),
 
     path('forgot-password/', PasswordResetView.as_view(), name='password_reset'),
     path('reset-password-sent/', PasswordResetDoneView.as_view(), name='password_reset_done'),
@@ -47,6 +48,7 @@ urlpatterns = [
 
     path('delivery/documents/', document_form, name='document_form'),
     path('delivery/documents/view/', document_view, name='document_view'),
+    path('delivery/document/edit', document_edit, name='document_edit'),
     path('delivery/profile', delivery_profile, name='delivery_profile'),
     path('delivery/profile/edit', edit_delivery_profile, name='edit_delivery_profile'),
 ]
