@@ -26,7 +26,7 @@
                 <button>🔍</button>
             </div>
             <div class="nav-links">
-                <a href="#">CONTACT</a>
+                <a href="{% url 'customer_blog_list' %}">BLOG</a>
                 <a href="{% url 'all_products' %}">SHOP</a>
                 <a href="{% url 'signout' %}">SIGNOUT</a>
             </div>
@@ -92,7 +92,9 @@
     <!-- Category Section -->
     <div class="section-header">
         <h2>Category</h2>
-        <a href="{% url 'customer_category_list' %}" class="view-all">View All</a>
+        <a href="{% url 'customer_category_list' %}">
+            <button class="view-all">View All →</button>
+        </a>
     </div>
 
     <section class="category-grid">
@@ -172,8 +174,10 @@
 
     <!-- Leatest Products -->
     <div class="section-header">
-        <h2>Leatest Products</h2>
-        <button class="view-all">View All →</button>
+        <h2>Latest Products</h2>
+        <a href="">
+            <button class="view-all">View All →</button>
+        </a>
     </div>
     <section class="product-grid">
         {% for product in productss %}
@@ -217,6 +221,55 @@
         </div>
         {% empty %}
             <p>No products available.</p>
+        {% endfor %}
+    </section>
+
+    <!-- Latest Blogs -->
+    <div class="section-header">
+        <h2>Latest Blogs</h2>
+        <a href="{% url 'customer_blog_list' %}">
+            <button class="view-all">View All →</button>
+        </a>
+    </div>
+
+    <section class="product-grid">
+        {% for blog in latest_blogs %}
+        <div class="product-card">
+
+            <div class="product-image"
+                style="background: linear-gradient(180deg, #5a6a5a 0%, #4a5a4a 100%);">
+
+                {% if blog.image %}
+                    <img src="{{ blog.image.url }}" alt="{{ blog.title }}">
+                {% else %}
+                    <!-- fallback -->
+                    <svg width="100%" height="100%" viewBox="0 0 300 350">
+                        <rect width="300" height="350" fill="#eaeaea"/>
+                        <text x="50%" y="50%" text-anchor="middle" fill="#777">
+                            No Image
+                        </text>
+                    </svg>
+                {% endif %}
+            </div>
+
+            <div class="product-info">
+                <div class="product-name">
+                    {{ blog.title|truncatechars:40 }}
+                </div>
+
+                <p style="font-size:14px; color:#666; margin:8px 0;">
+                    {{ blog.content|truncatewords:12 }}
+                </p>
+
+                <a href="{% url 'customer_blog_detail' blog.id %}"
+                class="buy-btn">
+                    Read Blog
+                </a>
+            </div>
+
+        </div>
+        {% empty %}
+            <p>No blogs available.</p>
         {% endfor %}
     </section>
 

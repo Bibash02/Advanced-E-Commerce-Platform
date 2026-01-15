@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ blog.title }}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
+        <div class="nav-links">
+            <a href="{% url 'customer_blog_list' %}">⬅ Back to Blogs</a>
+        </div>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>{{ blog.title }}</h1>
+        <p>Published on {{ blog.created_at|date:"F d, Y" }}</p>
+    </div>
+</section>
+
+<section style="padding:40px; max-width:900px; margin:auto;">
+    {% if blog.image %}
+        <img src="{{ blog.image.url }}" style="width:100%; border-radius:10px; margin-bottom:20px;">
+    {% endif %}
+
+    <p style="line-height:1.8;">
+        {{ blog.content }}
+    </p>
+</section>
+
+</body>
+</html>

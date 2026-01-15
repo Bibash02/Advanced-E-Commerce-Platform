@@ -154,11 +154,13 @@ def customer_dashboard(request):
         .order_by('-created_at')[:4]
     )
     productss = Product.objects.order_by('-created_at')[:4]
+    latest_blogs = Blog.objects.order_by('-created_at')[:4]
 
     context = {
         'categories': categories,
         'products': products,
-        'productss': productss
+        'productss': productss,
+        'latest_blogs': latest_blogs,
     }
     return render(request, 'customer_dashboard.html', context)   
 
@@ -517,6 +519,14 @@ def payment_fail(request):
     order.save()
 
     return render(request, 'payment_fail.html', {'order': order})
+
+def customer_blog_list(request):
+    blogs = Blog.objects.all().order_by('-created_at')
+    return render(request, 'customer_blog_list.html', {'blogs': blogs})
+
+def customer_blog_detail(request, blog_id):
+    blog = Blog.objects.get(id = blog_id)
+    return render(request, 'customer_blog_detail.html', {'blog': blog})
 
 @login_required
 def document_form(request):

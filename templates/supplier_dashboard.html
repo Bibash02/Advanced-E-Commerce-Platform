@@ -85,7 +85,9 @@
     <!-- Category Section -->
     <div class="section-header">
         <h2>Category</h2>
-        <a href="{% url 'supplier_category_list' %}" class="view-all">View All</a>
+        <a href="{% url 'supplier_category_list' %}">
+            <button class="view-all">View All →</button>
+        </a>
     </div>
 
     <section class="category-grid">
@@ -102,7 +104,9 @@
     <!-- Best Selling Products -->
     <div class="section-header">
         <h2>Products</h2>
-        <a href="{% url 'product_list' %}" class="view-all">View All</a>
+        <a href="{% url 'product_list' %}">
+            <button class="view-all">View All →</button>
+        </a>
     </div>
     <section class="product-grid">
         {% for product in products %}
@@ -130,7 +134,9 @@
     <!-- Blog Section -->
     <div class="section-header">
         <h2>Blogs</h2>
-        <a href="{% url 'blog_list' %}" class="view-all">View All</a>
+        <a href="{% url 'blog_list' %}">
+            <button class="view-all">View All →</button>
+        </a>
     </div>
     <section class="blog-grid">
         {% for blog in blogs %}

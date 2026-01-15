@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blogs</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 40px;
+        }
+
+        .blog-card {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-6px);
+        }
+
+        .blog-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .blog-card-content {
+            padding: 18px;
+        }
+
+        .blog-card-content h3 {
+            margin-bottom: 10px;
+        }
+
+        .blog-card-content p {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .blog-card-content .cta-button {
+            display: inline-block;
+            padding: 8px 18px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
+        <div class="nav-links">
+            <a href="{% url 'customer_dashboard' %}">DASHBOARD</a>
+        </div>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Our <span class="highlight">Blogs</span></h1>
+        <p>Latest fashion tips and supplier stories</p>
+    </div>
+</section>
+
+<!-- BLOG CARD GRID (LIKE PRODUCTS) -->
+<section class="blog-grid">
+    {% for blog in blogs %}
+    <div class="blog-card">
+
+        {% if blog.image %}
+            <img src="{{ blog.image.url }}">
+        {% else %}
+            <img src="{% static 'images/no-image.png' %}">
+        {% endif %}
+
+        <div class="blog-card-content">
+            <h3>{{ blog.title }}</h3>
+            <p>{{ blog.content|truncatewords:20 }}</p>
+
+            <a href="{% url 'customer_blog_detail' blog.id %}" class="cta-button">
+                VIEW
+            </a>
+        </div>
+    </div>
+    {% empty %}
+        <p style="text-align:center; grid-column:1/-1;">
+            No blogs available.
+        </p>
+    {% endfor %}
+</section>
+
+</body>
+</html>
