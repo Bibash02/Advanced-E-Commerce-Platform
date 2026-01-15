@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delivery Orders | Clothique</title>
+
+    <!-- MAIN STYLES -->
+    <link rel="stylesheet" href="{% static 'css/customer.css' %}">
+
+    <style>
+        .orders-wrapper {
+            max-width: 1100px;
+            margin: 40px auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+        }
+
+        thead {
+            background: #f5f5f5;
+        }
+
+        tr {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .action-btn {
+            padding: 6px 14px;
+            margin: 3px;
+            text-decoration: none;
+            font-size: 13px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .btn-view {
+            background: #222;
+            color: #fff;
+        }
+
+        .btn-ok {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .btn-cancel {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        .empty-row {
+            text-align: center;
+            padding: 30px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
+        <div class="nav-links">
+            <a href="{% url 'delivery_personnel_dashboard' %}">DASHBOARD</a>
+            <a href="{% url 'signout' %}">LOGOUT</a>
+        </div>
+    </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Delivery <span class="highlight">Orders</span></h1>
+        <p>Accept or manage orders for delivery</p>
+    </div>
+</section>
+
+<!-- ORDERS TABLE -->
+<section class="orders-wrapper">
+
+    <table>
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Products</th>
+                <th>Qty</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for order in orders %}
+            <tr>
+                <td>#{{ order.id }}</td>
+
+                <td>
+                    {{ order.full_name }} <br>
+                    {{ order.phone }}
+                </td>
+
+                <td>
+                    {% for item in order.items.all %}
+                        {{ item.product.name }} <br>
+                    {% endfor %}
+                </td>
+
+                <td>
+                    {% for item in order.items.all %}
+                        {{ item.quantity }} <br>
+                    {% endfor %}
+                </td>
+
+                <td>
+                    <a href="{% url 'order_detail' order.id %}" class="action-btn btn-view">
+                        View
+                    </a>
+
+                    <a href="{% url 'delivery_accept' order.id %}" class="action-btn btn-ok">
+                        OK
+                    </a>
+
+                    <a href="{% url 'delivery_cancel' order.id %}"
+                       class="action-btn btn-cancel"
+                       onclick="return confirm('Are you sure?')">
+                        Cancel
+                    </a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5" class="empty-row">
+                    🚫 No orders available
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</section>
+
+</body>
+</html>

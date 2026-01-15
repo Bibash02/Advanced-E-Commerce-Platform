@@ -94,6 +94,9 @@ class Order(models.Model):
     STATUS_CHOICES = (
         ('Pending', 'Pending'),
         ('Paid', 'Paid'),
+        ('Assigned', 'Assigned to Delivery'),
+        ('Delivered', 'Delivered'),
+        ('Cancelled', 'Cancelled'),
         ('Failed', 'Failed'),
     )
 
@@ -110,6 +113,13 @@ class Order(models.Model):
     transaction_uuid = models.CharField(max_length=40, unique=True)
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    delivery_person = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='assigned_orders'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

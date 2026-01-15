@@ -46,6 +46,13 @@ class CartItemAdmin(admin.ModelAdmin):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['user', 'full_name', 'email', 'phone', 'address', 'city', 'country', 'amount', 'payment_type', 'transaction_uuid', 'status', 'created_at']
+    list_per_page = 10
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ['order', 'product', 'quantity', 'price']
+    list_filter = ['product', 'price']
+    search_fields = ['product',]
 
 @admin.register(DeliveryDocument)
 class DeliveryDocumentAdmin(admin.ModelAdmin):

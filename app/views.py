@@ -14,6 +14,7 @@ from decimal import Decimal
 from django.conf import settings
 from .utils import generate_signature
 from django.http import HttpResponseForbidden
+from django.core.mail import send_mail
 
 
 from django.contrib.auth import get_user_model
@@ -656,3 +657,75 @@ def contact(request):
         messages.success(request, "Your message has been sent successfully.")
         return redirect('contnact')
     return render(request, 'contact.html')
+
+def is_delivery_user(user):
+    try:
+        return user.userprofile.role == 'DELIVERY'
+    except:
+        return False
+
+@login_required
+def delivery_order_list(request):
+    if not is_delivery_user(request.user):
+        return redirect('signin')
+
+    orders = Order.objects.filter(
+        status__in=['Paid', 'Pending'],
+        delivery_person__isnull=True
+    ).order_by('-created_at')
+
+    return render(request, 'order_list.html', {
+        'orders': orders
+    })
+
+
+@login_required
+def delivery_accept(request, order_id):
+    if not is_delivery_user(request.user):
+        return redirect('signin')
+    
+    order = get_object_or_404(Order, id = order_id)
+    order.delivery_person = request.user
+    order.status = 'Assigned'
+    order.save()
+
+    product_list = "\n".join([
+        f"{item.product.name} (x{item.quantity})"
+        for item in order.items.all()
+    ])
+
+    send_mail(
+        subject="Your Order is Out for Delivery",
+        message=f"""
+            Hello {order.full_name},
+
+            Your order #{order.id} has been assigned to a delivery person.
+
+            Delivery Person Details:
+            Name: {request.user.get_full_name() or request.user.username}
+            Phone: {request.user.profile.phone}
+
+            Order Items:
+            {product_list}
+
+            Delivery Address:
+            {order.address}, {order.city}, {order.country}
+
+            Thank you for shopping with Clothique!
+            """,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[order.email],
+                    fail_silently=False,
+                )
+    return redirect('delivery_order_list')
+
+@login_required
+def delivery_cancel(request, order_id):
+    if not is_delivery_user(request.user):
+        return redirect('signin')
+    
+    order = get_object_or_404(Order, id = order_id)
+    order.status = 'Cancelled'
+    order.save()
+
+    return redirect('delivery_order_list')
