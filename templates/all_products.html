@@ -44,7 +44,16 @@
         <div class="product-info">
             <div class="product-name">{{ product.name }}</div>
 
-            <!-- ⭐ RATING -->
+            <div class="supplier-name">
+                By 
+                {% if product.supplier.get_full_name %}
+                    {{ product.supplier.get_full_name }}
+                {% else %}
+                    {{ product.supplier.username }}
+                {% endif %}
+            </div>
+
+            <!-- RATING -->
             <div class="product-rating">
                 {% if product.avg_rating %}
                     {% for i in "12345" %}
