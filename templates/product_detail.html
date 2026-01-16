@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ product.name }} | Clothique</title>
+
+    <link rel="stylesheet" href="{% static 'css/customer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+
+    <style>
+        .product-detail-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .product-detail-image img {
+            width: 100%;
+            border-radius: 6px;
+        }
+
+        .product-detail-info h1 {
+            margin-bottom: 10px;
+        }
+
+        .price {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .supplier {
+            color: #777;
+            margin-bottom: 10px;
+        }
+
+        .desc {
+            margin-top: 15px;
+            line-height: 1.6;
+        }
+
+        .recommend-section {
+            max-width: 1100px;
+            margin: 70px auto;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
+        <div class="nav-links">
+            <a href="{% url 'customer_dashboard' %}">DASHBOARD</a>
+            <a href="{% url 'all_products' %}">PRODUCTS</a>
+        </div>
+    </nav>
+</header>
+
+<!-- PRODUCT DETAIL -->
+<section class="product-detail-container">
+
+    <!-- IMAGE -->
+    <div class="product-detail-image">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        {% else %}
+            <img src="{% static 'images/no-image.png' %}">
+        {% endif %}
+    </div>
+
+    <!-- INFO -->
+    <div class="product-detail-info">
+        <h1>{{ product.name }}</h1>
+
+        <div class="supplier">
+            By
+            {% if product.supplier.get_full_name %}
+                {{ product.supplier.get_full_name }}
+            {% else %}
+                {{ product.supplier.username }}
+            {% endif %}
+        </div>
+
+        <div class="price">
+            Rs. {{ product.price }}
+        </div>
+
+        <p class="desc">
+            {{ product.description }}
+        </p>
+
+        <a href="{% url 'buy_product' product.id %}" class="buy-btn">
+            Buy Now
+        </a>
+    </div>
+
+</section>
+
+<!-- RECOMMENDATION SECTION -->
+<section class="recommend-section">
+    <h2>You May Also Like</h2>
+
+    <div class="product-grid">
+    {% for p in recommended_products %}
+        <div class="product-card">
+
+            <div class="product-image">
+                {% if p.image %}
+                    <img src="{{ p.image.url }}" alt="{{ p.name }}">
+                {% else %}
+                    <img src="{% static 'images/no-image.png' %}">
+                {% endif %}
+            </div>
+
+            <div class="product-info">
+                <div class="product-name">{{ p.name }}</div>
+                <div class="price-container">Rs. {{ p.price }}</div>
+
+                <a href="{% url 'product_detail' p.id %}" class="buy-btn">
+                    View
+                </a>
+            </div>
+
+        </div>
+    {% empty %}
+        <p>No similar products found.</p>
+    {% endfor %}
+    </div>
+</section>
+
+</body>
+</html>

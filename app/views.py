@@ -15,6 +15,8 @@ from django.conf import settings
 from .utils import generate_signature
 from django.http import HttpResponseForbidden
 from django.core.mail import send_mail
+from .recommendation import get_similar_products, get_similar_products_by_text
+from django.db.models import Q
 
 
 from django.contrib.auth import get_user_model
@@ -729,3 +731,38 @@ def delivery_cancel(request, order_id):
     order.save()
 
     return redirect('delivery_order_list')
+
+@login_required
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+
+    recommended_products = get_similar_products(product.id)
+
+    return render(request, 'product_detail.html', {
+        'product': product,
+        'recommended_products': recommended_products
+    })
+
+def search_products(request):
+    query = request.GET.get('q', '')
+
+    search_results = Product.objects.none()
+    related_products = Product.objects.none()
+
+    if query:
+        # Correct search filters
+        search_results = Product.objects.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(category__name__icontains=query) |     
+            Q(supplier__username__icontains=query)   
+        ).distinct()
+
+        #  Content-based recommendation
+        related_products = get_similar_products_by_text(query)
+
+    return render(request, 'search_results.html', {
+        'query': query,
+        'search_results': search_results,
+        'related_products': related_products,
+    })

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{% static 'css/customer.css' %}">
     <link rel="stylesheet" href="{% static 'css/cart.css' %}">
     <link rel="stylesheet" href="{% static 'css/rating.css' %}">
+    <link rel="stylesheet" href="{% static 'css/searching.css' %}">
 </head>
 <body>
 
@@ -14,6 +15,10 @@
 <header>
     <nav>
         <div class="logo">Clothique</div>
+        <form action="{% url 'search_products' %}" method="get" class="search-form">
+            <input type="text" name="q" placeholder="Search products..." required>
+            <button type="submit">🔍</button>
+        </form>
         <div class="nav-links">
             <a href="{% url 'customer_dashboard' %}">DASHBOARD</a>
         </div>
