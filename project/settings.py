@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'app',
     'ecom_api',
 
-    'rest_framework'
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -147,3 +148,9 @@ ESEWA_PRODUCT_CODE = "EPAYTEST"         # test product code
 ESEWA_SECRET_KEY = "8gBm/:&EnhH.1/q"   # replace with eSewa sandbox secret key
 ESEWA_SUCCESS_URL = "http://127.0.0.1:8000/esewa/success/"   # change to your domain
 ESEWA_FAILURE_URL = "http://127.0.0.1:8000/esewa/failure/"
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
