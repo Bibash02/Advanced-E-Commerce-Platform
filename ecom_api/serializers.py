@@ -30,9 +30,30 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.userprofile.save()
         return user
 
-class LoginSerializer(serializers.ModelSerializer):
+class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
+
+class OrderCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = [
+            'full_name',
+            'email',
+            'phone',
+            'address',
+            'city',
+            'payment_type'
+        ]
+
+class ProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
+
+    class Meta:
+        model = UserProfile
+        fields = ['user', 'username', 'email', 'profile_image', 'phone', 'role']
+        read_only_fields = ['role', 'user']
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,6 +63,43 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
+        fields = ['id', 'name', 'price', 'image']
+
+class CartItemSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+    product_id = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(), source='product', write_only=True
+    )
+    total_price = serializers.DecimalField(
+        source='total_price', max_digits=10, decimal_places=2, read_only=True
+    )
+
+    class Meta:
+        model = CartItem
+        fields = ['id', 'product', 'product_id', 'quantity', 'total_price']
+
+class CartSerializer(serializers.ModelSerializer):
+    items = CartItemSerializer(many=True, read_only=True)
+    grand_total = serializers.DecimalField(
+       max_digits=10, decimal_places=2, read_only=True
+    )
+
+    class Meta:
+        model = Cart
+        fields = ['id', 'user', 'items', 'grand_total']
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'product', 'quantity', 'price']
+
+class OrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Order
         fields = '__all__'
 
 class BlogSerializer(serializers.ModelSerializer):

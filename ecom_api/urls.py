@@ -13,4 +13,10 @@ urlpatterns = [
     path('', include(router.urls)),
     path('register/', RegisterAPIView.as_view(), name='register'),
     path('login/', LoginAPIView.as_view(), name='login'),
+    path('customer/products', CustomerProductListAPIView.as_view()),
+    path('customer/blogs', CustomerBlogListAPIView.as_view()),
+    path('customer/orders', CustomerOrderCreateAPIView.as_view()),
+    path('customer/profile', CustomerProfileAPIView.as_view()),
+    path('customer/cart', CartAPIView.as_view(), name='cutomer-cart'),
+    path('customer/checkout', CheckoutAPIView.as_view(), name='customer-checkout'),
 ]
