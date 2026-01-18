@@ -321,10 +321,3 @@ class DeliveryUpdateOrderStatusAPIView(APIView):
         order.save()
 
         return Response({"message": "Order status updated successfully"})
-
-
-
-
-
-
-
