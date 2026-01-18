@@ -102,7 +102,32 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = '__all__'
 
-class 
+class SupplierProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['id', 'category', 'name', 'description', 'price', 'image', 'is_active', 'created_at']
+        read_only_fields = ['created_at']
+
+class SupplierBlogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Blog
+        fields = ['id', 'title', 'image', 'content', 'is_published', 'created_at']
+        read_only_fields = ['created_at']
+
+class SupplierProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+
+class DeliveryProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+
+class DeliveryOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = '__all__'
 
 class BlogSerializer(serializers.ModelSerializer):
     class Meta:

@@ -21,4 +21,8 @@ urlpatterns = [
     path('supplier/blogs', SupplierBlogAPIView.as_view()),
     path('supplier/blogs/<int:pk>', SupplierBlogDetailAPIView.as_view()),
     path('supplier/profile', SupplierProfileAPIView.as_view()),
+
+    path('delivery/profile', DeliveryProfileAPIView.as_view()),
+    path('delivery/orders', DeliveryAssignedOrdersAPIView.as_view()),
+    path('delivery/orders/<int:pk>', DeliveryUpdateOrderStatusAPIView.as_view()),
 ]

@@ -286,7 +286,44 @@ class SupplierProfileAPIView(APIView):
         serializer.save()
         return Response(serializer.data)
     
+class DeliveryProfileAPIView(APIView):
+    permission_classes = [IsDeliveryPersonnel]
+
+    def get(self, request):
+        serializer = DeliveryProfileSerializer(request.user.userprofile)
+        return Response(serializer.data)
     
+    def put(self, request):
+        serializer = DeliveryProfileSerializer(request.user.userprofile, data = request.data, partial = True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+class DeliveryAssignedOrdersAPIView(APIView):
+    permission_classes = [IsDeliveryPersonnel]
+
+    def get(self, request):
+        orders = Order.objects.filter(delivery_person=request.user, status='Assigned')
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data)
+    
+class DeliveryUpdateOrderStatusAPIView(APIView):
+    permission_classes = [IsDeliveryPersonnel]
+
+    def put(self, request, pk):
+        order = get_object_or_404(Order, pk=pk, delivery_personnel=request.user)
+        status = request.data.get('status')
+
+        if status not in ['Delivered', 'Failed']:
+            return Response({"error": "Invalid status"}, status=400)
+        
+        order.status = status
+        order.save()
+
+        return Response({"message": "Order status updated successfully"})
+
+
+
 
 
 
