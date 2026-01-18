@@ -71,7 +71,7 @@ class CartItemSerializer(serializers.ModelSerializer):
         queryset=Product.objects.all(), source='product', write_only=True
     )
     total_price = serializers.DecimalField(
-        source='total_price', max_digits=10, decimal_places=2, read_only=True
+        source='grand_total', max_digits=10, decimal_places=2, read_only=True
     )
 
     class Meta:
@@ -101,6 +101,8 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
+
+class 
 
 class BlogSerializer(serializers.ModelSerializer):
     class Meta:

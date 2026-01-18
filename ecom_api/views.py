@@ -215,15 +215,79 @@ class CartAPIView(APIView):
         serializer = CartSerializer(cart)
         return Response(serializer.data)
     
-class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+class SupplierProductAPIView(APIView):
+    permission_classes = [IsSupplier]
 
-class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+    def get(self, request):
+        products = Product.objects.filter(supplier = request.user)
+        serializer = SupplierProductSerializer(products, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        serialzer = SupplierProductSerializer(data = request.data)
+        serialzer.is_valid(raise_exception=True)
+        serialzer.save(supplier=request.user)
+        return Response(serialzer.data, status=201)
 
-class BlogViewSet(viewsets.ModelViewSet):
-    queryset = Blog.objects.all()
-    serializer_class = BlogSerializer
+class SupplierProductDetailAPIView(APIView):
+    permission_classes = [IsSupplier]
+
+    def put(self, request, pk):
+        product = get_object_or_404(Product, pk = pk, supplier = request.user)
+        serializer = SupplierProductSerializer(product, data = request.data, partial = True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    
+    def delete(self, request, pk):
+        product = get_object_or_404(Product, pk = pk, supplier = request.user)
+        product.delete()
+        return Response({"message": "Product deleted successfully"}, status=204)
+
+class SupplierBlogAPIView(APIView):
+    permission_classes = [IsSupplier]
+
+    def get(self, request):
+        blogs = Blog.objects.filter(supplier = request.user)
+        serializer = SupplierBlogSerializer(blogs, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        serializer = SupplierBlogSerializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(supplier = request.user)
+        return Response(serializer.data, status=201)
+
+class SupplierBlogDetailAPIView(APIView):
+    permission_classes = [IsSupplier]
+
+    def put(self, request, pk):
+        blog = get_object_or_404(Blog, pk = pk, supplier = request.user)
+        serializer = SupplierBlogSerializer(blog, data = request.data, partial = True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    
+    def delete(self, request, pk):
+        blog = get_object_or_404(Blog, pk = pk, supplier = request.user)
+        blog.delete()
+        return Response({"message": "Blog deleted successfully"}, status=204)
+
+class SupplierProfileAPIView(APIView):
+    permission_classes = [IsSupplier]
+
+    def get(self, request):
+        serializer = SupplierProfileSerializer(request.user.userprofile)
+        return Response(serializer.data)
+    
+    def put(self, request):
+        serializer = SupplierProfileSerializer(request.user.userprofile, data = request.data, partial = True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    
+    
+
+
+
 

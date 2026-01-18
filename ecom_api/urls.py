@@ -4,10 +4,6 @@ from rest_framework.routers import DefaultRouter
 from .views import *
 
 router = DefaultRouter()
-router.register(r'userprofiles', UserProfileViewSet)
-router.register(r'categories', CategoryViewSet)
-router.register(r'products', ProductViewSet)
-router.register(r'blogs', BlogViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -19,4 +15,10 @@ urlpatterns = [
     path('customer/profile', CustomerProfileAPIView.as_view()),
     path('customer/cart', CartAPIView.as_view(), name='cutomer-cart'),
     path('customer/checkout', CheckoutAPIView.as_view(), name='customer-checkout'),
+
+    path('supplier/products', SupplierProductAPIView.as_view()),
+    path('supplier/products/<int:pk>', SupplierProductDetailAPIView.as_view()),
+    path('supplier/blogs', SupplierBlogAPIView.as_view()),
+    path('supplier/blogs/<int:pk>', SupplierBlogDetailAPIView.as_view()),
+    path('supplier/profile', SupplierProfileAPIView.as_view()),
 ]
