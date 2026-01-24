@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from .models import *
 from .forms import *
 from django.contrib.auth.decorators import login_required
-from django.db.models import Avg
+from django.db.models import Avg, Count
 import uuid
 from django.urls import reverse
 from decimal import Decimal
@@ -151,11 +151,15 @@ def delivery_personnel_dashboard(request):
 @login_required
 def customer_dashboard(request):
     categories = Category.objects.all().order_by('-created_at')[:3]
-    products = (
-        Product.objects
-        .annotate(avg_rating=Avg('reviews__rating'))
-        .order_by('-created_at')[:4]
-    )
+    products = Product.objects.annotate(
+        avg_rating=Avg('reviews__rating'),
+        rating_count = Count('reviews')
+    ).filter(
+        rating_count__gt=0      # exclude products with no ratings
+    ).order_by(
+        'avg_rating',  # Higher ratig first
+        '-rating_count'     # more rating first
+    )[:4]
     productss = Product.objects.order_by('-created_at')[:4]
     latest_blogs = Blog.objects.order_by('-created_at')[:4]
 
@@ -736,10 +740,20 @@ def delivery_cancel(request, order_id):
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
+    # Category-based related products
+    category_related_products = Product.objects.filter(
+        category = product.category
+    ).exclude(id=product.id)[:8]
+
+    # Content-based similar products
+    similar_products = get_similar_products(product.id)
+
     recommended_products = get_similar_products(product.id)
 
     return render(request, 'product_detail.html', {
         'product': product,
+        'similar_products': similar_products,
+        'category_related_products': category_related_products,
         'recommended_products': recommended_products
     })
 
@@ -747,16 +761,27 @@ def search_products(request):
     query = request.GET.get('q', '')
 
     search_results = Product.objects.none()
+    category_related_products = Product.objects.none()
     related_products = Product.objects.none()
 
     if query:
-        # Correct search filters
+        # Matches Products
         search_results = Product.objects.filter(
             Q(name__icontains=query) |
             Q(description__icontains=query) |
             Q(category__name__icontains=query) |     
             Q(supplier__username__icontains=query)   
-        ).distinct()
+        ).select_related('category').distinct()
+
+        # Category based related products
+        categories = search_results.values_list('category_id', flat=True)
+
+        if categories:
+            category_related_products = Product.objects.filter(
+                category_id__in = categories
+            ).exclude(
+                id__in = search_results.values_list('id', flat=True)
+            ).distinct()[:12]
 
         #  Content-based recommendation
         related_products = get_similar_products_by_text(query)
@@ -764,5 +789,6 @@ def search_products(request):
     return render(request, 'search_results.html', {
         'query': query,
         'search_results': search_results,
+        'category_related_products': category_related_products,
         'related_products': related_products,
     })

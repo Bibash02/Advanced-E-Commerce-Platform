@@ -101,6 +101,37 @@
 
 </section>
 
+<section class="recommend-section">
+    <h2>More from {{ product.category.name }}</h2>
+
+    <div class="product-grid">
+    {% for p in category_related_products %}
+        <div class="product-card">
+
+            <div class="product-image">
+                {% if p.image %}
+                    <img src="{{ p.image.url }}" alt="{{ p.name }}">
+                {% else %}
+                    <img src="{% static 'images/no-image.png' %}">
+                {% endif %}
+            </div>
+
+            <div class="product-info">
+                <div class="product-name">{{ p.name }}</div>
+                <div class="price-container">Rs. {{ p.price }}</div>
+
+                <a href="{% url 'product_detail' p.id %}" class="buy-btn">
+                    View
+                </a>
+            </div>
+
+        </div>
+    {% empty %}
+        <p>No category related products found.</p>
+    {% endfor %}
+    </div>
+</section>
+
 <!-- RECOMMENDATION SECTION -->
 <section class="recommend-section">
     <h2>You May Also Like</h2>

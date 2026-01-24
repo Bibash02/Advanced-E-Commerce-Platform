@@ -122,14 +122,29 @@
         <a href="{% url 'product_detail' product.id %}">View</a>
     </div>
 {% empty %}
-    <p>No products found.</p>
+    <p>No matched products found.</p>
 {% endfor %}
 </div>
 
 <hr>
 
-<!-- RELATED PRODUCTS -->
-<h3>Related Products</h3>
+<h3>More from Same Category</h3>
+<div class="product-grid">
+{% for product in category_related_products %}
+    <div class="product-card">
+        <img src="{{ product.image.url }}">
+        <h4>{{ product.name }}</h4>
+        <p>Rs. {{ product.price }}</p>
+        <a href="{% url 'product_detail' product.id %}">View</a>
+    </div>
+{% empty %}
+    <p>No category related products available.</p>
+{% endfor %}
+</div>
+
+<hr>
+
+<h3>Recommended for You</h3>
 <div class="product-grid">
 {% for product in related_products %}
     <div class="product-card">
@@ -139,7 +154,7 @@
         <a href="{% url 'product_detail' product.id %}">View</a>
     </div>
 {% empty %}
-    <p>No related products available.</p>
+    <p>No recommendations available.</p>
 {% endfor %}
 </div>
 
