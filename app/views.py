@@ -15,7 +15,7 @@ from django.conf import settings
 from .utils import generate_signature
 from django.http import HttpResponseForbidden
 from django.core.mail import send_mail
-from .recommendation import get_similar_products, get_similar_products_by_text
+from .recommendation import *
 from django.db.models import Q
 
 
@@ -150,6 +150,7 @@ def delivery_personnel_dashboard(request):
 
 @login_required
 def customer_dashboard(request):
+    recommended_products = recommend_products_for_user(request.user)
     categories = Category.objects.all().order_by('-created_at')[:3]
     products = Product.objects.annotate(
         avg_rating=Avg('reviews__rating'),
@@ -164,6 +165,7 @@ def customer_dashboard(request):
     latest_blogs = Blog.objects.order_by('-created_at')[:4]
 
     context = {
+        'recommended_products': recommended_products,
         'categories': categories,
         'products': products,
         'productss': productss,
@@ -742,19 +744,18 @@ def product_detail(request, product_id):
 
     # Category-based related products
     category_related_products = Product.objects.filter(
-        category = product.category
-    ).exclude(id=product.id)[:8]
+        category=product.category
+    ).exclude(
+        id=product.id
+    )[:8]
 
-    # Content-based similar products
-    similar_products = get_similar_products(product.id)
-
+    # Content-based recommendations
     recommended_products = get_similar_products(product.id)
 
     return render(request, 'product_detail.html', {
         'product': product,
-        'similar_products': similar_products,
         'category_related_products': category_related_products,
-        'recommended_products': recommended_products
+        'recommended_products': recommended_products,
     })
 
 def search_products(request):
@@ -765,25 +766,25 @@ def search_products(request):
     related_products = Product.objects.none()
 
     if query:
-        # Matches Products
+        # Direct search matches
         search_results = Product.objects.filter(
             Q(name__icontains=query) |
             Q(description__icontains=query) |
-            Q(category__name__icontains=query) |     
-            Q(supplier__username__icontains=query)   
+            Q(category__name__icontains=query) |
+            Q(supplier__username__icontains=query)
         ).select_related('category').distinct()
 
-        # Category based related products
+        # Category-based related products
         categories = search_results.values_list('category_id', flat=True)
 
         if categories:
             category_related_products = Product.objects.filter(
-                category_id__in = categories
+                category_id__in=categories
             ).exclude(
-                id__in = search_results.values_list('id', flat=True)
+                id__in=search_results.values_list('id', flat=True)
             ).distinct()[:12]
 
-        #  Content-based recommendation
+        # Content-based recommendations 
         related_products = get_similar_products_by_text(query)
 
     return render(request, 'search_results.html', {

@@ -15,7 +15,6 @@ class UserProfile(models.Model):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='CUSTOMER')
     phone = models.CharField(max_length=10, blank=True)
 
-
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     image = models.ImageField(upload_to='category_images/', blank=True, null=True)
@@ -62,7 +61,6 @@ class ProductReview(models.Model):
 
     def __str__(self):
         return self.product.name
-
 
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -150,7 +148,6 @@ class DeliveryDocument(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
-
 class ContactMessage(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
@@ -162,4 +159,14 @@ class ContactMessage(models.Model):
     def __str__(self):
         return f"{self.name} - {self.subject}"
 
+class SearchHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    query = models.CharField(max_length=255)
+    searched_at = models.DateTimeField(auto_now_add=True)
+
+class ProductView(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    time_spent = models.IntegerField(default=0)
+    viewed_at = models.DateTimeField(auto_now_add=True)
     

@@ -101,6 +101,32 @@
         {% endfor %}
     </section>
 
+    <!-- RECOMMENDED FOR YOU -->
+    <div class="section-header">
+        <h2>Recommended for You</h2>
+    </div>
+
+    <section class="product-grid">
+    {% for product in recommended_products %}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{ product.image.url }}">
+            </div>
+
+            <div class="product-info">
+                <div class="product-name">{{ product.name }}</div>
+                <div class="price-container">Rs. {{ product.price }}</div>
+
+                <a href="{% url 'product_detail' product.id %}" class="buy-btn">
+                    View
+                </a>
+            </div>
+        </div>
+    {% empty %}
+        <p>No recommendations yet.</p>
+    {% endfor %}
+    </section>
+
     <!-- Best Selling Products -->
     <div class="section-header">
         <h2>Best Selling Products</h2>

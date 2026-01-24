@@ -1,6 +1,6 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from .models import Product
+from .models import *
 
 
 def get_similar_products(product_id, limit=6):
@@ -62,3 +62,47 @@ def get_similar_products_by_text(search_text, limit=6):
     similar_ids = [product_ids[i] for i in similar_indices]
 
     return Product.objects.filter(id__in=similar_ids)
+
+def get_user_interest_text(user):
+    search_texts = SearchHistory.objects.filter(
+        user = user
+    ).values_list('query', flat=True)
+
+    viewed_products = ProductView.objects.filter(
+        user = user
+    ).select_related('product')
+
+    product_texts = [
+        f"{pv.product.name} {pv.product.description} {pv.product.category.name}"
+        for pv in viewed_products
+    ]
+
+    return " ".join(search_texts) + " " + " ".join(product_texts)
+
+def recommend_products_for_user(user, limit=5):
+    products = Product.objects.all()
+
+    if not products.exists():
+        return Product.objects.none()
+    
+    user_profile = get_user_interest_text(user)
+
+    corpus = []
+    product_ids = []
+
+    for p in products:
+        text = f"{p.name} {p.description} {p.category.name}"
+        corpus.append(text)
+        product_ids.append(p.id)
+
+    vectorizer = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = vectorizer.fit_transform(corpus)
+
+    user_vector = vectorizer.transform([user_profile])
+
+    similarity_scores = cosine_similarity(user_vector, tfidf_matrix)[0]
+
+    top_indices = similarity_scores.argsort()[::1][:limit]
+    top_ids = [product_ids[i] for i in top_indices]
+
+    return Product.objects.filter(id__in = top_ids)
