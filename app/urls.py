@@ -57,6 +57,7 @@ urlpatterns = [
     path('delivery/profile', delivery_profile, name='delivery_profile'),
     path('delivery/profile/edit', edit_delivery_profile, name='edit_delivery_profile'),
     path('delivery/order/list', delivery_order_list, name='delivery_order_list'),
+    path('delivery/order/detail/<order_id>', delivery_order_detail, name='order_detail'),
     path('delivery/order/ok/<int:order_id>', delivery_accept, name='delivery_accept'),
     path('delivery/order/cancel/<int:order_id>', delivery_cancel, name='delivery_cancel'),
 ]

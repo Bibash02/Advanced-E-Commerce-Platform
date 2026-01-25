@@ -686,6 +686,13 @@ def delivery_order_list(request):
         'orders': orders
     })
 
+@login_required
+def delivery_order_detail(request, order_id):
+    order = get_object_or_404(Order, id = order_id)
+
+    return render(request, 'order_detail.html', {
+        'order': order
+    })
 
 @login_required
 def delivery_accept(request, order_id):
@@ -711,7 +718,7 @@ def delivery_accept(request, order_id):
 
             Delivery Person Details:
             Name: {request.user.get_full_name() or request.user.username}
-            Phone: {request.user.profile.phone}
+            Phone: {request.user.userprofile.phone}
 
             Order Items:
             {product_list}

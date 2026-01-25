@@ -1,0 +1,158 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Detail</title>
+    <link rel="stylesheet" href="{% static 'css/customer.css' %}">
+    <style>
+        .orders-wrapper {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.orders-wrapper h2 {
+    margin-bottom: 20px;
+    font-size: 26px;
+    color: #222;
+}
+
+.order-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px 40px;
+    margin-bottom: 30px;
+}
+
+.order-info p {
+    margin: 0;
+    font-size: 15px;
+    color: #444;
+}
+
+.order-info strong {
+    color: #111;
+}
+
+.order-status {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-accepted {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 25px 0;
+}
+
+/* PRODUCTS TABLE */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #f5f5f5;
+}
+
+th {
+    text-align: left;
+    padding: 14px;
+    font-size: 14px;
+    color: #333;
+}
+
+td {
+    padding: 14px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+tr:hover {
+    background: #fafafa;
+}
+
+/* BACK BUTTON */
+
+.back-btn {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 18px;
+    background: #222;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.back-btn:hover {
+    background: #000;
+}
+
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
+        <div class="nav-links">
+            <a href="{% url 'delivery_order_list' %}">BACK</a>
+        </div>
+    </nav>
+</header>
+
+<section class="orders-wrapper">
+    <h2>Order #{{ order.id }}</h2>
+
+    <p><strong>Customer:</strong> {{ order.full_name }}</p>
+    <p><strong>Phone:</strong> {{ order.phone }}</p>
+    <p><strong>Address:</strong> {{ order.address }}</p>
+    <p><strong>Status:</strong> {{ order.status|title }}</p>
+
+    <hr>
+
+    <h3>Products</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in order.items.all %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+</body>
+</html>
