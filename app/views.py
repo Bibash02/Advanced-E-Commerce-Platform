@@ -690,6 +690,10 @@ def delivery_order_list(request):
 def delivery_order_detail(request, order_id):
     order = get_object_or_404(Order, id = order_id)
 
+    # security: only assigned delivery person can see
+    if order.delivery_person != request.user:
+        return redirect('delivery_order_list')
+
     return render(request, 'order_detail.html', {
         'order': order
     })
@@ -800,3 +804,19 @@ def search_products(request):
         'category_related_products': category_related_products,
         'related_products': related_products,
     })
+
+@login_required
+def add_address(request):
+    if request.method == 'POST':
+        full_address = request.POST.get('full_address')
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
+
+        Address.objects.create(
+            user = request.user,
+            full_address = full_address,
+            latitude = latitude,
+            longitude = longitude
+        )
+        return redirect('profile')
+    return render(request, 'add_address.html')

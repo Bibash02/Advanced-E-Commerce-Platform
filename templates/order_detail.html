@@ -1,119 +1,75 @@
-{% load static %}
+<!-- {% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Order Detail</title>
     <link rel="stylesheet" href="{% static 'css/customer.css' %}">
+
     <style>
         .orders-wrapper {
-    max-width: 900px;
-    margin: 40px auto;
-    background: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-}
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
 
-.orders-wrapper h2 {
-    margin-bottom: 20px;
-    font-size: 26px;
-    color: #222;
-}
+        .orders-wrapper h2 {
+            margin-bottom: 20px;
+            font-size: 26px;
+            color: #222;
+        }
 
-.order-info {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px 40px;
-    margin-bottom: 30px;
-}
+        .order-info p {
+            font-size: 15px;
+            margin: 8px 0;
+        }
 
-.order-info p {
-    margin: 0;
-    font-size: 15px;
-    color: #444;
-}
+        hr {
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 25px 0;
+        }
 
-.order-info strong {
-    color: #111;
-}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-.order-status {
-    display: inline-block;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
+        th, td {
+            padding: 14px;
+            border-bottom: 1px solid #eee;
+        }
 
-.status-pending {
-    background: #fff3cd;
-    color: #856404;
-}
+        thead {
+            background: #f5f5f5;
+        }
 
-.status-accepted {
-    background: #d4edda;
-    color: #155724;
-}
+        .back-btn {
+            display: inline-block;
+            margin: 15px 0;
+            padding: 8px 18px;
+            background: #222;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 13px;
+        }
 
-.status-cancelled {
-    background: #f8d7da;
-    color: #721c24;
-}
+        .back-btn:hover {
+            background: #000;
+        }
 
-hr {
-    border: none;
-    border-top: 1px solid #eee;
-    margin: 25px 0;
-}
-
-/* PRODUCTS TABLE */
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-thead {
-    background: #f5f5f5;
-}
-
-th {
-    text-align: left;
-    padding: 14px;
-    font-size: 14px;
-    color: #333;
-}
-
-td {
-    padding: 14px;
-    border-bottom: 1px solid #eee;
-    font-size: 14px;
-}
-
-tr:hover {
-    background: #fafafa;
-}
-
-/* BACK BUTTON */
-
-.back-btn {
-    display: inline-block;
-    margin-bottom: 20px;
-    padding: 8px 18px;
-    background: #222;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 6px;
-    font-size: 13px;
-}
-
-.back-btn:hover {
-    background: #000;
-}
-
+        #map {
+            height: 350px;
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
     </style>
 </head>
+
 <body>
 
 <header>
@@ -126,12 +82,26 @@ tr:hover {
 </header>
 
 <section class="orders-wrapper">
+
     <h2>Order #{{ order.id }}</h2>
 
-    <p><strong>Customer:</strong> {{ order.full_name }}</p>
-    <p><strong>Phone:</strong> {{ order.phone }}</p>
-    <p><strong>Address:</strong> {{ order.address }}</p>
-    <p><strong>Status:</strong> {{ order.status|title }}</p>
+    <div class="order-info">
+        <p><strong>Customer:</strong> {{ order.full_name }}</p>
+        <p><strong>Phone:</strong> {{ order.phone }}</p>
+        <p><strong>Address:</strong> {{ order.address.full_address }}</p>
+        <p><strong>Status:</strong> {{ order.status|title }}</p>
+    </div>
+
+    <h3>📍 Delivery Location</h3>
+    <div id="map"></div>
+
+    <a 
+        href="https://www.google.com/maps?q={{ order.address.latitude }},{{ order.address.longitude }}"
+        target="_blank"
+        class="back-btn"
+    >
+        Open in Google Maps
+    </a>
 
     <hr>
 
@@ -152,7 +122,33 @@ tr:hover {
         {% endfor %}
         </tbody>
     </table>
+
 </section>
 
+ GOOGLE MAPS 
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+
+<script>
+function initMap() {
+    const location = {
+        lat: {{ order.address.latitude }},
+        lng: {{ order.address.longitude }}
+    };
+
+    const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 15,
+        center: location
+    });
+
+    new google.maps.Marker({
+        position: location,
+        map: map,
+        title: "Customer Location"
+    });
+}
+
+window.onload = initMap;
+</script>
+
 </body>
-</html>
+</html> -->

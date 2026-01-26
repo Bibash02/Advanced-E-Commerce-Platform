@@ -85,6 +85,16 @@ class CartItem(models.Model):
     def total_price(self):
         return self.product.price * self.quantity
 
+class Address(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    full_address = models.TextField()
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    is_default = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.full_address
+    
 class Order(models.Model):
     PAYMENT_CHOICES = (
         ('cod', 'Cash On Delivery'),
@@ -169,4 +179,3 @@ class ProductView(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     time_spent = models.IntegerField(default=0)
     viewed_at = models.DateTimeField(auto_now_add=True)
-    

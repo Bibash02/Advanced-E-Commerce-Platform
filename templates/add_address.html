@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Address</title>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Select Your Location</h2>
+
+<div id="map"></div>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <input type="hidden" name="latitude" id="lat">
+    <input type="hidden" name="longitude" id="lng">
+
+    <textarea name="full_address" id="address" required></textarea><br><br>
+
+    <button type="submit">Save Address</button>
+</form>
+
+<script>
+let map;
+let marker;
+
+function initMap() {
+    const defaultLocation = { lat: 27.7172, lng: 85.3240 }; // Kathmandu
+
+    map = new google.maps.Map(document.getElementById("map"), {
+        center: defaultLocation,
+        zoom: 14,
+    });
+
+    marker = new google.maps.Marker({
+        position: defaultLocation,
+        map: map,
+        draggable: true
+    });
+
+    document.getElementById("lat").value = defaultLocation.lat;
+    document.getElementById("lng").value = defaultLocation.lng;
+
+    google.maps.event.addListener(marker, 'dragend', function () {
+        const position = marker.getPosition();
+        document.getElementById("lat").value = position.lat();
+        document.getElementById("lng").value = position.lng();
+        getAddress(position.lat(), position.lng());
+    });
+}
+
+function getAddress(lat, lng) {
+    const geocoder = new google.maps.Geocoder();
+    const latlng = { lat: lat, lng: lng };
+
+    geocoder.geocode({ location: latlng }, function (results, status) {
+        if (status === "OK") {
+            if (results[0]) {
+                document.getElementById("address").value = results[0].formatted_address;
+            }
+        }
+    });
+}
+
+window.onload = initMap;
+</script>
+
+</body>
+</html>

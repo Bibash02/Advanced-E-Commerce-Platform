@@ -43,6 +43,8 @@ urlpatterns = [
     path('customer/cart/', cart_page, name='cart_page'),
     path('customer/cart/remove/<int:item_id>', remove_from_cart, name='remove_from_cart'),
 
+    path('customer/add-address', add_address, name='add_address'),
+
     path('customer/product/search', search_products, name='search_products'),
     path('customer/product/detail/<int:product_id>', product_detail, name='product_detail'),
 
@@ -60,4 +62,6 @@ urlpatterns = [
     path('delivery/order/detail/<order_id>', delivery_order_detail, name='order_detail'),
     path('delivery/order/ok/<int:order_id>', delivery_accept, name='delivery_accept'),
     path('delivery/order/cancel/<int:order_id>', delivery_cancel, name='delivery_cancel'),
+
+    
 ]
