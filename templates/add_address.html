@@ -1,72 +1,145 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Add Address</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGrGh8qxSOkxppYllSFZcuXvKxRC4oIgs&libraries=places"></script>
 
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
         #map {
             height: 400px;
             width: 100%;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 90px;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            resize: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #888faa 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
         }
     </style>
 </head>
+
 <body>
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
 
-<h2>Select Your Location</h2>
+        <div class="nav-links">
+            <a href="{% url 'customer_dashboard' %}">DASHBOARD</a>
+            <a href="{% url 'signout' %}">SIGNOUT</a>
+        </div>
+    </nav>
+</header>
 
-<div id="map"></div>
+<div class="container">
+    <h2>Select Your Location</h2>
 
-<form method="POST">
-    {% csrf_token %}
+    <div id="map"></div>
 
-    <input type="hidden" name="latitude" id="lat">
-    <input type="hidden" name="longitude" id="lng">
+    <form method="POST">
+        {% csrf_token %}
 
-    <textarea name="full_address" id="address" required></textarea><br><br>
+        <input type="hidden" name="latitude" id="lat">
+        <input type="hidden" name="longitude" id="lng">
 
-    <button type="submit">Save Address</button>
-</form>
+        <textarea name="full_address" id="address" required>
+{% if address %}{{ address.full_address }}{% endif %}
+        </textarea>
+
+        <button type="submit">Save Address</button>
+    </form>
+</div>
 
 <script>
-let map;
-let marker;
+let map, marker;
 
 function initMap() {
-    const defaultLocation = { lat: 27.7172, lng: 85.3240 }; // Kathmandu
+
+    let lat = 27.7172;  // default Kathmandu
+    let lng = 85.3240;
+
+    {% if address %}
+        lat = {{ address.latitude }};
+        lng = {{ address.longitude }};
+    {% endif %}
+
+    const location = { lat: lat, lng: lng };
 
     map = new google.maps.Map(document.getElementById("map"), {
-        center: defaultLocation,
-        zoom: 14,
+        center: location,
+        zoom: 15
     });
 
     marker = new google.maps.Marker({
-        position: defaultLocation,
+        position: location,
         map: map,
         draggable: true
     });
 
-    document.getElementById("lat").value = defaultLocation.lat;
-    document.getElementById("lng").value = defaultLocation.lng;
+    document.getElementById("lat").value = lat;
+    document.getElementById("lng").value = lng;
 
     google.maps.event.addListener(marker, 'dragend', function () {
-        const position = marker.getPosition();
-        document.getElementById("lat").value = position.lat();
-        document.getElementById("lng").value = position.lng();
-        getAddress(position.lat(), position.lng());
+        const pos = marker.getPosition();
+        document.getElementById("lat").value = pos.lat();
+        document.getElementById("lng").value = pos.lng();
+        reverseGeocode(pos.lat(), pos.lng());
     });
 }
 
-function getAddress(lat, lng) {
+function reverseGeocode(lat, lng) {
     const geocoder = new google.maps.Geocoder();
-    const latlng = { lat: lat, lng: lng };
-
-    geocoder.geocode({ location: latlng }, function (results, status) {
-        if (status === "OK") {
-            if (results[0]) {
-                document.getElementById("address").value = results[0].formatted_address;
-            }
+    geocoder.geocode({ location: { lat: lat, lng: lng } }, function (results, status) {
+        if (status === "OK" && results[0]) {
+            document.getElementById("address").value = results[0].formatted_address;
         }
     });
 }

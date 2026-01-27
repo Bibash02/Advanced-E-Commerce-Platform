@@ -818,5 +818,5 @@ def add_address(request):
             latitude = latitude,
             longitude = longitude
         )
-        return redirect('profile')
+        return redirect('add_address')
     return render(request, 'add_address.html')

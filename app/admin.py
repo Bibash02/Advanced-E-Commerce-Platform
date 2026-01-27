@@ -65,3 +65,9 @@ class ContactMessageAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'email', 'phone', 'subject', 'message', 'created_at']
     list_filter = ['name', 'subject']
     search_fields = ['name', 'subject']
+
+@admin.register(Address)
+class AddressAdmin(admin.ModelAdmin):
+    list_display = ['user', 'full_address', 'latitude', 'longitude', 'is_default']
+    list_filter = ['user', 'full_address']
+    search_fields = ['user__username']
