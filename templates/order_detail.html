@@ -1,4 +1,4 @@
-<!-- {% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -125,14 +125,13 @@
 
 </section>
 
- GOOGLE MAPS 
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
-
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGrGh8qxSOkxppYllSFZcuXvKxRC4oIgs"></script>
+<!--  -->
 <script>
 function initMap() {
     const location = {
-        lat: {{ order.address.latitude }},
-        lng: {{ order.address.longitude }}
+        lat: {{ order.address.latitude|default:27.7172 }},
+        lng: {{ order.address.longitude|default:85.3240 }}
     };
 
     const map = new google.maps.Map(document.getElementById("map"), {
@@ -143,7 +142,7 @@ function initMap() {
     new google.maps.Marker({
         position: location,
         map: map,
-        title: "Customer Location"
+        title: "{{ order.full_name }}'s Location"
     });
 }
 
@@ -151,4 +150,4 @@ window.onload = initMap;
 </script>
 
 </body>
-</html> -->
+</html>

@@ -143,8 +143,8 @@ def signout(request):
 
 def delivery_personnel_dashboard(request):
     orders = Order.objects.filter(
-        status='Paid'   # orders ready to deliver
-    ).prefetch_related('items__product')
+        status__in = ['Paid', 'Assigned']   # orders ready to deliver
+    ).prefetch_related('items__product').order_by('-created_at')
 
     return render(request, 'delivery_dashboard.html', {'orders': orders})
 
@@ -434,12 +434,19 @@ def remove_from_cart(request, item_id):
 
 @login_required
 def checkout(request):
-    cart = Cart.objects.get(user=request.user)
+    cart = Cart.objects.filter(user = request.user).first()
+
+    if not cart or not cart.items.exists():
+        return redirect('cart_page')
+    
+    addresses = Address.objects.filter(user = request.user)
+
     total_amount = cart.grand_total
 
     return render(request, 'esewa_checkout.html', {
         'cart': cart,
-        'total_amount': total_amount
+        'total_amount': total_amount,
+        'addresses': addresses
      })
 
 @login_required
@@ -450,6 +457,18 @@ def process_payment(request):
     cart = Cart.objects.filter(user=request.user).first()
     if not cart or not cart.items.exists():
         return redirect("cart_page")
+    
+    address_id = request.POST.get('address_id')
+
+    if not address_id:
+        messages.error(request, "Please select a delivery address.")
+        return redirect('checkout')
+    
+    address = Address.objects.filter(id = address_id, user = request.user).first()
+
+    if not address:
+        messages.error(request, "Invalid address selected.")
+        return redirect('checkout')
 
     total_amount = cart.grand_total
     payment_type = request.POST.get("payment_type")
@@ -461,7 +480,7 @@ def process_payment(request):
         full_name=request.POST.get("name"),
         email=request.POST.get("email"),
         phone=request.POST.get("phone"),
-        address=request.POST.get("address"),
+        address=address,
         city=request.POST.get("city"),
         country="Nepal",
         amount=total_amount,
@@ -469,6 +488,14 @@ def process_payment(request):
         transaction_uuid=transaction_uuid,
         status="Pending"
     )
+
+    for cart_item in cart.items.all():
+        OrderItem.objects.create(
+            order=order,
+            product=cart_item.product,
+            quantity=cart_item.quantity,
+            price=cart_item.product.price  # <-- assign price here
+        )
 
     request.session["current_order_id"] = order.id
 

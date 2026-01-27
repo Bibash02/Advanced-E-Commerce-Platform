@@ -4,9 +4,144 @@
 <head>
     <meta charset="utf-8">
     <title>Checkout</title>
-    <link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .checkout-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            display: flex;
+            gap: 40px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Billing Details Section */
+        .billing {
+            flex: 1;
+            min-width: 300px;
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .billing h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #222;
+        }
+
+        .billing input, 
+        .billing select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .billing input:focus,
+        .billing select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .billing button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #888faa 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .billing button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .billing h3 {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #222;
+        }
+
+        /* Order Summary Section */
+        .summary {
+            flex: 1;
+            min-width: 300px;
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .summary h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #222;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 15px;
+            color: #555;
+        }
+
+        .summary-item span {
+            display: block;
+        }
+
+        .summary hr {
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 20px 0;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: 600;
+            color: #222;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .checkout-container {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
+<header>
+    <nav>
+        <div class="logo">Clothique</div>
+
+        <div class="nav-links">
+            <a href="{% url 'customer_dashboard' %}">DASHBOARD</a>
+            <a href="{% url 'cart_page' %}">CART</a>
+            <a href="{% url 'signout' %}">SIGNOUT</a>
+        </div>
+    </nav>
+</header>
 
 <div class="checkout-container">
 
@@ -17,11 +152,18 @@
         <form method="POST" action="{% url 'process_payment' %}">
             {% csrf_token %}
 
-            <input name="name" value="{{ request.user.get_full_name }}" required>
-            <input name="email" value="{{ request.user.email }}" required>
-            <input name="phone" required>
-            <input name="address" required>
-            <input name="city" required>
+            <input name="name" value="{{ request.user.get_full_name }}" placeholder="Full Name" required>
+            <input name="email" value="{{ request.user.email }}" placeholder="Email" required>
+            <input name="phone" placeholder="Phone Number" required>
+            <select name="address_id" required>
+                <option value="">Select delivery address</option>
+                {% for addr in addresses %}
+                    <option value="{{ addr.id }}">
+                        {{ addr.full_address }}
+                    </option>
+                {% endfor %}
+            </select>
+            <input name="city" placeholder="City" required>
 
             <select name="payment_type" required>
                 <option value="">Select Payment</option>

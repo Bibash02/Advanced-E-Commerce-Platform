@@ -39,24 +39,24 @@ class CartAdmin(admin.ModelAdmin):
 
 @admin.register(CartItem)
 class CartItemAdmin(admin.ModelAdmin):
-    list_display = ['cart', 'product', 'quantity']
+    list_display = ['id', 'cart', 'product', 'quantity']
     list_filter = ['cart', 'product']
     search_fields = ['product']
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['user', 'full_name', 'email', 'phone', 'address', 'city', 'country', 'amount', 'payment_type', 'transaction_uuid', 'status', 'created_at']
+    list_display = ['id', 'user', 'full_name', 'email', 'phone', 'address', 'city', 'country', 'amount', 'payment_type', 'transaction_uuid', 'status', 'created_at']
     list_per_page = 10
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
-    list_display = ['order', 'product', 'quantity', 'price']
+    list_display = ['id', 'order', 'product', 'quantity', 'price']
     list_filter = ['product', 'price']
     search_fields = ['product',]
 
 @admin.register(DeliveryDocument)
 class DeliveryDocumentAdmin(admin.ModelAdmin):
-    list_display = ['user', 'full_name', 'phone', 'address', 'vehicle_type', 'vehicle_number', 'government_id', 'driving_license', 'vehicle_document', 'cv', 'created_at']
+    list_display = ['id', 'user', 'full_name', 'phone', 'address', 'vehicle_type', 'vehicle_number', 'government_id', 'driving_license', 'vehicle_document', 'cv', 'created_at']
     list_filter = ['user', 'address', 'vehicle_type']
     search_fields = ['address', 'vehicle_type']
 

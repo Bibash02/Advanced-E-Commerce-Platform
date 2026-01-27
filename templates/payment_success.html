@@ -8,7 +8,7 @@
 <body>
     <h1>Payment Successful 🎉</h1>
     <p>Order ID: {{ order.id }}</p>
-    <p>Amount Paid: Rs {{ order.total_amount }}</p>
+    <p>Amount Paid: Rs {{ order.amount }}</p>
 
     <a href="{% url 'customer_dashboard' %}">Go to Dashboard</a>
 </body>
