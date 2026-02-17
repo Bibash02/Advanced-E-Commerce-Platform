@@ -1,4 +1,3 @@
-from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -6,14 +5,13 @@ from .models import UserProfile
 from django.contrib.auth.models import User
 from .models import *
 from .forms import *
+import re
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Count
 import uuid
 from django.urls import reverse
-from decimal import Decimal
 from django.conf import settings
 from .utils import generate_signature
-from django.http import HttpResponseForbidden
 from django.core.mail import send_mail
 from .recommendation import *
 from django.db.models import Q
@@ -46,11 +44,38 @@ def signup(request):
         confirm_password = request.POST.get('confirm_password')
         role = request.POST.get('role')
         profile_image = request.FILES.get('profile_image')
-
+        
+        # password match validation
         if password != confirm_password:
             messages.error(request, "Passwords do not match.")
             return redirect('signup')
+        
+        # password length validation
+        if len(password) < 6:
+            messages.error(request, "Password must be at least 6 characters long.")
+            return redirect('signup')
+        
+        # email format validation
+        email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        if not re.match(email_regex, email):
+            messages.error(request, "Invalid email format.")
+            return redirect('signup')
 
+        # phone validation need 10 digits
+        if not phone.isdigit() or len(phone) != 10:
+            messages.error(request, "Phone number must be 10 digits.")
+            return redirect('signup')
+        
+        # image validation (.jpg, .jpeg, .png)
+        if profile_image:
+            allowed_extensions = ['jpg', 'jpeg', 'png']
+            file_extension = profile_image.name.lower()
+
+            if not any(file_extension.endswith(ext) for ext in allowed_extensions):
+                messages.error(request, "Profile image must be a .jpg, .jpeg, or .png file.")
+                return redirect('signup')
+
+        # unique username and email validation
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already taken.")
             return redirect('signup')
