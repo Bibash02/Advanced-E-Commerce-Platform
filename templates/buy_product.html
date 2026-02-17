@@ -11,10 +11,17 @@
 
 <header>
     <nav>
-        <div class="logo">Clothique</div>
+        <div class="logo">Shop Sphere</div>
         <div class="nav-links">
             <a href="{% url 'customer_dashboard' %}">DASHBOARD</a>
+            <a href="{% url 'all_products' %}">PRODUCTS</a>
+            <a href="{% url 'signout' %}">SIGNOUT</a>
         </div>
+        <a href="{% url 'cart_page' %}">
+                <div class="icons">
+                    <button class="icon-btn">🛒</button>
+                </div>
+        </a>
     </nav>
 </header>
 

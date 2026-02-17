@@ -3,10 +3,10 @@
 <html>
 <head>
     <title>Search Results</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/customer.css' %}">
     <link rel="stylesheet" href="{% static 'css/searching.css' %}">
     <style>
-
         body {
             font-family: Arial, Helvetica, sans-serif;
             background: #f6f6f6;
@@ -108,6 +108,17 @@
     </style>
 </head>
 <body>
+    <nav>
+            <div class="logo">Shop Sphere</div>
+            <div class="search-bar">
+                
+            </div>
+            <div class="nav-links">
+                <a href="{% url 'customer_dashboard' %}">DASHBOARD</a>
+                <a href="{% url 'all_products' %}">SHOP</a>
+                <a href="{% url 'signout' %}">SIGNOUT</a>
+            </div>
+        </nav>
 
 <h2>Search results for "{{ query }}"</h2>
 
