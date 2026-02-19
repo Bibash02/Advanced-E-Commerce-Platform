@@ -164,6 +164,18 @@
     {% endfor %}
     </div>
 </section>
+<script>
+let startTime = Date.now();
+
+window.addEventListener('beforeunload', function () {
+    let endTime = Date.now();
+    let timeSpent = Math.floor((endTime - startTime) / 1000); // seconds
+
+    navigator.sendBeacon("{% url 'product_detail' product.id %}", new URLSearchParams({
+        'time_spent': timeSpent
+    }));
+});
+</script>
 
 </body>
 </html>

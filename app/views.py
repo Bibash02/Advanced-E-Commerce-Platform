@@ -15,6 +15,7 @@ from .utils import generate_signature
 from django.core.mail import send_mail
 from .recommendation import *
 from django.db.models import Q
+from django.http import JsonResponse
 
 
 from django.contrib.auth import get_user_model
@@ -815,12 +816,29 @@ def product_detail(request, product_id):
     # Content-based recommendations
     recommended_products = get_similar_products(product.id)
 
+    # If it's an AJAX POST request to update time_spent
+    if request.method == 'POST' and request.is_ajax():
+        time_spent = int(request.POST.get('time_spent', 0))
+
+        # Update or create ProductView
+        pv, created = ProductView.objects.get_or_create(
+            user=request.user,
+            product=product,
+            defaults={'time_spent': time_spent} 
+        )
+        if not created:
+            pv.time_spent += time_spent
+            pv.save()
+
+        return JsonResponse({'status': 'success'})
+
     return render(request, 'product_detail.html', {
         'product': product,
         'category_related_products': category_related_products,
         'recommended_products': recommended_products,
     })
 
+@login_required
 def search_products(request):
     query = request.GET.get('q', '')
 
@@ -829,6 +847,10 @@ def search_products(request):
     related_products = Product.objects.none()
 
     if query:
+        # Save search history if user is logged in
+        if request.user.is_authenticated:
+            SearchHistory.objects.create(user=request.user, query=query)
+
         # Direct search matches
         search_results = Product.objects.filter(
             Q(name__icontains=query) |

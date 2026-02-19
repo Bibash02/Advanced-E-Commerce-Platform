@@ -84,3 +84,17 @@ class AddressAdmin(admin.ModelAdmin):
     list_filter = ['user', 'full_address']
     search_fields = ['user__username']
     list_per_page = 5
+
+@admin.register(SearchHistory)
+class SearchHistoryAdmin(admin.ModelAdmin):
+    list_display = ['user', 'query', 'searched_at']
+    list_filter = ['user', 'query']
+    search_fields = ['user__username',]
+    list_per_page = 5
+
+@admin.register(ProductView)
+class ProductViewAdmin(admin.ModelAdmin):
+    list_display = ['user', 'product', 'time_spent', 'viewed_at']
+    list_filter = ['user', 'product']
+    search_fields = ['user__username', 'product__name']
+    list_per_page = 5
