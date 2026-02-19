@@ -2,7 +2,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from .models import *
 
-
+# recommend similar products based on one product description and category using TF-IDF and cosine similarity
 def get_similar_products(product_id, limit=6):
     products = Product.objects.select_related('category')
 
@@ -37,6 +37,7 @@ def get_similar_products(product_id, limit=6):
 
     return Product.objects.filter(id__in=similar_ids)
 
+# recommends products based on the search text using TF-IDF and cosine similarity
 def get_similar_products_by_text(search_text, limit=6):
     products = Product.objects.all()
 
@@ -63,6 +64,7 @@ def get_similar_products_by_text(search_text, limit=6):
 
     return Product.objects.filter(id__in=similar_ids)
 
+# build a user interest profile based on their search history and viewed products
 def get_user_interest_text(user):
     search_texts = SearchHistory.objects.filter(
         user = user
@@ -79,6 +81,7 @@ def get_user_interest_text(user):
 
     return " ".join(search_texts) + " " + " ".join(product_texts)
 
+# personalized product recommendation system based on user search history and viewed products
 def recommend_products_for_user(user, limit=5):
     products = Product.objects.all()
 
@@ -102,7 +105,7 @@ def recommend_products_for_user(user, limit=5):
 
     similarity_scores = cosine_similarity(user_vector, tfidf_matrix)[0]
 
-    top_indices = similarity_scores.argsort()[::1][:limit]
+    top_indices = similarity_scores.argsort()[::-1][:limit]
     top_ids = [product_ids[i] for i in top_indices]
 
     return Product.objects.filter(id__in = top_ids)
