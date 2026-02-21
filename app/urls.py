@@ -27,6 +27,7 @@ urlpatterns = [
     path('supplier/product/edit/<int:pk>', edit_product, name='edit_product'),
     path('supplier/product/delete/<int:pk>', delete_product, name='delete_product'),
 
+    path('supplier/products/category/<int:category_id>', supplier_products_by_category, name = 'supplier_products_by_category'),
     path('supplier/blog/list', supplier_blogs, name='blog_list'),
     path('supplier/blog/add', add_blog, name='add_blog'),
     path('supplier/blog/edit/<int:pk>', edit_blog, name='edit_blog'),
@@ -35,6 +36,7 @@ urlpatterns = [
     path('customer/profile', customer_profile, name='customer_profile'),
     path('customer/profile/edit', edit_customer_profile, name='edit_customer_profile'),
     path('customer/category/list', category_list_customer, name='customer_category_list'),
+    path('customer/products/category/<int:category_id>', products_by_category, name='products_by_category'),
     path('customer/product/buy/<int:product_id>', buy_product, name='buy_product'),
     path('customer/blog/list', customer_blog_list, name='customer_blog_list'),
     path('customer/blog/detail/<int:blog_id>', customer_blog_detail, name='customer_blog_detail'),

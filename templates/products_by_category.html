@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Products - {{ category.name }}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        table {
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+        }
+
+        td, th {
+            padding: 12px;
+            text-align: center;
+        }
+
+        .view-btn {
+            background: #9296a5;
+            color: white;
+            padding: 6px 12px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-right: 6px;
+        }
+
+        .cart-btn {
+            background: #7c7fad;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .cart-btn:hover {
+            background: #2980b9;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 8px 14px;
+            background: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .back-btn:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">Shop Sphere</div>
+        <div class="nav-links">
+            <a href="{% url 'customer_dashboard' %}">DASHBOARD</a>
+            <a href="{% url 'all_products' %}">SHOP</a>
+            <a href="{% url 'cart_page' %}">
+                <div class="icons">
+                    <button class="icon-btn">🛒</button>
+                </div>
+            </a>
+        </div>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>{{ category.name }} <span class="highlight">Products</span></h1>
+        <p>Explore all products available in this category.</p>
+    </div>
+</section>
+
+<section style="padding: 40px;">
+    <table width="100%" cellpadding="12" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Rating</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for product in products %}
+            <tr>
+                <td>
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" width="80" style="border-radius:6px;">
+                    {% else %}
+                        <span>No Image</span>
+                    {% endif %}
+                </td>
+
+                <td>{{ product.name }}</td>
+
+                <td>Rs. {{ product.price }}</td>
+
+                <td>
+                    ⭐ {{ product.avg_rating|default:"0" }}
+                    ({{ product.rating_count }} reviews)
+                </td>
+
+                <td>
+                    <a href="{% url 'product_detail' product.id %}" class="view-btn">👁 View</a>
+
+                    <form method="POST"
+                          action="{% url 'add_to_cart' product.id %}"
+                          style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="cart-btn">🛒 Add to Cart</button>
+                    </form>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">No products available in this category.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'customer_dashboard' %}" class="back-btn">← Back to Dashboard</a>
+</section>
+
+</body>
+</html>

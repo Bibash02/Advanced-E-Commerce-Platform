@@ -199,6 +199,21 @@ def customer_dashboard(request):
     }
     return render(request, 'customer_dashboard.html', context)   
 
+def products_by_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+
+    products = Product.objects.filter(category = category).annotate(
+        avg_rating=Avg('reviews__rating'),
+        rating_count=Count('reviews')
+    ).order_by('-created_at')
+
+    context = {
+        'category': category,
+        'products': products
+    }
+
+    return render(request, 'products_by_category.html', context)
+
 @login_required
 def supplier_dashboard(request):
     products = Product.objects.filter(supplier = request.user).order_by('-created_at')[:4]
@@ -222,6 +237,22 @@ def supplier_profile(request):
         'profile': profile
     }
     return render(request, 'supplier_profile.html', context)
+
+@login_required
+def supplier_products_by_category(request, category_id):
+    category = get_object_or_404(Category, id = category_id)
+
+    products = Product.objects.filter(
+        category = category,
+        supplier = request.user
+    ).order_by('-created_at')
+
+    context = {
+        'category': category,
+        'products': products
+    }
+
+    return render(request, 'supplier_product_by_category.html', context)
 
 @login_required
 def edit_supplier_profile(request):

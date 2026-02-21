@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ category.name }} Products</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">Shop Sphere</div>
+        <div class="nav-links">
+            <a href="{% url 'supplier_dashboard' %}">DASHBOARD</a>
+            <a href="{% url 'product_list' %}">PRODUCTS</a>
+            <a href="{% url 'add_product' %}">ADD PRODUCT</a>
+            <a href="{% url 'signout' %}">SIGN OUT</a>
+        </div>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>{{ category.name }} <span class="highlight">Products</span></h1>
+        <p>Manage your products in this category.</p>
+    </div>
+</section>
+
+<section style="padding:40px;">
+    <div class="section-header">
+        <h2>Products</h2>
+        <a href="{% url 'supplier_dashboard' %}">
+            <button class="view-all">Back →</button>
+        </a>
+    </div>
+
+    <section class="product-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            </div>
+
+            <div class="product-info">
+                <div class="product-name">{{ product.name }}</div>
+                <div class="price-container">Rs.{{ product.price }}</div>
+
+                <div class="price-container">
+                    <a href="{% url 'edit_product' product.id %}">✏ Edit</a>
+                    <a href="{% url 'delete_product' product.id %}"
+                       onclick="return confirm('Are you sure?')">🗑 Delete</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <p>No products created in this category yet.</p>
+        {% endfor %}
+    </section>
+</section>
+
+</body>
+</html>

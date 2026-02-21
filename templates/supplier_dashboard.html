@@ -91,10 +91,12 @@
 
     <section class="category-grid">
         {% for category in categories %}
-            <div class="category-card">
-                <img src="{{ category.image.url }}" alt="{{ category.name }}">
-                <div class="category-name">{{ category.name }}</div>
-            </div>
+            <a href="{% url 'supplier_products_by_category' category.id %}" style="text-decoration:none;">
+                <div class="category-card">
+                    <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                    <div class="category-name">{{ category.name }}</div>
+                </div>
+            </a>
         {% empty %}
             <p>No categories available.</p>
         {% endfor %}
