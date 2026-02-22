@@ -255,6 +255,20 @@ def supplier_products_by_category(request, category_id):
     return render(request, 'supplier_product_by_category.html', context)
 
 @login_required
+def supplier_product_reviews(request):
+    # get supplier products
+    supplier_products = Product.objects.filter(supplier = request.user)
+
+    # get review of those products
+    reviews = ProductReview.objects.filter(product__in = supplier_products).select_related('product', 'user').order_by('-created_at')
+
+    context = {
+        'reviews': reviews
+    }
+
+    return render(request, 'supplier_product_reviews.html', context)
+
+@login_required
 def edit_supplier_profile(request):
     try:
         profile = request.user.userprofile

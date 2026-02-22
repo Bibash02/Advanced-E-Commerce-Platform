@@ -28,6 +28,8 @@ urlpatterns = [
     path('supplier/product/delete/<int:pk>', delete_product, name='delete_product'),
 
     path('supplier/products/category/<int:category_id>', supplier_products_by_category, name = 'supplier_products_by_category'),
+    path('supplier/product/reviews', supplier_product_reviews, name='supplier_product_reviews'),
+
     path('supplier/blog/list', supplier_blogs, name='blog_list'),
     path('supplier/blog/add', add_blog, name='add_blog'),
     path('supplier/blog/edit/<int:pk>', edit_blog, name='edit_blog'),

@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Reviews</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        table {
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+        }
+
+        td, th {
+            padding: 12px;
+            text-align: center;
+        }
+
+        .rating {
+            color: #f39c12;
+        }
+
+        .comment-box {
+            max-width: 250px;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">Shop Sphere</div>
+        <div class="nav-links">
+            <a href="{% url 'supplier_dashboard' %}">DASHBOARD</a>
+            <a href="{% url 'add_product' %}">ADD PRODUCT</a>
+            <a href="{% url 'signout' %}">SIGNOUT</a>
+        </div>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Customer <span class="highlight">Reviews</span></h1>
+        <p>See what customers are saying about your products.</p>
+    </div>
+</section>
+
+<section style="padding:40px;">
+    <table width="100%">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Customer</th>
+                <th>Rating</th>
+                <th>Comment</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for review in reviews %}
+            <tr>
+                <td>{{ review.product.name }}</td>
+                <td>{{ review.user.username }}</td>
+                <td class="rating">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                            ⭐
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td class="comment-box">{{ review.comment }}</td>
+                <td>{{ review.created_at|date:"Y-m-d" }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">No reviews yet for your products.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+</body>
+</html>
