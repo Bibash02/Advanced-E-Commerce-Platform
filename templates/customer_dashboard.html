@@ -183,17 +183,6 @@
         {% endfor %}
     </section>
 
-    <!-- Newsletter -->
-    <section class="newsletter">
-        <h2>Get 25% Discount On<br>Your First Purchase</h2>
-        <p>Just Sign Up & Register it now to become member.</p>
-        <form class="newsletter-form">
-            <input type="text" placeholder="Name">
-            <input type="email" placeholder="Email Address">
-            <button type="submit">Submit</button>
-        </form>
-    </section>
-
     <!-- Leatest Products -->
     <div class="section-header">
         <h2>Latest Products</h2>
@@ -295,5 +284,62 @@
         {% endfor %}
     </section>
 
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ShopSphere</h3>
+                <p>Shop Sphere — Where Your Style Comes Full Circle.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/YourPage" target="_blank" class="social-icon">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Information</h3>
+                <ul>
+                    <li><a href="{% url 'customer_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'customer_permission' %}">Permissions</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>For Customer</h3>
+                <ul>
+                    <li><a href="{% url 'all_products' %}">Products</a></li>
+                    <li><a href="{% url 'customer_blog_list' %}">Blogs</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'cart_page' %}">Cart</a></li>
+                    <li><a href="{% url 'signout' %}">SignOut</a></li>
+                    <li><a href="{% url 'customer_dashboard' %}">Dashboard</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>We don’t just sell clothes — we create experiences. Explore collections crafted with care, designed for confidence, and inspired by modern lifestyles.</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© ShopSphere...</p>
+            <a href="#clothique">ShopSphere.com</a>
+        </div>
+    </footer>
     <script src="{% static 'js/script.js' %}"></script>
 </body>

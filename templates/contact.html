@@ -45,7 +45,7 @@
                     <i class="fas fa-map-marker-alt"></i>
                 </div>
                 <h3>Our Location</h3>
-                <p>123 Fashion Street<br>Kathmandu, Nepal<br>Postal Code: 44600</p>
+                <p>panga kirtipur<br>Kathmandu, Nepal<br>Postal Code: 44600</p>
             </div>
 
             <div class="contact-info-card">
@@ -54,8 +54,8 @@
                 </div>
                 <h3>Phone Number</h3>
                 <p>
-                    <a href="tel:+9779812345678">+977 981-2345678</a><br>
-                    <a href="tel:+9771234567">+977 1-234567</a><br>
+                    <a href="tel:+9779812345678">+977 9800000000</a><br>
+                    <a href="tel:+9771234567">+977 9811111111</a><br>
                     Mon-Sat: 9AM - 6PM
                 </p>
             </div>
@@ -66,8 +66,8 @@
                 </div>
                 <h3>Email Address</h3>
                 <p>
-                    <a href="mailto:info@clothique.com">info@clothique.com</a><br>
-                    <a href="mailto:support@clothique.com">support@clothique.com</a><br>
+                    <a href="mailto:info@example.com">info@example.com</a><br>
+                    <a href="mailto:support@example.com">support@example.com</a><br>
                     24/7 Email Support
                 </p>
             </div>
@@ -122,7 +122,7 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h3>Clothique</h3>
-                <p>Your one-stop shop for the latest fashion trends. Quality clothing at affordable prices.</p>
+                <p>Your one-stop shop for the latest fashion trends.</p>
                 <div class="social-icons">
                     <a href="https://www.facebook.com/YourPage" target="_blank" class="social-icon">
                         <i class="fab fa-facebook-f"></i>
@@ -142,10 +142,9 @@
             <div class="footer-section">
                 <h3>Information</h3>
                 <ul>
-                    <li><a href="#about">About Us</a></li>
+                    <li><a href="{% url 'about' %}">About Us</a></li>
                     <li><a href="{% url 'contact' %}">Contact Us</a></li>
-                    <li><a href="#privacy">Privacy Policy</a></li>
-                    <li><a href="#terms">Terms & Conditions</a></li>
+                    <li><a href="{% url 'home' %}">Home</a></li>
                 </ul>
             </div>
 
@@ -154,18 +153,15 @@
                 <ul>
                     <li><a href="#shipping">Shipping Policy</a></li>
                     <li><a href="#returns">Returns & Exchanges</a></li>
-                    <li><a href="#faq">FAQs</a></li>
-                    <li><a href="#support">Support Center</a></li>
                 </ul>
             </div>
 
             <div class="footer-section">
                 <h3>Quick Links</h3>
                 <ul>
-                    <li><a href="#newarrivals">New Arrivals</a></li>
-                    <li><a href="#bestSellers">Best Sellers</a></li>
-                    <li><a href="#sale">Sale Items</a></li>
-                    <li><a href="#giftcards">Gift Cards</a></li>
+                    <li><a href="{% url 'signin' %}">SignIn</a></li>
+                    <li><a href="{% url 'signup' %}">SignUp</a></li>
+                    <li><a href="{% url 'home' %}">Home</a></li>
                 </ul>
             </div>
 
@@ -180,8 +176,8 @@
         </div>
 
         <div class="footer-bottom">
-            <p>© Clothique...</p>
-            <a href="#clothique">Clothique.com</a>
+            <p>© ShopSphere...</p>
+            <a href="#clothique">ShopSphere.com</a>
         </div>
     </footer>
 

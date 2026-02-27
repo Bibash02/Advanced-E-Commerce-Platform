@@ -19,6 +19,7 @@ urlpatterns = [
     path('supplier/dashboard/', supplier_dashboard, name='supplier_dashboard'),
     path('delivery_personnel/dashboard', delivery_personnel_dashboard, name='delivery_personnel_dashboard'),
 
+    path('supplier/permission', supplier_permission, name='supplier_permission'),
     path('supplier/profile', supplier_profile, name='supplier_profile'),
     path('supplier/profile/edit', edit_supplier_profile, name='edit_supplier_profile'),
     path('supplier/category/list', supplier_category_list, name='supplier_category_list'),
@@ -35,6 +36,7 @@ urlpatterns = [
     path('supplier/blog/edit/<int:pk>', edit_blog, name='edit_blog'),
     path('supplier/blog/delete/<int:pk>', delete_blog, name='delete_blog'),
 
+    path('customer/permission', customer_permission, name='customer_permission'),
     path('customer/profile', customer_profile, name='customer_profile'),
     path('customer/profile/edit', edit_customer_profile, name='edit_customer_profile'),
     path('customer/category/list', category_list_customer, name='customer_category_list'),

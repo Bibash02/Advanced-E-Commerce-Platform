@@ -17,6 +17,7 @@
         <div class="logo">Shop Sphere</div>
         <div class="nav-links">
             <a href="{% url 'home' %}">DASHBOARD</a>
+            <a href="{% url 'contact' %}">CONTACT</a>
             <a href="{% url 'signin' %}">SIGN IN</a>
         </div>
     </nav>
@@ -69,12 +70,12 @@
         <div class="team-member">
             <img src="{% static 'images/pic1.jpg' %}" alt="Team Member 1">
             <h4>Nikesh Shrestha</h4>
-            <p>Founder & CEO</p>
+            <p>Partner</p>
         </div>
         <div class="team-member">
             <img src="{% static 'images/pic1.jpg' %}" alt="Team Member 2">
             <h4>Bibash Bayalkoti</h4>
-            <p>Head of Design</p>
+            <p>Partner</p>
         </div>
     </div>
 </section>
@@ -84,7 +85,7 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h3>Clothique</h3>
-                <p>Your one-stop shop for the latest fashion trends. Quality clothing at affordable prices.</p>
+                <p>Your one-stop shop for the latest fashion trends.</p>
                 <div class="social-icons">
                     <a href="https://www.facebook.com/YourPage" target="_blank" class="social-icon">
                         <i class="fab fa-facebook-f"></i>
@@ -104,30 +105,29 @@
             <div class="footer-section">
                 <h3>Information</h3>
                 <ul>
-                    <li><a href="#about">About Us</a></li>
-                    <li><a href="#contact">Contact Us</a></li>
-                    <li><a href="#privacy">Privacy Policy</a></li>
-                    <li><a href="#terms">Terms & Conditions</a></li>
+                    <li><a href="{% url 'about' %}">About Us</a></li>
+                    <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                    <li><a href="{% url 'home' %}">Home</a></li>
                 </ul>
             </div>
+
             <div class="footer-section">
                 <h3>Customer Service</h3>
                 <ul>
                     <li><a href="#shipping">Shipping Policy</a></li>
                     <li><a href="#returns">Returns & Exchanges</a></li>
-                    <li><a href="#faq">FAQs</a></li>
-                    <li><a href="#support">Support Center</a></li>
                 </ul>
             </div>
+
             <div class="footer-section">
                 <h3>Quick Links</h3>
                 <ul>
-                    <li><a href="#newarrivals">New Arrivals</a></li>
-                    <li><a href="#bestSellers">Best Sellers</a></li>
-                    <li><a href="#sale">Sale Items</a></li>
-                    <li><a href="#giftcards">Gift Cards</a></li>
+                    <li><a href="{% url 'signin' %}">SignIn</a></li>
+                    <li><a href="{% url 'signup' %}">SignUp</a></li>
+                    <li><a href="{% url 'home' %}">Home</a></li>
                 </ul>
             </div>
+
             <div class="footer-section">
                 <h3>Subscribe</h3>
                 <p>Get the latest updates and offers.</p>
@@ -137,9 +137,10 @@
                 </form>
             </div>
         </div>
+
         <div class="footer-bottom">
-            <p>© Clothique...</p>
-            <a href="#clothique">Clothique.com</a>
+            <p>© ShopSphere...</p>
+            <a href="#clothique">ShopSphere.com</a>
         </div>
     </footer>
 

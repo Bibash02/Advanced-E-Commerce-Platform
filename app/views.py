@@ -939,3 +939,9 @@ def add_address(request):
         )
         return redirect('add_address')
     return render(request, 'add_address.html')
+
+def customer_permission(request):
+    return render(request, "customer_permissions.html")
+
+def supplier_permission(request):
+    return render(request, "supplier_permissions.html")

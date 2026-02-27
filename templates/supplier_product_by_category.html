@@ -3,8 +3,10 @@
 <html>
 <head>
     <title>{{ category.name }} Products</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icon.css' %}">
 </head>
 <body>
 
@@ -58,6 +60,61 @@
         {% endfor %}
     </section>
 </section>
+<footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ShopSphere</h3>
+                <p>Shop Sphere — Where Your Style Comes Full Circle.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/YourPage" target="_blank" class="social-icon">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
 
+            <div class="footer-section">
+                <h3>Information</h3>
+                <ul>
+                    <li><a href="{% url 'supplier_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'supplier_permission' %}">Permissions</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>For Customer</h3>
+                <ul>
+                    <li><a href="{% url 'product_list' %}">Products</a></li>
+                    <li><a href="{% url 'blog_list' %}">Blogs</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'signout' %}">SignOut</a></li>
+                    <li><a href="{% url 'supplier_dashboard' %}">Dashboard</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>We don’t just sell clothes — we create experiences. Explore collections crafted with care, designed for confidence, and inspired by modern lifestyles.</p> 
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© ShopSphere...</p>
+            <a href="#clothique">ShopSphere.com</a>
+        </div>
+    </footer>
 </body>
 </html>

@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Permissions</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        .permission-container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        }
+
+        .permission-container h2 {
+            margin-bottom: 20px;
+        }
+
+        .permission-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .permission-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 16px;
+        }
+
+        .permission-list li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">Shop Sphere</div>
+        <div class="nav-links">
+            <a href="{% url 'customer_dashboard' %}">DASHBOARD</a>
+            <a href="{% url 'all_products' %}">PRODUCTS</a>
+            <a href="{% url 'signout' %}">SIGNOUT</a>
+        </div>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Customer <span class="highlight">Permissions</span></h1>
+    </div>
+</section>
+
+<section class="permission-grid">
+
+    <div class="permission-container">
+        <h2>Customer Permissions</h2>
+
+        <ul class="permission-list">
+            <li>✔ Browse Products</li>
+            <li>✔ View Product Details</li>
+            <li>✔ Add Products to Cart</li>
+            <li>✔ Purchase Products</li>
+            <li>✔ View Blogs</li>
+            <li>✔ Manage Profile</li>
+            <li>✔ View Order History</li>
+        </ul>
+    </div>
+
+</section>
+
+</body>
+</html>
