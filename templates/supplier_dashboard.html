@@ -120,6 +120,7 @@
             <div class="product-info">
                 <div class="product-name">{{ product.name }}</div>
                 <div class="price-container">Rs.{{ product.price }}</div>
+                <div class="price-container">Stock: {{ product.stock }}</div>
                 
                 <div class="price-container">
                     <a href="{% url 'edit_product' product.id %}">✏ Edit</a>
