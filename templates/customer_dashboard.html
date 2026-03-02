@@ -119,6 +119,7 @@
             <div class="product-info">
                 <div class="product-name">{{ product.name }}</div>
                 <div class="price-container">Rs. {{ product.price }}</div>
+                <div class="price-container">Stock: {{ product.stock }}</div>
 
                 <a href="{% url 'product_detail' product.id %}" class="buy-btn">
                     View
@@ -149,6 +150,7 @@
 
             <div class="product-info">
                 <div class="product-name">{{ product.name }}</div>
+                <div class="price-container">Stock: {{ product.stock }}</div>
 
                 <!-- ⭐ RATING -->
                 <div class="product-rating">
@@ -213,6 +215,7 @@
 
             <div class="product-info">
                 <div class="product-name">{{ product.name }}</div>
+                <div class="price-container">Stock: {{ product.stock }}</div>
 
                 <div class="price-container">
                     {% if product.original_price %}

@@ -16,6 +16,8 @@ from django.core.mail import send_mail
 from .recommendation import *
 from django.db.models import Q
 from django.http import JsonResponse
+import base64
+import json
 
 
 from django.contrib.auth import get_user_model
@@ -362,6 +364,20 @@ def supplier_blogs(request):
     return render(request, 'blog_list.html', {'blogs': blogs})
 
 @login_required
+def supplier_orders(request):
+    supplier = request.user
+
+    orders = OrderItem.objects.filter(
+        product__supplier=supplier
+    ).select_related(
+        "order",
+        "product",
+        "order__user"
+    ).order_by("-order__created_at")
+
+    return render(request, "supplier_ordered.html", {"orders": orders})
+
+@login_required
 def add_blog(request):  
     form = BlogForm(request.POST or None, request.FILES or None)
 
@@ -604,17 +620,35 @@ def process_payment(request):
 
 @login_required
 def payment_success(request):
-    order_id = request.session.get('order_id')
-    order = get_object_or_404(Order, id=order_id)
+    encoded_data = request.GET.get("data")
 
-    order.status = "Paid"
-    order.save()
+    if not encoded_data:
+        return redirect("customer_dashboard")
 
-    # clear cart (assuming you have a Cart model linked to User)
-    if hasattr(order.user, 'cart'):
-        order.user.cart.items.all().delete()
+    try:
+        # Decode base64 response
+        decoded_data = base64.b64decode(encoded_data).decode("utf-8")
+        payment_data = json.loads(decoded_data)
 
-    return render(request, 'payment_success.html', {'order': order})
+        transaction_uuid = payment_data.get("transaction_uuid")
+        status = payment_data.get("status")
+
+        # Find order using transaction_uuid
+        order = get_object_or_404(Order, transaction_uuid=transaction_uuid)
+
+        if status == "COMPLETE":
+            order.status = "Paid"
+            order.save()
+
+            # Clear cart
+            if hasattr(order.user, 'cart'):
+                order.user.cart.items.all().delete()
+
+        return render(request, "payment_success.html", {"order": order})
+
+    except Exception as e:
+        print("Payment Success Error:", e)
+        return redirect("customer_dashboard")
 
 
 @login_required

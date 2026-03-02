@@ -85,7 +85,8 @@
             </div>
 
             <div class="price-container">
-                Rs. {{ product.price }}
+                Rs. {{ product.price }} <br>
+                Stock: {{ product.stock }}
             </div>
 
             <a href="{% url 'buy_product' product.id %}" class="buy-btn">
