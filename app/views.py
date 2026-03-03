@@ -18,6 +18,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 import base64
 import json
+from django.db import transaction
 
 
 from django.contrib.auth import get_user_model
@@ -617,8 +618,6 @@ def process_payment(request):
 
     return redirect("checkout")
 
-
-@login_required
 def payment_success(request):
     encoded_data = request.GET.get("data")
 
@@ -641,15 +640,15 @@ def payment_success(request):
             order.save()
 
             # Clear cart
-            if hasattr(order.user, 'cart'):
-                order.user.cart.items.all().delete()
+            cart = Cart.objects.filter(user=order.user).first()
+            if cart:
+                cart.items.all().delete()
 
         return render(request, "payment_success.html", {"order": order})
 
     except Exception as e:
         print("Payment Success Error:", e)
         return redirect("customer_dashboard")
-
 
 @login_required
 def payment_fail(request):

@@ -64,7 +64,7 @@ class ProductReview(models.Model):
         return self.product.name
 
 class Cart(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cart')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -135,6 +135,19 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order #{self.id}"
+    
+    def mark_as_paid_and_update_stock(self):
+        if self.status != "Paid":
+
+            self.status = "Paid"
+            self.save(update_fields=["status"])
+
+            for item in self.orderitem_set.all():
+                product = item.product
+
+                if product.stock >= item.quantity:
+                    product.stock -= item.quantity
+                    product.save(update_fields=["stock"])
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
