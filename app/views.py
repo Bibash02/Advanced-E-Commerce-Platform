@@ -18,11 +18,19 @@ from django.db.models import Q
 from django.http import JsonResponse
 import base64
 import json
+import threading
 from django.db import transaction
 
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
+
+def async_send_mail(subject, message, recipient_list):
+    threading.Thread(
+        target=send_mail,
+        args=(subject, message, settings.DEFAULT_FROM_EMAIL, recipient_list),
+        kwargs={"fail_silently": True},
+    ).start()
 
 def home(request):
     latest_products = Product.objects.order_by('-created_at')[:4]
@@ -625,24 +633,61 @@ def payment_success(request):
         return redirect("customer_dashboard")
 
     try:
-        # Decode base64 response
         decoded_data = base64.b64decode(encoded_data).decode("utf-8")
         payment_data = json.loads(decoded_data)
 
         transaction_uuid = payment_data.get("transaction_uuid")
         status = payment_data.get("status")
 
-        # Find order using transaction_uuid
         order = get_object_or_404(Order, transaction_uuid=transaction_uuid)
 
-        if status == "COMPLETE":
-            order.status = "Paid"
-            order.save()
+        if status == "COMPLETE" and order.status != "Paid":
 
-            # Clear cart
-            cart = Cart.objects.filter(user=order.user).first()
-            if cart:
-                cart.items.all().delete()
+            # DATABASE OPERATIONS
+            with transaction.atomic():
+
+                order.status = "Paid"
+                order.save(update_fields=["status"])
+
+                for item in order.items.all():
+                    product = item.product
+
+                    if product.stock >= item.quantity:
+                        product.stock -= item.quantity
+                        product.save(update_fields=["stock"])
+                    else:
+                        print("Not enough stock for:", product.name)
+
+                # Clear cart
+                Cart.objects.filter(user=order.user).delete()
+
+            # SEND EMAIL (OUTSIDE TRANSACTION)
+            product_details = ""
+            for item in order.items.all():
+                product_details += f"{item.product.name} (Qty: {item.quantity}) - Rs.{item.price}\n"
+
+            customer_message = f"""
+Hello {order.full_name},
+
+Your payment was successful!
+
+Order ID: {order.id}
+
+Products:
+{product_details}
+
+Total Paid: Rs.{order.amount}
+
+Thank you for shopping with us!
+"""
+
+            send_mail(
+                subject="Order Confirmation - Payment Successful",
+                message=customer_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[order.email],
+                fail_silently=False,
+            )
 
         return render(request, "payment_success.html", {"order": order})
 

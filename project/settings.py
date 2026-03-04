@@ -135,11 +135,16 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
 # Looking to send emails in production? Check out our Email API/SMTP product!
 EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
 EMAIL_HOST_USER = 'b3b8d5a8d2babb'
 EMAIL_HOST_PASSWORD = '43e89d38974a58'
-EMAIL_PORT = '2525'
+EMAIL_PORT = 2525
+
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 
 DEFAULT_FROM_EMAIL = 'testing@lms.com'
 
