@@ -14,7 +14,7 @@ from django.conf import settings
 from .utils import generate_signature
 from django.core.mail import send_mail
 from .recommendation import *
-from django.db.models import Q
+from django.db.models import Q, Sum, Count, F
 from django.http import JsonResponse
 import base64
 import json
@@ -22,6 +22,7 @@ import threading
 from django.db import transaction
 from django.utils import timezone
 from datetime import timedelta
+from django.core.paginator import Paginator
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -1072,3 +1073,308 @@ def customer_permission(request):
 
 def supplier_permission(request):
     return render(request, "supplier_permissions.html")
+
+@login_required
+def supplier_earning(request):
+
+    supplier = request.user
+
+    # Base queryset (only supplier products)
+    order_items = OrderItem.objects.filter(
+        product__supplier=supplier
+    ).select_related("order", "product")
+
+    # FILTERS
+
+    product_id = request.GET.get("product")
+    date_from = request.GET.get("date_from")
+    date_to = request.GET.get("date_to")
+    status = request.GET.get("status")
+
+    if product_id:
+        order_items = order_items.filter(product__id=product_id)
+
+    if date_from:
+        order_items = order_items.filter(order__created_at__date__gte=date_from)
+
+    if date_to:
+        order_items = order_items.filter(order__created_at__date__lte=date_to)
+
+    if status:
+        order_items = order_items.filter(order__status=status)
+
+    # SUMMARY CALCULATIONS 
+
+    # Total orders (distinct orders)
+    total_orders = order_items.values("order").distinct().count()
+
+    # Units sold
+    total_units = order_items.aggregate(
+        total=Sum("quantity")
+    )["total"] or 0
+
+    # Total earnings (Paid + Delivered)
+    total_earnings = order_items.filter(
+        order__status__in=["Paid", "Delivered"]
+    ).aggregate(
+        total=Sum(F("quantity") * F("product__price"))
+    )["total"] or 0
+
+    # Pending earnings
+    pending_earnings = order_items.filter(
+        order__status="Pending"
+    ).aggregate(
+        total=Sum(F("quantity") * F("product__price"))
+    )["total"] or 0
+
+    # PER PRODUCT EARNINGS 
+
+    product_data = order_items.values(
+        "product__id",
+        "product__name",
+        "product__price"
+    ).annotate(
+        units_sold=Sum("quantity"),
+        total_revenue=Sum(F("quantity") * F("product__price")),
+        pending_amount=Sum(
+            F("quantity") * F("product__price"),
+            filter=Q(order__status="Pending")
+        ),
+        cancelled_amount=Sum(
+            F("quantity") * F("product__price"),
+            filter=Q(order__status="Cancelled")
+        ),
+    )
+
+    product_earnings = []
+
+    for row in product_data:
+        net_earned = (row["total_revenue"] or 0) - (row["cancelled_amount"] or 0)
+
+        product_earnings.append({
+            "product_name": row["product__name"],
+            "unit_price": row["product__price"],
+            "units_sold": row["units_sold"] or 0,
+            "total_revenue": row["total_revenue"] or 0,
+            "pending_amount": row["pending_amount"] or 0,
+            "cancelled_amount": row["cancelled_amount"] or 0,
+            "net_earned": net_earned
+        })
+
+    # TOP PRODUCTS 
+
+    max_revenue = max(
+        [p["net_earned"] for p in product_earnings],
+        default=0
+    )
+
+    top_products = []
+
+    for p in sorted(product_earnings, key=lambda x: x["net_earned"], reverse=True)[:5]:
+        pct = (p["net_earned"] / max_revenue * 100) if max_revenue > 0 else 0
+        p["revenue_pct"] = round(pct, 2)
+        top_products.append(p)
+
+    # STATUS BREAKDOWN
+
+    status_breakdown = {
+        "paid_count": order_items.filter(order__status__in=["Paid", "Delivered"])
+                                  .values("order").distinct().count(),
+        "pending_count": order_items.filter(order__status="Pending")
+                                    .values("order").distinct().count(),
+        "cancelled_count": order_items.filter(order__status="Cancelled")
+                                      .values("order").distinct().count(),
+    }
+
+    supplier_products = Product.objects.filter(supplier=supplier)
+
+    context = {
+        "total_orders": total_orders,
+        "total_units": total_units,
+        "total_earnings": total_earnings,
+        "pending_earnings": pending_earnings,
+        "product_earnings": product_earnings,
+        "top_products": top_products,
+        "status_breakdown": status_breakdown,
+        "supplier_products": supplier_products,
+    }
+
+    return render(request, "supplier_earnings.html", context)
+
+@login_required
+def customer_spending(request):
+
+    user = request.user
+
+    # Base queryset (only this customer's orders)
+    order_items = OrderItem.objects.filter(
+        order__user=user
+    ).select_related("order", "product")
+
+    # FILTERS
+
+    category_id = request.GET.get("category")
+    status = request.GET.get("status")
+    date_from = request.GET.get("date_from")
+    date_to = request.GET.get("date_to")
+
+    if category_id:
+        order_items = order_items.filter(product__category__id=category_id)
+
+    if status:
+        order_items = order_items.filter(order__status=status)
+
+    if date_from:
+        order_items = order_items.filter(order__created_at__date__gte=date_from)
+
+    if date_to:
+        order_items = order_items.filter(order__created_at__date__lte=date_to)
+
+    # SUMMARY CARDS
+
+    # Total orders
+    total_orders = order_items.values("order").distinct().count()
+
+    # Total items bought
+    total_items = order_items.aggregate(
+        total=Sum("quantity")
+    )["total"] or 0
+
+    # Total spent (Paid + Delivered only)
+    total_spent = order_items.filter(
+        order__status__in=["Paid", "Delivered"]
+    ).aggregate(
+        total=Sum(F("quantity") * F("product__price"))
+    )["total"] or 0
+
+    # Cancelled count
+    cancelled_count = order_items.filter(
+        order__status="Cancelled"
+    ).values("order").distinct().count()
+
+    # TABLE DATA 
+
+    product_spending = []
+
+    for item in order_items:
+        total_paid = item.quantity * item.product.price
+
+        product_spending.append({
+            "product_name": item.product.name,
+            "image": item.product.image,
+            "category": item.product.category.name if item.product.category else "N/A",
+            "quantity": item.quantity,
+            "unit_price": item.product.price,
+            "total_paid": total_paid,
+            "status": item.order.status,
+            "date": item.order.created_at,
+        })
+
+    # TOP ITEMS 
+
+    confirmed_items = order_items.filter(
+        order__status__in=["Paid", "Delivered"]
+    )
+
+    item_totals = confirmed_items.values(
+        "product__name"
+    ).annotate(
+        total_paid=Sum(F("quantity") * F("product__price"))
+    )
+
+    max_spend = max(
+        [i["total_paid"] for i in item_totals],
+        default=0
+    )
+
+    top_items = []
+
+    for item in item_totals:
+        pct = (item["total_paid"] / max_spend * 100) if max_spend > 0 else 0
+
+        top_items.append({
+            "product_name": item["product__name"],
+            "total_paid": item["total_paid"],
+            "spend_pct": round(pct, 2)
+        })
+
+    # Sort highest first
+    top_items = sorted(top_items, key=lambda x: x["total_paid"], reverse=True)[:5]
+
+    # CATEGORY BREAKDOWN
+
+    category_data = confirmed_items.values(
+        "product__category__name"
+    ).annotate(
+        total=Sum(F("quantity") * F("product__price"))
+    )
+
+    max_total = total_spent if total_spent else 1
+
+    colors = ["#27ae60", "#2980b9", "#e67e22", "#8e44ad", "#e74c3c", "#16a085"]
+
+    category_breakdown = []
+    for index, cat in enumerate(category_data):
+        pct = (cat["total"] / max_total) * 100 if max_total > 0 else 0
+
+        category_breakdown.append({
+            "name": cat["product__category__name"] or "Uncategorized",
+            "total": cat["total"],
+            "pct": round(pct, 1),
+            "color": colors[index % len(colors)]
+        })
+
+    # CATEGORY DROPDOWN 
+
+    categories = Category.objects.all()
+
+    paginator = Paginator(product_spending, 10)  # 10 rows per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        "total_spent": total_spent,
+        "total_orders": total_orders,
+        "total_items": total_items,
+        "cancelled_count": cancelled_count,
+        "product_spending": product_spending,
+        "top_items": top_items,
+        "category_breakdown": category_breakdown,
+        "categories": categories,
+        "page_obj": page_obj
+    }
+
+    return render(request, "customer_spending.html", context)
+
+def customer_order_history(request):
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+
+    # Apply filters
+    status = request.GET.get('status')
+    payment = request.GET.get('payment')
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+
+    if status:
+        orders = orders.filter(status=status)
+    if payment:
+        orders = orders.filter(payment_type=payment)
+    if date_from:
+        orders = orders.filter(created_at__gte=date_from)
+    if date_to:
+        orders = orders.filter(created_at__lte=date_to)
+
+    # Pagination
+    paginator = Paginator(orders, 10)  # 10 orders per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        "page_obj": page_obj,
+        "delivered_count": orders.filter(status='Delivered').count(),
+        "pending_count": orders.filter(status='Pending').count(),
+        "cancelled_count": orders.filter(status='Cancelled').count(),
+        "total_orders": orders.count(),
+        # Keep any other data you need
+    }
+    return render(request, "customer_order_history.html", context)

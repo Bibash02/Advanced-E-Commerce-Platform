@@ -19,10 +19,12 @@
                 
             </div>
             <div class="nav-links">
+                <a href="{% url 'add_address' %}">ADD ADDRESS</a>
+                <a href="{% url 'customer_spending' %}">MY SPENDING</a>
+                <a href="{% url 'customer_order_history' %}">MY HISTORY</a>
                 <a href="{% url 'customer_blog_list' %}">BLOG</a>
                 <a href="{% url 'all_products' %}">SHOP</a>
                 <a href="{% url 'signout' %}">SIGNOUT</a>
-                <a href="{% url 'add_address' %}">ADD ADDRESS</a>
             </div>
             <a href="{% url 'customer_profile' %}">
                 <div class="icons">

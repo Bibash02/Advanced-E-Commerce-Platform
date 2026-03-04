@@ -1,0 +1,366 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Order History — ShopSphere</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icon.css' %}">
+    <link rel="stylesheet" href="{% static 'css/history.css' %}">
+    <link rel="stylesheet" href="{% static 'css/spending.css' %}"> 
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+    <nav>
+        <div class="logo">Shop Sphere</div>
+        <div class="nav-links">
+            <a href="{% url 'customer_dashboard' %}">DASHBOARD</a>
+            <a href="{% url 'product_list' %}">PRODUCTS</a>
+            <a href="{% url 'customer_spending' %}">MY SPENDING</a>
+            <a href="{% url 'signout' %}">SIGNOUT</a>
+        </div>
+    </nav>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Order <span class="highlight">History</span></h1>
+        <p>All your past and current orders in one place.</p>
+    </div>
+</section>
+
+<!-- ===== SUMMARY CARDS ===== -->
+<section class="summary-section">
+
+    <div class="summary-card green">
+        <span class="card-icon"><i class="fas fa-check-circle"></i></span>
+        <span class="card-label">Delivered</span>
+        <span class="card-value">{{ delivered_count }}</span>
+        <span class="card-sub">Successfully delivered</span>
+    </div>
+
+    <div class="summary-card orange">
+        <span class="card-icon"><i class="fas fa-clock"></i></span>
+        <span class="card-label">Pending</span>
+        <span class="card-value">{{ pending_count }}</span>
+        <span class="card-sub">Awaiting confirmation</span>
+    </div>
+
+    <div class="summary-card blue">
+        <span class="card-icon"><i class="fas fa-receipt"></i></span>
+        <span class="card-label">Total Orders</span>
+        <span class="card-value">{{ total_orders }}</span>
+        <span class="card-sub">All time</span>
+    </div>
+
+    <div class="summary-card red">
+        <span class="card-icon"><i class="fas fa-times-circle"></i></span>
+        <span class="card-label">Cancelled</span>
+        <span class="card-value">{{ cancelled_count }}</span>
+        <span class="card-sub">Cancelled orders</span>
+    </div>
+
+</section>
+
+<!-- ===== FILTERS ===== -->
+<section class="filter-section">
+    <form method="GET" class="filter-box">
+
+        <div class="filter-group">
+            <label>Status</label>
+            <select name="status">
+                <option value="">All Statuses</option>
+                <option value="Pending"   {% if request.GET.status == "Pending"   %}selected{% endif %}>Pending</option>
+                <option value="Paid"      {% if request.GET.status == "Paid"      %}selected{% endif %}>Paid</option>
+                <option value="Assigned"  {% if request.GET.status == "Assigned"  %}selected{% endif %}>Assigned</option>
+                <option value="Delivered" {% if request.GET.status == "Delivered" %}selected{% endif %}>Delivered</option>
+                <option value="Cancelled" {% if request.GET.status == "Cancelled" %}selected{% endif %}>Cancelled</option>
+                <option value="Failed"    {% if request.GET.status == "Failed"    %}selected{% endif %}>Failed</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label>Payment</label>
+            <select name="payment">
+                <option value="">All</option>
+                <option value="cod"   {% if request.GET.payment == "cod"   %}selected{% endif %}>Cash on Delivery</option>
+                <option value="esewa" {% if request.GET.payment == "esewa" %}selected{% endif %}>eSewa</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label>From Date</label>
+            <input type="date" name="date_from" value="{{ request.GET.date_from }}">
+        </div>
+
+        <div class="filter-group">
+            <label>To Date</label>
+            <input type="date" name="date_to" value="{{ request.GET.date_to }}">
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit" class="filter-btn"><i class="fas fa-filter"></i> Filter</button>
+            <a href="{% url 'customer_order_history' %}" class="reset-btn">Reset</a>
+        </div>
+
+    </form>
+</section>
+
+<!-- ===== ORDERS TABLE ===== -->
+<section class="ta  ble-section">
+    <h2 class="section-title"><i class="fas fa-list" style="margin-right:8px;"></i>All Orders</h2>
+    <table width="100%">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th style="text-align:left;">Items</th>
+                <th>Amount</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for order in page_obj %}
+
+            <!-- Main order row -->
+            <tr>
+                <td style="font-weight:700; color:#111;">#{{ order.id }}</td>
+
+                <!-- Items preview (first 2 items) -->
+                <td class="items-cell">
+                    {% for item in order.items.all|slice:":2" %}
+                    <div class="item-row">
+                        {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" class="item-thumb" alt="{{ item.product.name }}">
+                        {% else %}
+                            <div class="item-thumb-placeholder"><i class="fas fa-tshirt"></i></div>
+                        {% endif %}
+                        <div>
+                            <div class="item-name">{{ item.product.name }}</div>
+                            <div class="item-qty">Qty: {{ item.quantity }} &nbsp;·&nbsp; Rs. {{ item.price|floatformat:0 }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if order.items.count > 2 %}
+                        <div style="font-size:12px; color:#aaa; padding-top:4px;">
+                            +{{ order.items.count|add:"-2" }} more item(s)
+                        </div>
+                    {% endif %}
+                </td>
+
+                <td class="amount-positive">Rs. {{ order.amount|floatformat:0 }}</td>
+
+                <td>
+                    {% if order.payment_type == 'cod' %}
+                        <span class="badge badge-grey"><i class="fas fa-money-bill-wave" style="margin-right:4px;"></i>COD</span>
+                    {% else %}
+                        <span class="badge badge-blue"><i class="fas fa-mobile-alt" style="margin-right:4px;"></i>eSewa</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if order.status == 'Delivered' %}
+                        <span class="badge badge-green">Delivered</span>
+                    {% elif order.status == 'Paid' %}
+                        <span class="badge badge-green">Paid</span>
+                    {% elif order.status == 'Pending' %}
+                        <span class="badge badge-orange">Pending</span>
+                    {% elif order.status == 'Assigned' %}
+                        <span class="badge badge-darkblue">Assigned</span>
+                    {% elif order.status == 'Cancelled' %}
+                        <span class="badge badge-red">Cancelled</span>
+                    {% elif order.status == 'Failed' %}
+                        <span class="badge badge-red">Failed</span>
+                    {% else %}
+                        <span class="badge badge-grey">{{ order.status }}</span>
+                    {% endif %}
+                </td>
+
+                <td style="color:#aaa; font-size:13px;">{{ order.created_at|date:"Y-m-d" }}</td>
+
+                <td>
+                    <button class="expand-btn" onclick="toggleDetail('order-{{ order.id }}', this)">
+                        <i class="fas fa-chevron-down"></i> View
+                    </button>
+                </td>
+            </tr>
+
+            <!-- Expandable detail row -->
+            <tr class="detail-row" id="order-{{ order.id }}">
+                <td colspan="7" style="padding:0;">
+                    <div class="detail-box">
+
+                        <!-- Shipping info grid -->
+                        <div class="detail-grid">
+                            <div class="detail-field">
+                                <label>Full Name</label>
+                                <span>{{ order.full_name }}</span>
+                            </div>
+                            <div class="detail-field">
+                                <label>Email</label>
+                                <span>{{ order.email }}</span>
+                            </div>
+                            <div class="detail-field">
+                                <label>Phone</label>
+                                <span>{{ order.phone }}</span>
+                            </div>
+                            <div class="detail-field">
+                                <label>City</label>
+                                <span>{{ order.city }}</span>
+                            </div>
+                            <div class="detail-field">
+                                <label>Country</label>
+                                <span>{{ order.country }}</span>
+                            </div>
+                            <div class="detail-field">
+                                <label>Address</label>
+                                <span>{{ order.address }}</span>
+                            </div>
+                            <div class="detail-field">
+                                <label>Transaction ID</label>
+                                <span style="font-size:12px; color:#888;">{{ order.transaction_uuid }}</span>
+                            </div>
+                            {% if order.delivery_person %}
+                            <div class="detail-field">
+                                <label>Delivery Person</label>
+                                <span>{{ order.delivery_person.get_full_name|default:order.delivery_person.username }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- All items in this order -->
+                        <div class="detail-items-title"><i class="fas fa-box-open" style="margin-right:6px;"></i>Order Items</div>
+                        {% for item in order.items.all %}
+                        <div class="item-row" style="padding: 8px 0;">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" class="item-thumb" alt="{{ item.product.name }}">
+                            {% else %}
+                                <div class="item-thumb-placeholder"><i class="fas fa-tshirt"></i></div>
+                            {% endif %}
+                            <div style="flex:1;">
+                                <div class="item-name">{{ item.product.name }}</div>
+                                <div class="item-qty">{{ item.product.category.name }}</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:13px; font-weight:700; color:#111;">Rs. {{ item.price|floatformat:0 }} × {{ item.quantity }}</div>
+                                <div style="font-size:12px; color:#27ae60; font-weight:700;">= Rs. {% widthratio item.price 1 item.quantity %}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                </td>
+            </tr>
+
+        {% empty %}
+            <tr>
+                <td colspan="7" style="text-align:center; padding:60px; color:#aaa;">
+                    <i class="fas fa-shopping-bag" style="font-size:32px; display:block; margin-bottom:12px;"></i>
+                    You haven't placed any orders yet.
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1
+            {% if request.GET.status %}&status={{ request.GET.status }}{% endif %}
+            {% if request.GET.payment %}&payment={{ request.GET.payment }}{% endif %}
+            {% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}
+            {% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}
+            ">&laquo; First</a>
+
+            <a href="?page={{ page_obj.previous_page_number }}
+            {% if request.GET.status %}&status={{ request.GET.status }}{% endif %}
+            {% if request.GET.payment %}&payment={{ request.GET.payment }}{% endif %}
+            {% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}
+            {% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}
+            ">Previous</a>
+        {% endif %}
+
+        <span class="current-page">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}
+            {% if request.GET.status %}&status={{ request.GET.status }}{% endif %}
+            {% if request.GET.payment %}&payment={{ request.GET.payment }}{% endif %}
+            {% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}
+            {% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}
+            ">Next</a>
+
+            <a href="?page={{ page_obj.paginator.num_pages }}
+            {% if request.GET.status %}&status={{ request.GET.status }}{% endif %}
+            {% if request.GET.payment %}&payment={{ request.GET.payment }}{% endif %}
+            {% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}
+            {% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}
+            ">Last &raquo;</a>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>ShopSphere</h3>
+            <p>Shop Sphere — Where Your Style Comes Full Circle.</p>
+            <div class="social-icons">
+                <a href="https://www.facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://twitter.com"       target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com"  target="_blank" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+        <div class="footer-section">
+            <h3>Shop</h3>
+            <ul>
+                <li><a href="{% url 'product_list' %}">All Products</a></li>
+                <li><a href="{% url 'blog_list' %}">Blogs</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>My Account</h3>
+            <ul>
+                <li><a href="">My Orders</a></li>
+                <li><a href="{% url 'customer_spending' %}">My Spending</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="{% url 'signout' %}">Sign Out</a></li>
+                <li><a href="{% url 'home' %}">Home</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>About Us</h3>
+            <p>We don't just sell clothes — we create experiences. Explore collections crafted with care, designed for confidence.</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© ShopSphere...</p>
+        <a href="{% url 'customer_dashboard' %}">ShopSphere.com</a>
+    </div>
+</footer>
+
+<script>
+    function toggleDetail(id, btn) {
+        const row = document.getElementById(id);
+        const isOpen = row.classList.toggle('open');
+        btn.innerHTML = isOpen
+            ? '<i class="fas fa-chevron-up"></i> Hide'
+            : '<i class="fas fa-chevron-down"></i> View';
+    }
+</script>
+
+</body>
+</html>

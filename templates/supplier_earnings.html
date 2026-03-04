@@ -1,0 +1,280 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Earnings & Sales - ShopSphere</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icon.css' %}">
+    <link rel="stylesheet" href="{% static 'css/summary.css' %}">
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+    <nav>
+        <div class="logo">Shop Sphere</div>
+        <div class="nav-links">
+            <a href="{% url 'supplier_dashboard' %}">DASHBOARD</a>
+            <a href="{% url 'product_list' %}">PRODUCTS</a>
+            <a href="{% url 'supplier_orders' %}">ORDERS</a>
+            <a href="{% url 'supplier_product_reviews' %}">REVIEWS</a>
+            <a href="{% url 'signout' %}">SIGNOUT</a>
+        </div>
+    </nav>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Earnings &amp; <span class="highlight">Sales</span></h1>
+        <p>Track your revenue, units sold, and top-performing products.</p>
+    </div>
+</section>
+
+<!-- ===== SUMMARY CARDS ===== -->
+<section class="summary-section">
+
+    <div class="summary-card green">
+        <span class="card-icon"><i class="fas fa-coins"></i></span>
+        <span class="card-label">Total Earnings</span>
+        <span class="card-value">Rs. {{ total_earnings|floatformat:0 }}</span>
+        <span class="card-sub">All paid orders</span>
+    </div>
+
+    <div class="summary-card orange">
+        <span class="card-icon"><i class="fas fa-shopping-bag"></i></span>
+        <span class="card-label">Total Orders</span>
+        <span class="card-value">{{ total_orders }}</span>
+        <span class="card-sub">Across all products</span>
+    </div>
+
+    <div class="summary-card blue">
+        <span class="card-icon"><i class="fas fa-boxes"></i></span>
+        <span class="card-label">Units Sold</span>
+        <span class="card-value">{{ total_units }}</span>
+        <span class="card-sub">Total quantity</span>
+    </div>
+
+    <div class="summary-card red">
+        <span class="card-icon"><i class="fas fa-clock"></i></span>
+        <span class="card-label">Pending Amount</span>
+        <span class="card-value">Rs. {{ pending_earnings|floatformat:0 }}</span>
+        <span class="card-sub">Unpaid orders</span>
+    </div>
+
+</section>
+
+<!-- ===== FILTERS ===== -->
+<section class="filter-section">
+    <form method="GET" class="filter-box">
+
+        <div class="filter-group">
+            <label>Product</label>
+            <select name="product">
+                <option value="">All Products</option>
+                {% for p in supplier_products %}
+                    <option value="{{ p.id }}"
+                        {% if request.GET.product == p.id|stringformat:"s" %}selected{% endif %}>
+                        {{ p.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label>From Date</label>
+            <input type="date" name="date_from" value="{{ request.GET.date_from }}">
+        </div>
+
+        <div class="filter-group">
+            <label>To Date</label>
+            <input type="date" name="date_to" value="{{ request.GET.date_to }}">
+        </div>
+
+        <div class="filter-group">
+            <label>Status</label>
+            <select name="status">
+                <option value="">All</option>
+                <option value="Paid"       {% if request.GET.status == "Paid"      %}selected{% endif %}>Paid</option>
+                <option value="Pending"    {% if request.GET.status == "Pending"   %}selected{% endif %}>Pending</option>
+                <option value="Delivered"  {% if request.GET.status == "Delivered" %}selected{% endif %}>Delivered</option>
+                <option value="Cancelled"  {% if request.GET.status == "Cancelled" %}selected{% endif %}>Cancelled</option>
+            </select>
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit" class="filter-btn"><i class="fas fa-filter"></i> Filter</button>
+            <a href="{% url 'supplier_earnings' %}" class="reset-btn">Reset</a>
+        </div>
+
+    </form>
+</section>
+
+<!-- ===== PER-PRODUCT EARNINGS TABLE ===== -->
+<section class="table-section">
+    <h2 class="section-title"><i class="fas fa-table" style="margin-right:8px;"></i>Sales by Product</h2>
+    <table width="100%">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Product</th>
+                <th>Units Sold</th>
+                <th>Unit Price</th>
+                <th>Revenue</th>
+                <th>Pending</th>
+                <th>Cancelled</th>
+                <th>Net Earned</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in product_earnings %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td style="text-align:left; font-weight:600;">{{ row.product_name }}</td>
+                <td>{{ row.units_sold }}</td>
+                <td>Rs. {{ row.unit_price|floatformat:0 }}</td>
+                <td class="amount-neutral">Rs. {{ row.total_revenue|floatformat:0 }}</td>
+                <td>
+                    {% if row.pending_amount > 0 %}
+                        <span class="badge badge-orange">Rs. {{ row.pending_amount|floatformat:0 }}</span>
+                    {% else %}
+                        <span style="color:#ccc;">—</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if row.cancelled_amount > 0 %}
+                        <span class="badge badge-red">Rs. {{ row.cancelled_amount|floatformat:0 }}</span>
+                    {% else %}
+                        <span style="color:#ccc;">—</span>
+                    {% endif %}
+                </td>
+                <td class="amount-positive">Rs. {{ row.net_earned|floatformat:0 }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="8" style="color:#aaa; padding:30px;">No sales data found.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<!-- ===== CHARTS ROW ===== -->
+<section class="charts-row">
+
+    <!-- Top Products by Revenue (bar) -->
+    <div class="chart-card">
+        <h3><i class="fas fa-chart-bar" style="margin-right:8px; color:#e67e22;"></i>Top Products by Revenue</h3>
+        <div class="bar-list">
+            {% for row in top_products %}
+            <div class="bar-item">
+                <div class="bar-meta">
+                    <span class="bar-name">{{ row.product_name }}</span>
+                    <span class="bar-val">Rs. {{ row.net_earned|floatformat:0 }}</span>
+                </div>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: {{ row.revenue_pct }}%;"></div>
+                </div>
+            </div>
+            {% empty %}
+                <p style="color:#aaa; font-size:14px;">No data yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Order Status Breakdown -->
+    <div class="chart-card">
+        <h3><i class="fas fa-chart-pie" style="margin-right:8px; color:#2980b9;"></i>Order Status Breakdown</h3>
+        <div class="pie-list">
+
+            <div class="pie-item">
+                <span class="pie-dot" style="background:#27ae60;"></span>
+                <span class="pie-label">Paid / Delivered</span>
+                <span class="pie-pct">{{ status_breakdown.paid_count }} orders</span>
+            </div>
+
+            <div class="pie-item">
+                <span class="pie-dot" style="background:#e67e22;"></span>
+                <span class="pie-label">Pending</span>
+                <span class="pie-pct">{{ status_breakdown.pending_count }} orders</span>
+            </div>
+
+            <div class="pie-item">
+                <span class="pie-dot" style="background:#e74c3c;"></span>
+                <span class="pie-label">Cancelled</span>
+                <span class="pie-pct">{{ status_breakdown.cancelled_count }} orders</span>
+            </div>
+
+            <div class="pie-item" style="margin-top:16px; padding-top:16px; border-top:1px solid #f0f0f0;">
+                <span class="pie-dot" style="background:#111;"></span>
+                <span class="pie-label" style="font-weight:700;">Total Orders</span>
+                <span class="pie-pct">{{ total_orders }}</span>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>ShopSphere</h3>
+            <p>Shop Sphere — Where Your Style Comes Full Circle.</p>
+            <div class="social-icons">
+                <a href="https://www.facebook.com/YourPage" target="_blank" class="social-icon">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://twitter.com/YourProfile" target="_blank" class="social-icon">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://www.instagram.com/YourProfile" target="_blank" class="social-icon">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/YourProfile" target="_blank" class="social-icon">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer-section">
+            <h3>Information</h3>
+            <ul>
+                <li><a href="{% url 'supplier_dashboard' %}">Dashboard</a></li>
+                <li><a href="{% url 'supplier_permission' %}">Permissions</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h3>For Customer</h3>
+            <ul>
+                <li><a href="{% url 'product_list' %}">Products</a></li>
+                <li><a href="{% url 'blog_list' %}">Blogs</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="{% url 'signout' %}">SignOut</a></li>
+                <li><a href="{% url 'supplier_dashboard' %}">Dashboard</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h3>About Us</h3>
+            <p>We don't just sell clothes — we create experiences. Explore collections crafted with care, designed for confidence, and inspired by modern lifestyles.</p>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>© ShopSphere...</p>
+        <a href="#clothique">ShopSphere.com</a>
+    </div>
+</footer>
+
+</body>
+</html>

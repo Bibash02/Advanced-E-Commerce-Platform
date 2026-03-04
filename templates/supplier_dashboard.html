@@ -24,6 +24,7 @@
                 <a href="{% url 'blog_list' %}">BLOGS</a>
                 <a href="{% url 'supplier_product_reviews' %}">REVIEWS</a>
                 <a href="{% url 'supplier_orders' %}">ORDERS</a>
+                <a href="{% url 'supplier_earnings' %}">EARNINGS</a>
                 <a href="{% url 'signout' %}">SIGNOUT</a>
             </div>
             <a href="{% url 'supplier_profile' %}">
@@ -207,7 +208,8 @@
                 <h3>Quick Links</h3>
                 <ul>
                     <li><a href="{% url 'signout' %}">SignOut</a></li>
-                    <li><a href="{% url 'supplier_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'supplier_product_reviews' %}">Reviews</a></li>
+                    <li><a href="{% url 'supplier_orders' %}">Orders</a></li>
                 </ul>
             </div>
 
@@ -219,7 +221,7 @@
 
         <div class="footer-bottom">
             <p>© ShopSphere...</p>
-            <a href="#clothique">ShopSphere.com</a>
+            <a href="#shopsphere">ShopSphere.com</a>
         </div>
     </footer>
 </body>

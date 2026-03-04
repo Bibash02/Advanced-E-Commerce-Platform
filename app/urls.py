@@ -31,6 +31,7 @@ urlpatterns = [
     path('supplier/products/category/<int:category_id>', supplier_products_by_category, name = 'supplier_products_by_category'),
     path('supplier/product/reviews', supplier_product_reviews, name='supplier_product_reviews'),
     path('supplier/orders', supplier_orders, name='supplier_orders'),
+    path('supplier/earnings', supplier_earning, name='supplier_earnings'),
 
     path('supplier/blog/list', supplier_blogs, name='blog_list'),
     path('supplier/blog/add', add_blog, name='add_blog'),
@@ -54,6 +55,8 @@ urlpatterns = [
 
     path('customer/product/search', search_products, name='search_products'),
     path('customer/product/detail/<int:product_id>', product_detail, name='product_detail'),
+    path('customer/spending', customer_spending, name='customer_spending'),
+    path('customer/order/history', customer_order_history, name='customer_order_history'),
 
     path('customer/chekout', checkout, name='checkout'),
     path('customer/esewa/process', process_payment, name='process_payment'),
