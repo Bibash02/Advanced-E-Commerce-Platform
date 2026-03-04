@@ -27,6 +27,109 @@
         .pending { color: orange; }
         .paid { color: green; }
         .cancelled { color: red; }
+
+        /* ============================= */
+/* FILTER SECTION */
+/* ============================= */
+
+.filter-section {
+    padding: 30px 40px 0 40px;
+}
+
+.filter-box {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+/* Input Groups */
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+}
+
+.filter-group label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #444;
+}
+
+/* Inputs & Select */
+.filter-group input,
+.filter-group select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    transition: 0.3s ease;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+    border-color: #333;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
+}
+
+/* Buttons */
+.filter-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.filter-btn {
+    padding: 9px 18px;
+    background: #111;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.3s ease;
+}
+
+.filter-btn:hover {
+    background: #444;
+}
+
+.reset-btn {
+    padding: 9px 18px;
+    background: #999;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s ease;
+}
+
+.reset-btn:hover {
+    background: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .filter-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-actions {
+        width: 100%;
+    }
+
+    .filter-btn,
+    .reset-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
     </style>
 </head>
 <body>
@@ -49,7 +152,47 @@
         <p>See who ordered your products.</p>
     </div>
 </section>
+<section class="filter-section">
+    <form method="GET" class="filter-box">
 
+        <div class="filter-group">
+            <label>Product</label>
+            <select name="product">
+                <option value="">All Products</option>
+                {% for product in supplier_products %}
+                    <option value="{{ product.product__id }}"
+                        {% if request.GET.product == product.product__id|stringformat:"s" %}selected{% endif %}>
+                        {{ product.product__name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label>City</label>
+            <input type="text" name="city" placeholder="Enter city"
+                   value="{{ request.GET.city }}">
+        </div>
+
+        <div class="filter-group">
+            <label>Min Amount</label>
+            <input type="number" name="min_amount"
+                   value="{{ request.GET.min_amount }}">
+        </div>
+
+        <div class="filter-group">
+            <label>Max Amount</label>
+            <input type="number" name="max_amount"
+                   value="{{ request.GET.max_amount }}">
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit" class="filter-btn">Filter</button>
+            <a href="{% url 'supplier_orders' %}" class="reset-btn">Reset</a>
+        </div>
+
+    </form>
+</section>
 <section style="padding:40px;">
     <table width="100%">
         <thead>

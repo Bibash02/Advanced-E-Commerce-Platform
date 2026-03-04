@@ -20,7 +20,8 @@ import base64
 import json
 import threading
 from django.db import transaction
-
+from django.utils import timezone
+from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -267,11 +268,21 @@ def supplier_products_by_category(request, category_id):
 
 @login_required
 def supplier_product_reviews(request):
-    # get supplier products
-    supplier_products = Product.objects.filter(supplier = request.user)
+    supplier = request.user
 
-    # get review of those products
-    reviews = ProductReview.objects.filter(product__in = supplier_products).select_related('product', 'user').order_by('-created_at')
+    seven_days_ago = timezone.now() - timedelta(days=7)
+
+    # Get Supplier products
+    supplier_products = Product.objects.filter(supplier=supplier)
+
+    # Reviews only from last 7 days
+    reviews = ProductReview.objects.filter(
+        product__in=supplier_products,
+        created_at__gte=seven_days_ago   # ✅ 7 days filter
+    ).select_related(
+        'product',
+        'user'
+    ).order_by('-created_at')
 
     context = {
         'reviews': reviews
@@ -376,15 +387,53 @@ def supplier_blogs(request):
 def supplier_orders(request):
     supplier = request.user
 
+    # Last 7 days date
+    seven_days_ago = timezone.now() - timedelta(days=7)
+
     orders = OrderItem.objects.filter(
-        product__supplier=supplier
+        product__supplier=supplier,
+        order__created_at__gte=seven_days_ago 
     ).select_related(
         "order",
         "product",
         "order__user"
-    ).order_by("-order__created_at")
+    )
 
-    return render(request, "supplier_ordered.html", {"orders": orders})
+    # ----------- FILTERING -------------
+    product_id = request.GET.get("product")
+    city = request.GET.get("city")
+    min_amount = request.GET.get("min_amount")
+    max_amount = request.GET.get("max_amount")
+
+    if product_id:
+        orders = orders.filter(product__id=product_id)
+
+    if city:
+        orders = orders.filter(order__city__icontains=city)
+
+    if min_amount:
+        orders = orders.filter(order__amount__gte=min_amount)
+
+    if max_amount:
+        orders = orders.filter(order__amount__lte=max_amount)
+
+    orders = orders.order_by("-order__created_at")
+
+    # Get supplier products for dropdown
+    supplier_products = Product.objects.filter(supplier=supplier)
+
+    # Get distinct products from OrderItems instead of Product table
+    supplier_products = (
+        orders.values("product__id", "product__name")
+        .distinct()
+    )
+
+    context = {
+        "orders": orders,
+        "supplier_products": supplier_products,
+    }
+
+    return render(request, "supplier_ordered.html", context)
 
 @login_required
 def add_blog(request):  
