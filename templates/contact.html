@@ -16,9 +16,8 @@
         <nav>
             <div class="logo">Shop Sphere</div>
             <div class="nav-links">
-                <a href="{% url 'home' %}">Dashboard</a>
-                <a href="{% url 'signin' %}">Sign In</a>
-                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'customer_dashboard' %}">Dashboard</a>
+                <a href="{% url 'signout' %}">Sign Out</a>
             </div>
         </nav>
     </header>
@@ -126,8 +125,8 @@
     <footer>
         <div class="footer-content">
             <div class="footer-section">
-                <h3>Clothique</h3>
-                <p>Your one-stop shop for the latest fashion trends.</p>
+                <h3>ShopSphere</h3>
+                <p>Shop Sphere — Where Your Style Comes Full Circle.</p>
                 <div class="social-icons">
                     <a href="https://www.facebook.com/YourPage" target="_blank" class="social-icon">
                         <i class="fab fa-facebook-f"></i>
@@ -147,45 +146,41 @@
             <div class="footer-section">
                 <h3>Information</h3>
                 <ul>
-                    <li><a href="{% url 'about' %}">About Us</a></li>
-                    <li><a href="{% url 'contact' %}">Contact Us</a></li>
-                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'customer_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'customer_permission' %}">Permissions</a></li>
+                    <li><a href="{% url 'signout' %}">SignOut</a></li>
                 </ul>
             </div>
 
             <div class="footer-section">
-                <h3>Customer Service</h3>
+                <h3>For Customer</h3>
                 <ul>
-                    <li><a href="#shipping">Shipping Policy</a></li>
-                    <li><a href="#returns">Returns & Exchanges</a></li>
+                    <li><a href="{% url 'all_products' %}">Products</a></li>
+                    <li><a href="{% url 'customer_blog_list' %}">Blogs</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
                 </ul>
             </div>
 
             <div class="footer-section">
                 <h3>Quick Links</h3>
                 <ul>
-                    <li><a href="{% url 'signin' %}">SignIn</a></li>
-                    <li><a href="{% url 'signup' %}">SignUp</a></li>
-                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'cart_page' %}">Cart</a></li>
+                    <li><a href="{% url 'customer_spending' %}">My Spending</a></li>
+                    <li><a href="{% url 'customer_order_history' %}">My History</a></li>
                 </ul>
             </div>
 
             <div class="footer-section">
-                <h3>Subscribe</h3>
-                <p>Get the latest updates and offers.</p>
-                <form class="subscribe-form">
-                    <input type="email" placeholder="Enter your email">
-                    <button type="submit">SUBSCRIBE</button>
-                </form>
+                <h3>About Us</h3>
+                <p>We don’t just sell clothes — we create experiences. Explore collections crafted with care, designed for confidence, and inspired by modern lifestyles.</p>
             </div>
         </div>
 
         <div class="footer-bottom">
             <p>© ShopSphere...</p>
-            <a href="#clothique">ShopSphere.com</a>
+            <a href="{% url 'customer_dashboard' %}">ShopSphere.com</a>
         </div>
     </footer>
-
     <script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>

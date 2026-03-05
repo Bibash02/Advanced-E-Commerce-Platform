@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models import UserProfile
 from django.contrib.auth.models import User
+from .permissions import *
 from .models import *
 from .forms import *
 import re
@@ -188,6 +189,7 @@ def delivery_personnel_dashboard(request):
     return render(request, 'delivery_dashboard.html', {'orders': orders})
 
 @login_required
+@customer_required
 def customer_dashboard(request):
     recommended_products = recommend_products_for_user(request.user)
     categories = Category.objects.all().order_by('-created_at')[:3]
@@ -228,6 +230,7 @@ def products_by_category(request, category_id):
     return render(request, 'products_by_category.html', context)
 
 @login_required
+@supplier_required
 def supplier_dashboard(request):
     products = Product.objects.filter(supplier = request.user).order_by('-created_at')[:4]
     blogs = Blog.objects.filter(supplier = request.user).order_by('-created_at')[:3]
@@ -240,7 +243,7 @@ def supplier_dashboard(request):
     }
     return render(request, 'supplier_dashboard.html', context)
 
-@login_required
+@supplier_required
 def supplier_profile(request):
     try:
         profile = request.user.userprofile
@@ -251,7 +254,7 @@ def supplier_profile(request):
     }
     return render(request, 'supplier_profile.html', context)
 
-@login_required
+@supplier_required
 def supplier_products_by_category(request, category_id):
     category = get_object_or_404(Category, id = category_id)
 
@@ -267,7 +270,7 @@ def supplier_products_by_category(request, category_id):
 
     return render(request, 'supplier_product_by_category.html', context)
 
-@login_required
+@supplier_required
 def supplier_product_reviews(request):
     supplier = request.user
 
@@ -291,7 +294,7 @@ def supplier_product_reviews(request):
 
     return render(request, 'supplier_product_reviews.html', context)
 
-@login_required
+@supplier_required
 def edit_supplier_profile(request):
     try:
         profile = request.user.userprofile
@@ -326,17 +329,17 @@ def edit_supplier_profile(request):
     }
     return render(request, 'edit_supplier_profile.html', context)
 
-@login_required
+@supplier_required
 def supplier_category_list(request):
     categories = Category.objects.all().order_by('created_at')
     return render(request, 'category_list.html', {'categories': categories})
 
-@login_required
+@supplier_required
 def supplier_products(request):
     products = Product.objects.filter(supplier = request.user)
     return render(request, 'product_list.html', {'products': products})
 
-@login_required
+@supplier_required
 def add_product(request):
     form = ProductForm(request.POST or None, request.FILES or None)
 
@@ -350,7 +353,7 @@ def add_product(request):
         'form': form
     })
 
-@login_required
+@supplier_required
 def edit_product(request, pk):
     product = get_object_or_404(
         Product,
@@ -373,18 +376,18 @@ def edit_product(request, pk):
         'product': product
     })
 
-@login_required
+@supplier_required
 def delete_product(request, pk):
     product = get_object_or_404(Product, pk = pk, supplier = request.user)
     product.delete()
     return redirect('supplier_dashboard')
 
-@login_required
+@supplier_required
 def supplier_blogs(request):
     blogs = Blog.objects.filter(supplier = request.user)
     return render(request, 'blog_list.html', {'blogs': blogs})
 
-@login_required
+@supplier_required
 def supplier_orders(request):
     supplier = request.user
 
@@ -436,7 +439,7 @@ def supplier_orders(request):
 
     return render(request, "supplier_ordered.html", context)
 
-@login_required
+@supplier_required
 def add_blog(request):  
     form = BlogForm(request.POST or None, request.FILES or None)
 
@@ -449,7 +452,7 @@ def add_blog(request):
         'form': form
     })
 
-@login_required
+@supplier_required
 def edit_blog(request, pk):
     blog = get_object_or_404(Blog, pk = pk, supplier = request.user)
     form = BlogForm(request.POST or None, request.FILES or None)
@@ -462,13 +465,13 @@ def edit_blog(request, pk):
         'blog': blog
     })
 
-@login_required
+@supplier_required
 def delete_blog(request, pk):
     blog = get_object_or_404(Blog, pk = pk, supplier = request.user)
     blog.delete()
     return redirect('supplier_dashboard')
 
-@login_required
+@customer_required
 def customer_profile(request):
     try:
         profile = request.user.userprofile
@@ -479,16 +482,16 @@ def customer_profile(request):
     }
     return render(request, 'customer_profile.html', context)
 
-@login_required
+@customer_required
 def edit_customer_profile(request):
     return render(request, 'edit_customer_profile.html')
 
-@login_required
+@customer_required
 def category_list_customer(request):
     categories = Category.objects.all().order_by('created_at')
     return render(request, 'category_list_customer.html', {'categories': categories})
 
-@login_required
+@customer_required
 def buy_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     reviews = product.reviews.select_related('user').order_by('-created_at')
@@ -512,7 +515,7 @@ def buy_product(request, product_id):
     }
     return render(request, 'buy_product.html', context)
 
-@login_required
+@customer_required
 def all_products(request):
     products = (
         Product.objects
@@ -525,7 +528,7 @@ def all_products(request):
         'products': products
     })
 
-@login_required
+@customer_required
 def rate_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
@@ -540,7 +543,7 @@ def rate_product(request, product_id):
 
         return redirect('product_detail', product_id=product.id)
 
-@login_required
+@customer_required
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart, created = Cart.objects.get_or_create(user=request.user)
@@ -552,8 +555,7 @@ def add_to_cart(request, product_id):
 
     return redirect('cart_page')
 
-
-@login_required
+@customer_required
 def cart_page(request):
     # Get or create cart for the user
     cart, created = Cart.objects.get_or_create(user=request.user)
@@ -572,13 +574,13 @@ def cart_page(request):
     })
 
 
-@login_required
+@customer_required
 def remove_from_cart(request, item_id):
     item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
     item.delete()
     return redirect('cart_page')
 
-@login_required
+@customer_required
 def checkout(request):
     cart = Cart.objects.filter(user = request.user).first()
 
@@ -596,6 +598,7 @@ def checkout(request):
      })
 
 @login_required
+@customer_required
 def process_payment(request):
     if request.method != "POST":
         return redirect("checkout")
@@ -745,7 +748,7 @@ Thank you for shopping with us!
         print("Payment Success Error:", e)
         return redirect("customer_dashboard")
 
-@login_required
+@customer_required
 def payment_fail(request):
     order_id = request.session.get('order_id')
     order = get_object_or_404(Order, id=order_id)
@@ -763,7 +766,7 @@ def customer_blog_detail(request, blog_id):
     blog = Blog.objects.get(id = blog_id)
     return render(request, 'customer_blog_detail.html', {'blog': blog})
 
-@login_required
+@delivery_required
 def document_form(request):
     if request.user.userprofile.role != 'DELIVERY':
         return redirect('signin')
@@ -795,8 +798,7 @@ def document_form(request):
 
     return render(request, 'document_form.html', {'form': form})
 
-
-@login_required
+@delivery_required
 def document_view(request):
     try:
         document = DeliveryDocument.objects.get(user=request.user)
@@ -808,7 +810,7 @@ def document_view(request):
         'document': document
     })
 
-@login_required
+@delivery_required
 def delivery_profile(request):
     try:
         profile = request.user.userprofile
@@ -819,7 +821,7 @@ def delivery_profile(request):
     }
     return render(request, 'delivery_profile.html', context)
 
-@login_required
+@delivery_required
 def edit_delivery_profile(request):
     try:
         profile = request.user.userprofile
@@ -854,7 +856,7 @@ def edit_delivery_profile(request):
     }
     return render(request, 'edit_delivery_profile.html', context)
 
-@login_required
+@delivery_required
 def document_edit(request):
     document = DeliveryDocument.objects.get(user=request.user)
 
@@ -873,6 +875,7 @@ def document_edit(request):
 
     return render(request, 'document_edit.html', {'form': form})
 
+@customer_required
 def contact(request):
     if request.method == "POST":
         name = request.POST.get("name")
@@ -898,7 +901,7 @@ def is_delivery_user(user):
     except:
         return False
 
-@login_required
+@delivery_required
 def delivery_order_list(request):
     if not is_delivery_user(request.user):
         return redirect('signin')
@@ -912,7 +915,7 @@ def delivery_order_list(request):
         'orders': orders
     })
 
-@login_required
+@delivery_required
 def delivery_order_detail(request, order_id):
     order = get_object_or_404(Order, id = order_id)
 
@@ -924,7 +927,7 @@ def delivery_order_detail(request, order_id):
         'order': order
     })
 
-@login_required
+@delivery_required
 def delivery_accept(request, order_id):
     if not is_delivery_user(request.user):
         return redirect('signin')
@@ -964,7 +967,7 @@ def delivery_accept(request, order_id):
                 )
     return redirect('delivery_order_list')
 
-@login_required
+@delivery_required
 def delivery_cancel(request, order_id):
     if not is_delivery_user(request.user):
         return redirect('signin')
@@ -1012,6 +1015,7 @@ def product_detail(request, product_id):
     })
 
 @login_required
+@customer_required
 def search_products(request):
     query = request.GET.get('q', '')
 
@@ -1052,7 +1056,7 @@ def search_products(request):
         'related_products': related_products,
     })
 
-@login_required
+@customer_required
 def add_address(request):
     if request.method == 'POST':
         full_address = request.POST.get('full_address')
@@ -1075,6 +1079,7 @@ def supplier_permission(request):
     return render(request, "supplier_permissions.html")
 
 @login_required
+@supplier_required
 def supplier_earning(request):
 
     supplier = request.user
@@ -1202,6 +1207,7 @@ def supplier_earning(request):
     return render(request, "supplier_earnings.html", context)
 
 @login_required
+@customer_required
 def customer_spending(request):
 
     user = request.user
@@ -1347,6 +1353,7 @@ def customer_spending(request):
     return render(request, "customer_spending.html", context)
 
 @login_required
+@customer_required
 def customer_order_history(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
 
