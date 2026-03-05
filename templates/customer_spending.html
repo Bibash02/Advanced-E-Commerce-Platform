@@ -16,10 +16,10 @@
     <nav>
         <div class="logo">Shop Sphere</div>
         <div class="nav-links">
-            <a href="{% url 'customer_dashboard' %}">DASHBOARD</a>
-            <a href="{% url 'product_list' %}">PRODUCTS</a>
-            <a href="{% url 'customer_order_history' %}">MY ORDERS</a>
-            <a href="{% url 'signout' %}">SIGNOUT</a>
+            <a href="{% url 'customer_dashboard' %}">Dashboard</a>
+            <a href="{% url 'all_products' %}">Products</a>
+            <a href="{% url 'customer_order_history' %}">My Orders</a>
+            <a href="{% url 'signout' %}">Sign Out</a>
         </div>
     </nav>
 </header>
@@ -273,48 +273,64 @@
 
 <!-- ===== FOOTER ===== -->
 <footer>
-    <div class="footer-content">
-        <div class="footer-section">
-            <h3>ShopSphere</h3>
-            <p>Shop Sphere — Where Your Style Comes Full Circle.</p>
-            <div class="social-icons">
-                <a href="https://www.facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://twitter.com"       target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
-                <a href="https://www.instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
-                <a href="https://www.linkedin.com"  target="_blank" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ShopSphere</h3>
+                <p>Shop Sphere — Where Your Style Comes Full Circle.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/YourPage" target="_blank" class="social-icon">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Information</h3>
+                <ul>
+                    <li><a href="{% url 'customer_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'customer_permission' %}">Permissions</a></li>
+                    <li><a href="{% url 'signout' %}">SignOut</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>For Customer</h3>
+                <ul>
+                    <li><a href="{% url 'all_products' %}">Products</a></li>
+                    <li><a href="{% url 'customer_blog_list' %}">Blogs</a></li>
+                    <li><a href="{% url 'customer_profile' %}">Profile</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'cart_page' %}">Cart</a></li>
+                    <li><a href="{% url 'customer_spending' %}">My Spending</a></li>
+                    <li><a href="{% url 'customer_order_history' %}">My History</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>We don’t just sell clothes — we create experiences. Explore collections crafted with care, designed for confidence, and inspired by modern lifestyles.</p>
             </div>
         </div>
-        <div class="footer-section">
-            <h3>Shop</h3>
-            <ul>
-                <li><a href="{% url 'product_list' %}">All Products</a></li>
-                <li><a href="{% url 'blog_list' %}">Blogs</a></li>
-            </ul>
+
+        <div class="footer-bottom">
+            <p>© ShopSphere...</p>
+            <a href="{% url 'customer_dashboard' %}">ShopSphere.com</a>
         </div>
-        <div class="footer-section">
-            <h3>My Account</h3>
-            <ul>
-                <li><a href="">My Orders</a></li>
-                <li><a href="{% url 'customer_spending' %}">My Spending</a></li>
-            </ul>
-        </div>
-        <div class="footer-section">
-            <h3>Quick Links</h3>
-            <ul>
-                <li><a href="{% url 'signout' %}">Sign Out</a></li>
-                <li><a href="{% url 'home' %}">Home</a></li>
-            </ul>
-        </div>
-        <div class="footer-section">
-            <h3>About Us</h3>
-            <p>We don't just sell clothes — we create experiences. Explore collections crafted with care, designed for confidence.</p>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>© ShopSphere...</p>
-        <a href="{% url 'customer_dashboard' %}">ShopSphere.com</a>
-    </div>
-</footer>
+    </footer>
 
 </body>
 </html>

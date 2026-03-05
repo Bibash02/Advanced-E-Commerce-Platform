@@ -39,3 +39,17 @@
             e.preventDefault();
             alert('Thank you for subscribing!');
         });
+
+function toggleDropdown() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close dropdown when clicking outside
+window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+        var dropdown = document.getElementById("myDropdown");
+        if (dropdown.classList.contains('show')) {
+            dropdown.classList.remove('show');
+        }
+    }
+}

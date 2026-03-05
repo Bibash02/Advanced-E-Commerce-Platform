@@ -22,14 +22,10 @@
             <button type="submit">🔍</button>
         </form>
         <div class="nav-links">
-            <a href="{% url 'customer_dashboard' %}">DASHBOARD</a>
-            <a href="{% url 'signout' %}">SIGNOUT</a>
+            <a href="{% url 'customer_dashboard' %}">Dashboard</a>
+            <a href="{% url 'signout' %}">Sign Out</a>
         </div>
-        <a href="{% url 'cart_page' %}">
-                <div class="icons">
-                    <button class="icon-btn">🛒</button>
-                </div>
-        </a>
+        <a href="{% url 'cart_page' %}">Cart 🛒</a>
     </nav>
 </header>
 
@@ -125,6 +121,7 @@
                 <ul>
                     <li><a href="{% url 'customer_dashboard' %}">Dashboard</a></li>
                     <li><a href="{% url 'customer_permission' %}">Permissions</a></li>
+                    <li><a href="{% url 'signout' %}">SignOut</a></li>
                 </ul>
             </div>
 
@@ -133,6 +130,7 @@
                 <ul>
                     <li><a href="{% url 'all_products' %}">Products</a></li>
                     <li><a href="{% url 'customer_blog_list' %}">Blogs</a></li>
+                    <li><a href="{% url 'customer_profile' %}">Profile</a></li>
                 </ul>
             </div>
 
@@ -140,7 +138,8 @@
                 <h3>Quick Links</h3>
                 <ul>
                     <li><a href="{% url 'cart_page' %}">Cart</a></li>
-                    <li><a href="{% url 'signout' %}">SignOut</a></li>
+                    <li><a href="{% url 'customer_spending' %}">My Spending</a></li>
+                    <li><a href="{% url 'customer_order_history' %}">My History</a></li>
                 </ul>
             </div>
 
@@ -152,7 +151,7 @@
 
         <div class="footer-bottom">
             <p>© ShopSphere...</p>
-            <a href="#clothique">ShopSphere.com</a>
+            <a href="{% url 'customer_dashboard' %}">ShopSphere.com</a>
         </div>
     </footer>
 

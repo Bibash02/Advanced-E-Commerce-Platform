@@ -9,29 +9,113 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/cart.css' %}">
     <link rel="stylesheet" href="{% static 'css/icon.css' %}">
+    <style>
+        .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+    }
+
+    .dropbtn {
+        background: none;
+        border: none;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        color: #333;
+        transition: 0.3s;
+    }
+
+    .dropbtn:hover {
+        color: #007bff;
+    }
+
+    .dropdown {
+        position: relative;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        top: 40px;
+        right: 0;
+        background: white;
+        min-width: 200px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        border-radius: 8px;
+        overflow: hidden;
+        z-index: 999;
+    }
+
+    .dropdown-content a {
+        display: block;
+        padding: 12px 18px;
+        color: #333;
+        text-decoration: none;
+    }
+
+    .dropdown-content a:hover {
+        background: #f5f5f5;
+    }
+
+    .show {
+        display: block;
+    }
+    </style>
 </head>
 <body>
     <!-- Header -->
     <header>
         <nav>
             <div class="logo">Shop Sphere</div>
-            <div class="search-bar">
-                
-            </div>
+
             <div class="nav-links">
-                <a href="{% url 'supplier_category_list' %}">CATEGORY</a>
-                <a href="{% url 'product_list' %}">PRODUCTS</a>
-                <a href="{% url 'blog_list' %}">BLOGS</a>
-                <a href="{% url 'supplier_product_reviews' %}">REVIEWS</a>
-                <a href="{% url 'supplier_orders' %}">ORDERS</a>
-                <a href="{% url 'supplier_earnings' %}">EARNINGS</a>
-                <a href="{% url 'signout' %}">SIGNOUT</a>
+
+                <!-- Product Management -->
+                <div class="dropdown">
+                    <button class="dropbtn" onclick="toggleDropdown('productDropdown')">
+                        Product ▾
+                    </button>
+                    <div id="productDropdown" class="dropdown-content">
+                        <a href="{% url 'supplier_category_list' %}">Categories</a>
+                        <a href="{% url 'product_list' %}">Products</a>
+                        <a href="{% url 'supplier_orders' %}">Orders</a>
+                        <a href="{% url 'supplier_product_reviews' %}">Reviews</a>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="dropdown">
+                    <button class="dropbtn" onclick="toggleDropdown('contentDropdown')">
+                        Content ▾
+                    </button>
+                    <div id="contentDropdown" class="dropdown-content">
+                        <a href="{% url 'blog_list' %}">Blogs</a>
+                    </div>
+                </div>
+
+                <!-- Finance -->
+                <div class="dropdown">
+                    <button class="dropbtn" onclick="toggleDropdown('financeDropdown')">
+                        Finance ▾
+                    </button>
+                    <div id="financeDropdown" class="dropdown-content">
+                        <a href="{% url 'supplier_earnings' %}">Earnings</a>
+                    </div>
+                </div>
+
+                <!-- Signout -->
+                <a href="{% url 'signout' %}" class="logout">Sign Out</a>
+
             </div>
+
+            <!-- Profile Icon -->
             <a href="{% url 'supplier_profile' %}">
                 <div class="icons">
                     <button class="icon-btn">👤</button>
                 </div>
             </a>
+
         </nav>
     </header>
 
@@ -193,6 +277,7 @@
                 <ul>
                     <li><a href="{% url 'supplier_dashboard' %}">Dashboard</a></li>
                     <li><a href="{% url 'supplier_permission' %}">Permissions</a></li>
+                    <li><a href="{% url 'signout' %}">SignOut</a></li>
                 </ul>
             </div>
 
@@ -201,15 +286,17 @@
                 <ul>
                     <li><a href="{% url 'product_list' %}">Products</a></li>
                     <li><a href="{% url 'blog_list' %}">Blogs</a></li>
+                    <li><a href="{% url 'supplier_category_list' %}">Category</a></li>
                 </ul>
             </div>
 
             <div class="footer-section">
                 <h3>Quick Links</h3>
                 <ul>
-                    <li><a href="{% url 'signout' %}">SignOut</a></li>
+                    
                     <li><a href="{% url 'supplier_product_reviews' %}">Reviews</a></li>
                     <li><a href="{% url 'supplier_orders' %}">Orders</a></li>
+                    <li><a href="{% url 'supplier_earnings' %}">Earnings</a></li>
                 </ul>
             </div>
 
@@ -221,8 +308,26 @@
 
         <div class="footer-bottom">
             <p>© ShopSphere...</p>
-            <a href="#shopsphere">ShopSphere.com</a>
+            <a href="{% url 'supplier_dashboard' %}">ShopSphere.com</a>
         </div>
     </footer>
+    <script>
+    function toggleDropdown(id) {
+        document.querySelectorAll(".dropdown-content").forEach(drop => {
+            if (drop.id !== id) {
+                drop.classList.remove("show");
+            }
+        });
+        document.getElementById(id).classList.toggle("show");
+    }
+
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropbtn')) {
+            document.querySelectorAll(".dropdown-content").forEach(drop => {
+                drop.classList.remove("show");
+            });
+        }
+    }
+    </script>
 </body>
 </html>

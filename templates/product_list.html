@@ -119,8 +119,8 @@
     <nav>
         <div class="logo">Shop Sphere</div>
         <div class="nav-links">
-            <a href="{% url 'add_product' %}">ADD PRODUCT</a>
-            <a href="{% url 'supplier_dashboard' %}">DASHBOARD</a>
+            <a href="{% url 'add_product' %}">Add Product</a>
+            <a href="{% url 'supplier_dashboard' %}">Dashboard</a>
         </div>
     </nav>
 </header>
@@ -205,6 +205,7 @@
                 <ul>
                     <li><a href="{% url 'supplier_dashboard' %}">Dashboard</a></li>
                     <li><a href="{% url 'supplier_permission' %}">Permissions</a></li>
+                    <li><a href="{% url 'signout' %}">SignOut</a></li>
                 </ul>
             </div>
 
@@ -213,14 +214,17 @@
                 <ul>
                     <li><a href="{% url 'product_list' %}">Products</a></li>
                     <li><a href="{% url 'blog_list' %}">Blogs</a></li>
+                    <li><a href="{% url 'supplier_category_list' %}">Category</a></li>
                 </ul>
             </div>
 
             <div class="footer-section">
                 <h3>Quick Links</h3>
                 <ul>
-                    <li><a href="{% url 'signout' %}">SignOut</a></li>
-                    <li><a href="{% url 'supplier_dashboard' %}">Dashboard</a></li>
+                    
+                    <li><a href="{% url 'supplier_product_reviews' %}">Reviews</a></li>
+                    <li><a href="{% url 'supplier_orders' %}">Orders</a></li>
+                    <li><a href="{% url 'supplier_earnings' %}">Earnings</a></li>
                 </ul>
             </div>
 
@@ -232,7 +236,7 @@
 
         <div class="footer-bottom">
             <p>© ShopSphere...</p>
-            <a href="#clothique">ShopSphere.com</a>
+            <a href="{% url 'supplier_dashboard' %}">ShopSphere.com</a>
         </div>
     </footer>
 </body>

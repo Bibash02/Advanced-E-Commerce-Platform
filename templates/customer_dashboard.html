@@ -13,31 +13,40 @@
 <body>
     <!-- Header -->
     <header>
-        <nav>
-            <div class="logo">Shop Sphere</div>
-            <div class="search-bar">
-                
-            </div>
-            <div class="nav-links">
-                <a href="{% url 'add_address' %}">ADD ADDRESS</a>
-                <a href="{% url 'customer_spending' %}">MY SPENDING</a>
-                <a href="{% url 'customer_order_history' %}">MY HISTORY</a>
-                <a href="{% url 'customer_blog_list' %}">BLOG</a>
-                <a href="{% url 'all_products' %}">SHOP</a>
-                <a href="{% url 'signout' %}">SIGNOUT</a>
-            </div>
-            <a href="{% url 'customer_profile' %}">
-                <div class="icons">
-                    <button class="icon-btn">👤</button>
+    <nav class="navbar">
+        <div class="logo">Shop Sphere</div>
+
+        <div class="nav-links">
+            
+            <!-- Shop -->
+            <a href="{% url 'all_products' %}">Shop</a>
+
+            <!-- Blog -->
+            <a href="{% url 'customer_blog_list' %}">Blog</a>
+
+            <!-- My Account Dropdown -->
+            <div class="dropdown">
+                <button class="dropbtn" onclick="toggleDropdown()">
+                    My Account ▾
+                </button>
+
+                <div id="myDropdown" class="dropdown-content">
+                    <a href="{% url 'customer_profile' %}">My Profile</a>
+                    <a href="{% url 'add_address' %}">Add Address</a>
+                    <a href="{% url 'customer_order_history' %}">Order History</a>
+                    <a href="{% url 'customer_spending' %}">My Spending</a>
                 </div>
-            </a>
-            <a href="{% url 'cart_page' %}">
-                <div class="icons">
-                    <button class="icon-btn">🛒</button>
-                </div>
-            </a>
-        </nav>
-    </header>
+            </div>
+
+            <!-- Cart -->
+            <a href="{% url 'cart_page' %}">Cart 🛒</a>
+
+            <!-- Logout -->
+            <a href="{% url 'signout' %}" class="logout">Sign Out</a>
+
+        </div>
+    </nav>
+</header>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -315,6 +324,7 @@
                 <ul>
                     <li><a href="{% url 'customer_dashboard' %}">Dashboard</a></li>
                     <li><a href="{% url 'customer_permission' %}">Permissions</a></li>
+                    <li><a href="{% url 'signout' %}">SignOut</a></li>
                 </ul>
             </div>
 
@@ -323,6 +333,7 @@
                 <ul>
                     <li><a href="{% url 'all_products' %}">Products</a></li>
                     <li><a href="{% url 'customer_blog_list' %}">Blogs</a></li>
+                    <li><a href="{% url 'customer_profile' %}">Profile</a></li>
                 </ul>
             </div>
 
@@ -330,8 +341,8 @@
                 <h3>Quick Links</h3>
                 <ul>
                     <li><a href="{% url 'cart_page' %}">Cart</a></li>
-                    <li><a href="{% url 'signout' %}">SignOut</a></li>
-                    <li><a href="{% url 'customer_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'customer_spending' %}">My Spending</a></li>
+                    <li><a href="{% url 'customer_order_history' %}">My History</a></li>
                 </ul>
             </div>
 
@@ -343,7 +354,7 @@
 
         <div class="footer-bottom">
             <p>© ShopSphere...</p>
-            <a href="#clothique">ShopSphere.com</a>
+            <a href="{% url 'customer_dashboard' %}">ShopSphere.com</a>
         </div>
     </footer>
     <script src="{% static 'js/script.js' %}"></script>
