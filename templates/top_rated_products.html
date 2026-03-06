@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Top Rated Products | ShopSphere</title>
+
+<link rel="stylesheet" href="{% static 'css/customer.css' %}">
+<link rel="stylesheet" href="{% static 'css/cart.css' %}">
+<link rel="stylesheet" href="{% static 'css/rating.css' %}">
+<link rel="stylesheet" href="{% static 'css/searching.css' %}">
+<link rel="stylesheet" href="{% static 'css/icon.css' %}">
+</head>
+
+<body>
+
+<header>
+<nav>
+<div class="logo">Shop Sphere</div>
+
+<form action="{% url 'search_products' %}" method="get" class="search-form">
+<input type="text" name="q" placeholder="Search products..." required>
+<button type="submit">🔍</button>
+</form>
+
+<div class="nav-links">
+<a href="{% url 'customer_dashboard' %}">Dashboard</a>
+<a href="{% url 'signout' %}">Sign Out</a>
+</div>
+
+<a href="{% url 'cart_page' %}">Cart 🛒</a>
+</nav>
+</header>
+
+
+<!-- PAGE TITLE -->
+
+<section class="hero">
+<div class="hero-content">
+<h1>Top <span class="highlight">Rated Products</span></h1>
+<p>Products ranked by customer reviews and ratings.</p>
+</div>
+</section>
+
+
+<!-- PRODUCT GRID -->
+
+<section class="product-grid">
+
+{% for product in products %}
+
+<div class="product-card">
+
+<div class="product-image">
+{% if product.image %}
+<img src="{{ product.image.url }}" alt="{{ product.name }}">
+{% else %}
+<img src="{% static 'images/no-image.png' %}">
+{% endif %}
+</div>
+
+
+<div class="product-info">
+
+<div class="product-name">{{ product.name }}</div>
+
+<div class="supplier-name">
+By
+{% if product.supplier.get_full_name %}
+{{ product.supplier.get_full_name }}
+{% else %}
+{{ product.supplier.username }}
+{% endif %}
+</div>
+
+
+<!-- RATING -->
+
+<div class="product-rating">
+
+{% if product.avg_rating %}
+
+{% for i in "12345" %}
+{% if forloop.counter <= product.avg_rating|floatformat:0 %}
+<span class="star filled">★</span>
+{% else %}
+<span class="star">★</span>
+{% endif %}
+{% endfor %}
+
+<span class="rating-value">
+{{ product.avg_rating|floatformat:1 }} / 5
+({{ product.review_count }} reviews)
+</span>
+
+{% else %}
+
+<span class="no-rating">No ratings yet</span>
+
+{% endif %}
+
+</div>
+
+
+<div class="price-container">
+Rs. {{ product.price }} <br>
+Stock: {{ product.stock }}
+</div>
+
+
+<a href="{% url 'buy_product' product.id %}" class="buy-btn">
+Buy Now
+</a>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<p>No rated products available.</p>
+
+{% endfor %}
+
+</section>
+
+</body>
+</html>

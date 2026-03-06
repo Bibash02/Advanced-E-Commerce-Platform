@@ -194,13 +194,11 @@ def customer_dashboard(request):
     recommended_products = recommend_products_for_user(request.user)
     categories = Category.objects.all().order_by('-created_at')[:3]
     products = Product.objects.annotate(
-        avg_rating=Avg('reviews__rating'),
-        rating_count = Count('reviews')
+        total_orders=Count('orderitem')
     ).filter(
-        rating_count__gt=0      # exclude products with no ratings
+        total_orders__gt=0
     ).order_by(
-        'avg_rating',  # Higher ratig first
-        '-rating_count'     # more rating first
+        '-total_orders'
     )[:4]
     productss = Product.objects.order_by('-created_at')[:4]
     latest_blogs = Blog.objects.order_by('-created_at')[:4]
@@ -228,6 +226,24 @@ def products_by_category(request, category_id):
     }
 
     return render(request, 'products_by_category.html', context)
+
+@customer_required
+def top_rated_products(request):
+    products = Product.objects.annotate(
+        avg_rating=Avg('reviews__rating'),
+        review_count=Count('reviews', distinct=True)
+    ).filter(
+        review_count__gt=0
+    ).order_by(
+        '-avg_rating',
+        '-review_count'
+    )
+
+    context = {
+        'products': products
+    }
+
+    return render(request, 'top_rated_products.html', context)
 
 @login_required
 @supplier_required
@@ -979,6 +995,7 @@ def delivery_cancel(request, order_id):
     return redirect('delivery_order_list')
 
 @login_required
+@customer_required
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
@@ -992,16 +1009,18 @@ def product_detail(request, product_id):
     # Content-based recommendations
     recommended_products = get_similar_products(product.id)
 
-    # If it's an AJAX POST request to update time_spent
+    # Item-based collaborative filtering
+    collaborative_products = get_item_based_recommendations(product.id)
+
     if request.method == 'POST' and request.is_ajax():
         time_spent = int(request.POST.get('time_spent', 0))
 
-        # Update or create ProductView
         pv, created = ProductView.objects.get_or_create(
             user=request.user,
             product=product,
-            defaults={'time_spent': time_spent} 
+            defaults={'time_spent': time_spent}
         )
+
         if not created:
             pv.time_spent += time_spent
             pv.save()
@@ -1012,6 +1031,7 @@ def product_detail(request, product_id):
         'product': product,
         'category_related_products': category_related_products,
         'recommended_products': recommended_products,
+        'collaborative_products': collaborative_products,   # NEW
     })
 
 @login_required

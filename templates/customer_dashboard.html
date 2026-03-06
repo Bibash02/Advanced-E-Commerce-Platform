@@ -33,6 +33,7 @@
                 <div id="myDropdown" class="dropdown-content">
                     <a href="{% url 'customer_profile' %}">My Profile</a>
                     <a href="{% url 'add_address' %}">Add Address</a>
+                    <a href="{% url 'top_rated_products' %}">Rating Products</a>
                     <a href="{% url 'customer_order_history' %}">Order History</a>
                     <a href="{% url 'customer_spending' %}">My Spending</a>
                     <a href="{% url 'contact' %}">Contact</a>
@@ -119,6 +120,9 @@
     <!-- RECOMMENDED FOR YOU -->
     <div class="section-header">
         <h2>Recommended for You</h2>
+        <a href="{% url 'all_products' %}">
+            <button class="view-all">View All →</button>
+        </a>
     </div>
 
     <section class="product-grid">
@@ -146,40 +150,31 @@
     <!-- Best Selling Products -->
     <div class="section-header">
         <h2>Best Selling Products</h2>
-        <button class="view-all">View All</button>
+        <a href="{% url 'all_products' %}">
+            <button class="view-all">View All →</button>
+        </a>
     </div>
+
     <section class="product-grid">
         {% for product in products %}
+
         <div class="product-card">
 
             <div class="product-image">
                 {% if product.image %}
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
                 {% else %}
-                    <img src="{% static 'images/no-image.png' %}" alt="No image">
+                <img src="{% static 'images/no-image.png' %}" alt="No image">
                 {% endif %}
             </div>
 
             <div class="product-info">
-                <div class="product-name">{{ product.name }}</div>
-                <div class="price-container">Stock: {{ product.stock }}</div>
 
-                <!-- ⭐ RATING -->
-                <div class="product-rating">
-                    {% if product.avg_rating %}
-                        {% for i in "12345" %}
-                            {% if forloop.counter <= product.avg_rating|floatformat:0 %}
-                                ⭐
-                            {% else %}
-                                ☆
-                            {% endif %}
-                        {% endfor %}
-                        <span class="rating-number">
-                            ({{ product.avg_rating|floatformat:1 }})
-                        </span>
-                    {% else %}
-                        <span class="no-rating">No ratings</span>
-                    {% endif %}
+                <div class="product-name">{{ product.name }}</div>
+
+                <div class="price-container">
+                    Stock: {{ product.stock }} <br>
+                    Sold: {{ product.total_orders }}
                 </div>
 
                 <div class="price-container">
@@ -189,11 +184,13 @@
                 <a href="{% url 'buy_product' product.id %}" class="buy-btn">
                     Buy Now
                 </a>
+
             </div>
 
         </div>
+
         {% empty %}
-            <p>No products available.</p>
+        <p>No products available.</p>
         {% endfor %}
     </section>
 

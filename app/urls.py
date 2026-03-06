@@ -53,6 +53,7 @@ urlpatterns = [
 
     path('customer/add-address', add_address, name='add_address'),
 
+    path('customer/top-rated/products', top_rated_products, name='top_rated_products'),
     path('customer/product/search', search_products, name='search_products'),
     path('customer/product/detail/<int:product_id>', product_detail, name='product_detail'),
     path('customer/spending', customer_spending, name='customer_spending'),

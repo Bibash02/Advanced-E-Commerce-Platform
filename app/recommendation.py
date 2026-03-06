@@ -1,6 +1,7 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from .models import *
+import pandas as pd
 
 # recommend similar products based on one product description and category using TF-IDF and cosine similarity
 def get_similar_products(product_id, limit=6):
@@ -109,3 +110,50 @@ def recommend_products_for_user(user, limit=5):
     top_ids = [product_ids[i] for i in top_indices]
 
     return Product.objects.filter(id__in = top_ids)
+
+def get_item_based_recommendations(product_id, limit=6):
+
+    views = ProductView.objects.all()
+
+    if not views.exists():
+        return Product.objects.none()
+
+    data = []
+
+    for v in views:
+        data.append({
+            "user_id": v.user_id,
+            "product_id": v.product_id,
+            "interaction": 1
+        })
+
+    df = pd.DataFrame(data)
+
+    # create user-item matrix
+    user_item_matrix = df.pivot_table(
+        index="user_id",
+        columns="product_id",
+        values="interaction",
+        fill_value=0
+    )
+
+    # transpose → item-user matrix
+    item_matrix = user_item_matrix.T
+
+    similarity = cosine_similarity(item_matrix)
+
+    similarity_df = pd.DataFrame(
+        similarity,
+        index=item_matrix.index,
+        columns=item_matrix.index
+    )
+
+    if product_id not in similarity_df.index:
+        return Product.objects.none()
+
+    similar_items = similarity_df[product_id] \
+        .sort_values(ascending=False)[1:limit+1]
+
+    similar_ids = similar_items.index.tolist()
+
+    return Product.objects.filter(id__in=similar_ids)
