@@ -32,6 +32,7 @@ urlpatterns = [
     path('supplier/product/reviews', supplier_product_reviews, name='supplier_product_reviews'),
     path('supplier/orders', supplier_orders, name='supplier_orders'),
     path('supplier/earnings', supplier_earning, name='supplier_earnings'),
+    path('supplier/assign-delivery/<int:order_id>', assign_delivery, name='assign_delivery'),
 
     path('supplier/blog/list', supplier_blogs, name='blog_list'),
     path('supplier/blog/add', add_blog, name='add_blog'),

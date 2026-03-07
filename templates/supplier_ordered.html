@@ -210,6 +210,7 @@
                 <th>Payment</th>
                 <th>Status</th>
                 <th>Ordered Time</th>
+                <th>Assign Delivery</th>
             </tr>
         </thead>
 
@@ -251,6 +252,36 @@
                 </td>
 
                 <td>{{ item.order.created_at|date:"Y-m-d H:i" }}</td>
+                <td>
+
+                {% if item.order.delivery_person %}
+
+                Assigned to <b>{{ item.order.delivery_person.username }}</b>
+
+                {% else %}
+
+                <form method="POST" action="{% url 'assign_delivery' item.order.id %}">
+                {% csrf_token %}
+
+                <select name="delivery_person" required>
+
+                <option value="">Select Delivery</option>
+
+                {% for delivery in delivery_users %}
+                <option value="{{ delivery.user.id }}">
+                {{ delivery.user.username }}
+                </option>
+                {% endfor %}
+
+                </select>
+
+                <button type="submit">Assign</button>
+
+                </form>
+
+                {% endif %}
+
+                </td>
             </tr>
         {% empty %}
             <tr>

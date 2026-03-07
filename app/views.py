@@ -183,8 +183,8 @@ def signout(request):
 
 def delivery_personnel_dashboard(request):
     orders = Order.objects.filter(
-        status__in = ['Paid', 'Assigned']   # orders ready to deliver
-    ).prefetch_related('items__product').order_by('-created_at')
+        delivery_person=request.user
+    ).order_by("-created_at")
 
     return render(request, 'delivery_dashboard.html', {'orders': orders})
 
@@ -405,21 +405,20 @@ def supplier_blogs(request):
 
 @supplier_required
 def supplier_orders(request):
-    supplier = request.user
 
-    # Last 7 days date
+    supplier = request.user
     seven_days_ago = timezone.now() - timedelta(days=7)
 
     orders = OrderItem.objects.filter(
         product__supplier=supplier,
-        order__created_at__gte=seven_days_ago 
+        order__created_at__gte=seven_days_ago
     ).select_related(
         "order",
         "product",
         "order__user"
     )
 
-    # ----------- FILTERING -------------
+    # -------- FILTERS --------
     product_id = request.GET.get("product")
     city = request.GET.get("city")
     min_amount = request.GET.get("min_amount")
@@ -439,21 +438,38 @@ def supplier_orders(request):
 
     orders = orders.order_by("-order__created_at")
 
-    # Get supplier products for dropdown
-    supplier_products = Product.objects.filter(supplier=supplier)
-
-    # Get distinct products from OrderItems instead of Product table
     supplier_products = (
         orders.values("product__id", "product__name")
         .distinct()
     )
 
+    # 🔥 DELIVERY USERS
+    delivery_users = UserProfile.objects.filter(role="DELIVERY")
+
     context = {
         "orders": orders,
         "supplier_products": supplier_products,
+        "delivery_users": delivery_users
     }
 
     return render(request, "supplier_ordered.html", context)
+
+@supplier_required
+def assign_delivery(request, order_id):
+
+    if request.method == "POST":
+
+        order = get_object_or_404(Order, id=order_id)
+
+        delivery_id = request.POST.get("delivery_person")
+
+        delivery_user = User.objects.get(id=delivery_id)
+
+        order.delivery_person = delivery_user
+        order.status = "Assigned"
+        order.save()
+
+    return redirect("supplier_orders")
 
 @supplier_required
 def add_blog(request):  
@@ -923,8 +939,9 @@ def delivery_order_list(request):
         return redirect('signin')
 
     orders = Order.objects.filter(
-        status__in=['Paid', 'Pending'],
-        delivery_person__isnull=True
+        delivery_person=request.user
+    ).exclude(
+        status__in=['Delivered', 'Cancelled']
     ).order_by('-created_at')
 
     return render(request, 'order_list.html', {
@@ -975,7 +992,7 @@ def delivery_accept(request, order_id):
             Delivery Address:
             {order.address}, {order.city}, {order.country}
 
-            Thank you for shopping with Clothique!
+            Thank you for shopping with Shop Sphere!
             """,
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[order.email],
