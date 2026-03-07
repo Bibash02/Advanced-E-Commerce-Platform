@@ -1,82 +1,192 @@
-{% if form.errors %}
-<div style="background:#ffe6e6; padding:15px; border-radius:8px; margin-bottom:20px;">
-    <strong>Form Errors:</strong>
-    {{ form.errors }}
-</div>
-{% endif %}
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Delivery Verification | Clothique</title>
-    <link rel="stylesheet" href="{% static 'css/customer.css' %}">
+<meta charset="UTF-8">
+<title>Delivery Verification | Shop Sphere</title>
+<link rel="stylesheet" href="{% static 'css/customer.css' %}">
+
+<style>
+
+    .form-group{
+        margin-bottom:20px;
+    }
+
+    input, select, textarea{
+        width:100%;
+        padding:10px;
+        border:1px solid #ddd;
+        border-radius:6px;
+    }
+
+    label{
+        font-weight:600;
+    }
+
+    .file-note{
+        font-size:13px;
+        color:#777;
+    }
+
+</style>
+
 </head>
 <body>
 
-<!-- HEADER -->
-<header>
+    <!-- HEADER -->
+    <header>
     <nav>
-        <div class="logo">Shop Sphere</div>
+    <div class="logo">Shop Sphere</div>
 
-        <div class="nav-links">
-            <a href="#">Document</a>
-            <a href="{% url 'signout' %}">Sign Out</a>
-        </div>
-    </nav>
-</header>
-
-<!-- HERO -->
-<section class="hero">
-    <div class="hero-content">
-        <h1>Delivery <span class="highlight">Verification</span></h1>
-        <p>Complete your profile and upload required documents to activate delivery services.</p>
+    <div class="nav-links">
+    <a href="#">Document</a>
+    <a href="{% url 'signout' %}">Sign Out</a>
     </div>
-</section>
 
-<!-- SECTION HEADER -->
-<div class="section-header">
-    <h2>Delivery Personnel Details</h2>
-</div>
+    </nav>
+    </header>
 
-<!-- FORM SECTION -->
-<section class="features">
-    <div class="feature" style="width:100%; max-width:900px; margin:auto;">
-        <div style="width:100%;">
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Delivery <span class="highlight">Verification</span></h1>
+            <p>Complete your profile and upload required documents to activate delivery services.</p>
+        </div>
+    </section>
+
+        <div class="section-header">
+            <h2>Delivery Personnel Details</h2>
+        </div>
+
+    <!-- FORM -->
+    <section class="features">
+        <div class="feature" style="width:100%; max-width:900px; margin:auto;">
+
+            {% if form.errors %}
+            <div style="background:#ffe6e6; padding:15px; border-radius:8px; margin-bottom:20px;">
+            <strong>Form Errors:</strong>
+            {{ form.errors }}
+            </div>
+            {% endif %}
 
             <form method="POST" enctype="multipart/form-data">
+
                 {% csrf_token %}
 
                 <h3>Personal Information</h3>
-                <label><strong>Full Name</strong></label>
-                {{ form.full_name }}<br><br>
 
-                <label><strong>Phone Number</strong></label>
-                {{ form.phone }}<br><br>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    {{ form.full_name }}
+                </div>
 
-                <label><strong>Address</strong></label>
-                {{ form.address }}<br><br>
+                <div class="form-group">
+                <label>Phone Number</label>
+
+                <input type="text"
+                name="phone"
+                value="{{ form.phone.value|default:'' }}"
+                placeholder="98XXXXXXXX"
+                pattern="9[0-9]{9}"
+                maxlength="10"
+                required>
+
+                <div class="file-note">
+                    Enter valid Nepali phone number (10 digits)
+                </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label>Address (Nepal)</label>
+                    <textarea name="address" required placeholder="Enter your full address in Nepal">{{ form.address.value|default:'' }}</textarea>
+                </div>
 
                 <h3>Vehicle Details</h3>
-                <label><strong>Vehicle Type</strong></label>
-                {{ form.vehicle_type }}<br><br>
 
-                <label><strong>Vehicle Number</strong></label>
-                {{ form.vehicle_number }}<br><br>
+                <div class="form-group">
+                    <label>Vehicle Type</label>
+
+                    <select name="vehicle_type" required>
+                    <option value="">Select Vehicle</option>
+                    <option value="Bike">Bike</option>
+                    <option value="Car">Car</option>
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+                <label>Vehicle Number</label>
+
+                <input type="text"
+                name="vehicle_number"
+                value="{{ form.vehicle_number.value|default:'' }}"
+                placeholder="BA-1234"
+                pattern="[A-Za-z]{1,3}-?[0-9]{1,4}"
+                required>
+
+                <div class="file-note">
+                    Example: BA-1234
+                </div>
+
+                </div>
 
                 <h3>Upload Documents</h3>
-                <label><strong>Government ID</strong></label>
-                {{ form.government_id }}<br><br>
 
-                <label><strong>Driving License</strong></label>
-                {{ form.driving_license }}<br><br>
+                <div class="form-group">
+                    <label>Government ID</label>
 
-                <label><strong>Vehicle Registration</strong></label>
-                {{ form.vehicle_document }}<br><br>
+                    <input type="file"
+                    name="government_id"
+                    accept=".jpg,.jpeg,.png"
+                    required>
 
-                <label><strong>CV / Resume (Optional)</strong></label>
-                {{ form.cv }}<br><br>
+                    <div class="file-note">
+                        Upload photo (JPG / PNG)
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label>Driving License</label>
+
+                    <input type="file"
+                    name="driving_license"
+                    accept=".jpg,.jpeg,.png"
+                    required>
+
+                    <div class="file-note">
+                        Upload photo (JPG / PNG)
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label>Vehicle Registration</label>
+
+                    <input type="file"
+                    name="vehicle_document"
+                    accept=".jpg,.jpeg,.png"
+                    required>
+
+                    <div class="file-note">
+                    Upload photo (JPG / PNG)
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label>CV / Resume (Optional)</label>
+
+                    <input type="file"
+                    name="cv"
+                    accept=".pdf">
+
+                    <div class="file-note">
+                        Only PDF allowed
+                    </div>
+
+                </div>
 
                 <button type="submit" class="cta-button">
                     SUBMIT DOCUMENTS
@@ -85,8 +195,7 @@
             </form>
 
         </div>
-    </div>
-</section>
+    </section>
 
 </body>
 </html>
