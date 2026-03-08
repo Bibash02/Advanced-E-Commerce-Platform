@@ -125,6 +125,7 @@
                 <th>Revenue</th>
                 <th>Pending</th>
                 <th>Cancelled</th>
+                <th>Delivered</th>
                 <th>Net Earned</th>
             </tr>
         </thead>
@@ -146,6 +147,15 @@
                 <td>
                     {% if row.cancelled_amount > 0 %}
                         <span class="badge badge-red">Rs. {{ row.cancelled_amount|floatformat:0 }}</span>
+                    {% else %}
+                        <span style="color:#ccc;">—</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if row.delivered_amount > 0 %}
+                        <span class="badge badge-green">
+                            Rs. {{ row.delivered_amount|floatformat:0 }}
+                        </span>
                     {% else %}
                         <span style="color:#ccc;">—</span>
                     {% endif %}
@@ -191,7 +201,7 @@
 
             <div class="pie-item">
                 <span class="pie-dot" style="background:#27ae60;"></span>
-                <span class="pie-label">Paid / Delivered</span>
+                <span class="pie-label">Paid</span>
                 <span class="pie-pct">{{ status_breakdown.paid_count }} orders</span>
             </div>
 
@@ -199,6 +209,12 @@
                 <span class="pie-dot" style="background:#e67e22;"></span>
                 <span class="pie-label">Pending</span>
                 <span class="pie-pct">{{ status_breakdown.pending_count }} orders</span>
+            </div>
+
+            <div class="pie-item">
+                <span class="pie-dot" style="background:#6d2eb5;"></span>
+                <span class="pie-label">Delivered</span>
+                <span class="pie-pct">{{ status_breakdown.delivered_count }} orders</span>
             </div>
 
             <div class="pie-item">

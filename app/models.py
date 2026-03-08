@@ -131,6 +131,7 @@ class Order(models.Model):
         blank=True,
         related_name='assigned_orders'
     )
+    delivery_proof = models.ImageField(upload_to='delivery_proofs/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

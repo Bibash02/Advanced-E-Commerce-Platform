@@ -76,4 +76,5 @@ urlpatterns = [
     path('delivery/order/detail/<order_id>', delivery_order_detail, name='order_detail'),
     path('delivery/order/ok/<int:order_id>', delivery_accept, name='delivery_accept'),
     path('delivery/order/cancel/<int:order_id>', delivery_cancel, name='delivery_cancel'),
+    path('delivery/order/<int:order_id>/delivered/', delivery_mark_delivered, name='delivery_mark_delivered'),
 ]

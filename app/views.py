@@ -1074,6 +1074,28 @@ def delivery_cancel(request, order_id):
 
     return redirect('delivery_order_list')
 
+@delivery_required
+def delivery_mark_delivered(request, order_id):
+
+    order = get_object_or_404(Order, id=order_id)
+
+    # security check
+    if order.delivery_person != request.user:
+        return redirect('delivery_order_list')
+
+    if request.method == "POST":
+        proof = request.FILES.get('delivery_proof')
+
+        if proof:
+            order.delivery_proof = proof
+
+        order.status = "Delivered"
+        order.save()
+
+        return redirect('delivery_order_list')
+
+    return redirect('order_detail', order_id=order.id)
+
 @login_required
 @customer_required
 def product_detail(request, product_id):
@@ -1240,11 +1262,19 @@ def supplier_earning(request):
         "product__price"
     ).annotate(
         units_sold=Sum("quantity"),
+
         total_revenue=Sum(F("quantity") * F("product__price")),
+
         pending_amount=Sum(
             F("quantity") * F("product__price"),
             filter=Q(order__status="Pending")
         ),
+
+        delivered_amount=Sum(
+            F("quantity") * F("product__price"),
+            filter=Q(order__status="Delivered")
+        ),
+
         cancelled_amount=Sum(
             F("quantity") * F("product__price"),
             filter=Q(order__status="Cancelled")
@@ -1262,6 +1292,7 @@ def supplier_earning(request):
             "units_sold": row["units_sold"] or 0,
             "total_revenue": row["total_revenue"] or 0,
             "pending_amount": row["pending_amount"] or 0,
+            "delivered_amount": row["delivered_amount"] or 0,
             "cancelled_amount": row["cancelled_amount"] or 0,
             "net_earned": net_earned
         })
@@ -1289,6 +1320,8 @@ def supplier_earning(request):
                                     .values("order").distinct().count(),
         "cancelled_count": order_items.filter(order__status="Cancelled")
                                       .values("order").distinct().count(),
+        "delivered_count": order_items.filter(order__status="Delivered")
+                                      .values("order").distinct().count(),                             
     }
 
     supplier_products = Product.objects.filter(supplier=supplier)
