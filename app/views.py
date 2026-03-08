@@ -24,6 +24,7 @@ from django.db import transaction
 from django.utils import timezone
 from datetime import timedelta
 from django.core.paginator import Paginator
+from django.views.decorators.http import require_POST
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -191,17 +192,33 @@ def delivery_personnel_dashboard(request):
 @login_required
 @customer_required
 def customer_dashboard(request):
+
+    query = request.GET.get('q')
+
     recommended_products = recommend_products_for_user(request.user)
+
     categories = Category.objects.all().order_by('-created_at')[:3]
+
     products = Product.objects.annotate(
         total_orders=Count('orderitem')
     ).filter(
         total_orders__gt=0
-    ).order_by(
-        '-total_orders'
-    )[:4]
+    ).order_by('-total_orders')[:4]
+
     productss = Product.objects.order_by('-created_at')[:4]
+
     latest_blogs = Blog.objects.order_by('-created_at')[:4]
+
+
+    # SEARCH ALGORITHM
+    search_results = None
+    if query:
+        search_results = Product.objects.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(category__name__icontains=query)
+        ).distinct()
+
 
     context = {
         'recommended_products': recommended_products,
@@ -209,8 +226,11 @@ def customer_dashboard(request):
         'products': products,
         'productss': productss,
         'latest_blogs': latest_blogs,
+        'search_results': search_results,
+        'query': query
     }
-    return render(request, 'customer_dashboard.html', context)   
+
+    return render(request, 'customer_dashboard.html', context)  
 
 def products_by_category(request, category_id):
     category = get_object_or_404(Category, id=category_id)
@@ -454,22 +474,65 @@ def supplier_orders(request):
 
     return render(request, "supplier_ordered.html", context)
 
+# @supplier_required
+# def assign_delivery(request, order_id):
+#     if request.method == "POST":
+#         delivery_person_id = request.POST.get("delivery_person")
+#         if delivery_person_id:
+#             order = get_object_or_404(Order, id=order_id)
+#             delivery_user = get_object_or_404(User, id=delivery_person_id, userprofile__role='DELIVERY')
+
+#             # Assign delivery person
+#             order.delivery_person = delivery_user
+#             order.status = "Assigned"
+#             order.save(update_fields=["delivery_person", "status"])
+
+#             # Redirect back to supplier orders page
+#             return redirect("supplier_orders")
+#     return redirect("supplier_orders")
+
 @supplier_required
-def assign_delivery(request, order_id):
+@require_POST
+def assign_delivery_ajax(request):
+    order_id = request.POST.get("order_id")
+    delivery_person_id = request.POST.get("delivery_person_id")
 
-    if request.method == "POST":
+    order = get_object_or_404(Order, id=order_id)
+    delivery_user = get_object_or_404(User, id=delivery_person_id, userprofile__role='DELIVERY')
 
-        order = get_object_or_404(Order, id=order_id)
+    # Assign the order
+    order.delivery_person = delivery_user
+    order.status = "Assigned"
+    order.save(update_fields=["delivery_person", "status"])
 
-        delivery_id = request.POST.get("delivery_person")
+    return JsonResponse({"success": True})
 
-        delivery_user = User.objects.get(id=delivery_id)
+@supplier_required
+def delivery_person_list(request):
+    delivery_users = UserProfile.objects.filter(role='DELIVERY').select_related('user')
 
-        order.delivery_person = delivery_user
-        order.status = "Assigned"
-        order.save()
+    delivery_persons = []
+    for user_profile in delivery_users:
+        try:
+            documents = DeliveryDocument.objects.get(user=user_profile.user)
+        except DeliveryDocument.DoesNotExist:
+            documents = None
 
-    return redirect("supplier_orders")
+        assigned_orders = Order.objects.filter(delivery_person=user_profile.user)
+        delivery_persons.append({
+            'profile': user_profile,
+            'documents': documents,
+            'orders': assigned_orders,
+            'assigned_count': assigned_orders.count()
+        })
+
+    # Unassigned orders for assigning
+    unassigned_orders = Order.objects.filter(delivery_person__isnull=True, status__in=['Paid', 'Pending']).order_by('-created_at')
+
+    return render(request, 'delivery_person_list.html', {
+        'delivery_persons': delivery_persons,
+        'unassigned_orders': unassigned_orders
+    })
 
 @supplier_required
 def add_blog(request):  

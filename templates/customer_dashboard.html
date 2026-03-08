@@ -15,7 +15,12 @@
     <header>
     <nav class="navbar">
         <div class="logo">Shop Sphere</div>
-
+        <form method="GET" action="{% url 'customer_dashboard' %}">
+            <div class="search-bar">
+                <input type="text" name="q" placeholder="Find what you want..." value="{{ request.GET.q }}">
+                <button type="submit">🔍</button>
+            </div>
+        </form>
         <div class="nav-links">
             
             <!-- Shop -->
@@ -49,6 +54,41 @@
         </div>
     </nav>
 </header>
+
+    {% if query %}
+    <h2 class="search-title">Search Results for "{{ query }}"</h2>
+
+    <section class="product-grid">
+        {% for product in search_results %}
+            <div class="product-card">
+
+                <div class="product-image">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                </div>
+
+                <div class="product-info">
+                    <div class="product-name">{{ product.name }}</div>
+
+                    <div class="price-container">
+                        Rs. {{ product.price }}
+                    </div>
+
+                    <div class="price-container">
+                        Stock: {{ product.stock }}
+                    </div>
+
+                    <a href="{% url 'product_detail' product.id %}" class="buy-btn">
+                        View
+                    </a>
+                </div>
+
+            </div>
+        {% empty %}
+            <p>No products found.</p>
+        {% endfor %}
+    </section>
+
+    {% endif %}
 
     <!-- Hero Section -->
     <section class="hero">

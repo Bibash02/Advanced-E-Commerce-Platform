@@ -140,7 +140,7 @@
         <div class="nav-links">
             <a href="{% url 'supplier_dashboard' %}">Dashboard</a>
             <a href="{% url 'product_list' %}">Products</a>
-            <a href="{% url 'supplier_product_reviews' %}">Reviews</a>
+            <a href="{% url 'delivery_person_list' %}">Delivery Persons</a>
             <a href="{% url 'signout' %}">Sign Out</a>
         </div>
     </nav>
@@ -254,33 +254,16 @@
                 <td>{{ item.order.created_at|date:"Y-m-d H:i" }}</td>
                 <td>
 
-                {% if item.order.delivery_person %}
-
-                Assigned to <b>{{ item.order.delivery_person.username }}</b>
-
-                {% else %}
-
-                <form method="POST" action="{% url 'assign_delivery' item.order.id %}">
-                {% csrf_token %}
-
-                <select name="delivery_person" required>
-
-                <option value="">Select Delivery</option>
-
-                {% for delivery in delivery_users %}
-                <option value="{{ delivery.user.id }}">
-                {{ delivery.user.username }}
-                </option>
-                {% endfor %}
-
-                </select>
-
-                <button type="submit">Assign</button>
-
-                </form>
-
+                <td>
+                {% if not item.order.delivery_person %}
+                    <select class="delivery-select" data-order-id="{{ item.order.id }}" required>
+                        <option value="">Select Delivery</option>
+                        {% for delivery in delivery_users %}
+                            <option value="{{ delivery.user.id }}">{{ delivery.user.username }}</option>
+                        {% endfor %}
+                    </select>
+                    <button class="assign-btn" data-order-id="{{ item.order.id }}">Assign</button>
                 {% endif %}
-
                 </td>
             </tr>
         {% empty %}
@@ -291,6 +274,38 @@
         </tbody>
     </table>
 </section>
+<script>
+document.querySelectorAll('.assign-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const orderId = btn.dataset.orderId;
+        const select = document.querySelector(`.delivery-select[data-order-id="${orderId}"]`);
+        const deliveryId = select.value;
 
+        if(!deliveryId){
+            alert("Please select a delivery person!");
+            return;
+        }
+
+        fetch("{% url 'assign_delivery_ajax' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `order_id=${orderId}&delivery_person_id=${deliveryId}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success){
+                // Remove the table row
+                const row = btn.closest('tr');
+                row.remove();
+            } else {
+                alert("Error assigning order!");
+            }
+        })
+    });
+});
+</script>
 </body>
 </html>

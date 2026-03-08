@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shop Sphere - Fashion E-commerce</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/customer.css' %}">
     <link rel="stylesheet" href="{% static 'css/icon.css' %}">
     <link rel="stylesheet" href="{% static 'css/table.css' %}">
@@ -16,7 +17,7 @@
         <nav>
             <div class="logo">Shop Sphere</div>
             <div class="search-bar">
-                <input type="text" placeholder="Find your choice of clothing">
+                <input type="text" placeholder="Find your choice of you want...">
                 <button>🔍</button>
             </div>
             <div class="nav-links">
@@ -37,6 +38,9 @@
         <div class="hero-content">
             <h1>Discover The Latest<br><span class="highlight">Fashion Trends</span></h1>
             <p>Whether you're looking for casual wear, formal attire, or seasonal outfits, we have something for everyone.</p>
+            <a href="{% url 'delivery_order_list' %}">
+                <button class="cta-button">ORDERS</button>
+            </a>
         </div>
         <div class="hero-image">
             <svg width="400" height="400" viewBox="0 0 400 400">

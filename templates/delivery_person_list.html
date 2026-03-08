@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Delivery Personnel | Shop Sphere</title>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<style>
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+}
+
+th, td{
+padding:12px;
+border-bottom:1px solid #eee;
+text-align:center;
+}
+
+th{
+background:#f5f5f5;
+}
+
+.profile-img{
+width:60px;
+height:60px;
+border-radius:50%;
+object-fit:cover;
+}
+
+.doc-btn{
+padding:6px 12px;
+background:#7c7fad;
+color:white;
+text-decoration:none;
+border-radius:5px;
+font-size:14px;
+}
+
+.doc-btn:hover{
+background:#7b7c8e;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+<nav>
+
+<div class="logo">Shop Sphere</div>
+
+<div class="nav-links">
+<a href="{% url 'supplier_dashboard' %}">Dashboard</a>
+<a href="{% url 'supplier_orders' %}">Orders</a>
+<a href="{% url 'signout' %}">Sign Out</a>
+</div>
+
+</nav>
+</header>
+
+<section class="hero">
+<div class="hero-content">
+<h1>Delivery <span class="highlight">Personnel</span></h1>
+<p>View verified delivery partners before assigning orders.</p>
+</div>
+</section>
+
+<section style="padding:40px">
+
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Name</th>
+<th>Email</th>
+<th>Address</th>
+<th>Vehicle</th>
+<th>Vehicle Number</th>
+<th>ID</th>
+<th>License</th>
+<th>Vehicle Doc</th>
+<th>CV</th>
+<th>Assigned Orders</th>
+</tr>
+</thead>
+
+<tbody>
+{% for d in delivery_persons %}
+<tr>
+<td><img src="{{ d.profile.profile_image.url }}" class="profile-img"></td>
+<td>{{ d.profile.user.first_name }} {{ d.profile.user.last_name }}</td>
+<td>{{ d.profile.user.email }}</td>
+<td style="max-width:200px; word-wrap:break-word;">{{ d.documents.address|default:"Not Provided" }}</td>
+<td>{{ d.documents.vehicle_type|default:"N/A" }}</td>
+<td>{{ d.documents.vehicle_number|default:"N/A" }}</td>
+<td>
+{% if d.documents and d.documents.government_id %}
+<a class="doc-btn" href="{{ d.documents.government_id.url }}" target="_blank">View</a>
+{% else %}N/A{% endif %}
+</td>
+<td>
+{% if d.documents and d.documents.driving_license %}
+<a class="doc-btn" href="{{ d.documents.driving_license.url }}" target="_blank">View</a>
+{% else %}N/A{% endif %}
+</td>
+<td>
+{% if d.documents and d.documents.vehicle_document %}
+<a class="doc-btn" href="{{ d.documents.vehicle_document.url }}" target="_blank">View</a>
+{% else %}N/A{% endif %}
+</td>
+<td>
+{% if d.documents and d.documents.cv %}
+<a class="doc-btn" href="{{ d.documents.cv.url }}" target="_blank">View</a>
+{% else %}N/A{% endif %}
+</td>
+
+<td>
+<button class="toggle-orders-btn" data-id="{{ forloop.counter0 }}">
+    Assigned Orders ({{ d.assigned_count }})
+</button>
+
+<div class="assigned-orders" id="orders-{{ forloop.counter0 }}" style="display:none; margin-top:10px; text-align:left;">
+    {% if d.orders %}
+    <ul>
+        {% for order in d.orders %}
+        <li>
+            Order #{{ order.id }} — {{ order.full_name }} — Rs. {{ order.amount }} — Status: {{ order.status }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No orders assigned yet.</p>
+    {% endif %}
+</div>
+</td>
+
+</tr>
+{% empty %}
+<tr>
+<td colspan="11" style="text-align:center;">No delivery personnel available.</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</section>
+
+<script>
+document.querySelectorAll('.toggle-orders-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const index = btn.dataset.id;
+        const div = document.getElementById('orders-' + index);
+        if(div.style.display === 'none'){
+            div.style.display = 'block';
+            btn.innerText = 'Hide Assigned Orders';
+        } else {
+            div.style.display = 'none';
+            btn.innerText = 'View Assigned Orders (' + div.querySelectorAll('li').length + ')';
+        }
+    });
+});
+</script>
+
+</body>
+</html>

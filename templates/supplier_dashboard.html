@@ -79,8 +79,7 @@
                     <div id="productDropdown" class="dropdown-content">
                         <a href="{% url 'supplier_category_list' %}">Categories</a>
                         <a href="{% url 'product_list' %}">Products</a>
-                        <a href="{% url 'supplier_orders' %}">Orders</a>
-                        <a href="{% url 'supplier_product_reviews' %}">Reviews</a>
+                        <a href="{% url 'blog_list' %}">Blogs</a>
                     </div>
                 </div>
 
@@ -90,7 +89,9 @@
                         Content ▾
                     </button>
                     <div id="contentDropdown" class="dropdown-content">
-                        <a href="{% url 'blog_list' %}">Blogs</a>
+                        <a href="{% url 'supplier_orders' %}">Orders</a>
+                        <a href="{% url 'supplier_product_reviews' %}">Reviews</a>
+                        <a href="{% url 'delivery_person_list' %}">Delivery Persons</a>
                     </div>
                 </div>
 
