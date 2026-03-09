@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delivery History</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/table.css' %}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Shop Sphere</div>
+            <div class="nav-links">
+                <a href="{% url 'delivery_personnel_dashboard' %}">Dashboard</a>
+            </div>
+        </nav>
+    </header>
+
+    <h2 style="text-align:center;">Delivered Orders</h2>
+
+    <table border="1" style="width:95%; margin:auto; border-collapse:collapse;">
+
+    <thead>
+    <tr>
+        <th>Order ID</th>
+        <th>Product ID</th>
+        <th>Image</th>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Customer</th>
+        <th>Address</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    {% for order in orders %}
+        {% for item in order.items.all %}
+        <tr>
+
+            <td>#{{ order.id }}</td>
+
+            <td>{{ item.product.id }}</td>
+
+            <td>
+                <img src="{{ item.product.image.url }}" width="60">
+            </td>
+
+            <td>{{ item.product.name }}</td>
+
+            <td>Rs {{ item.price }}</td>
+
+            <td>{{ item.quantity }}</td>
+
+            <td>
+                {{ order.full_name }} <br>
+                {{ order.phone }}
+            </td>
+
+            <td>
+                {{ order.address }} <br>
+                {{ order.city }}
+            </td>
+
+        </tr>
+        {% endfor %}
+    {% empty %}
+
+    <tr>
+    <td colspan="8" style="text-align:center;">No Delivered Orders</td>
+    </tr>
+
+    {% endfor %}
+
+    </tbody>
+    </table>
+
+</body>
+</html>

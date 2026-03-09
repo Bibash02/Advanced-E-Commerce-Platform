@@ -185,9 +185,22 @@ def signout(request):
 def delivery_personnel_dashboard(request):
     orders = Order.objects.filter(
         delivery_person=request.user
+    ).exclude(
+        status="DELIVERED"
     ).order_by("-created_at")
 
     return render(request, 'delivery_dashboard.html', {'orders': orders})
+
+@login_required
+@delivery_required
+def delivery_history(request):
+
+    orders = Order.objects.filter(
+        delivery_person=request.user,
+        status="Delivered"
+    ).prefetch_related("items__product").order_by("-created_at")
+
+    return render(request, "delivery_history.html", {"orders": orders})
 
 @login_required
 @customer_required
