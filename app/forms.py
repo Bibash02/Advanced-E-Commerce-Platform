@@ -10,7 +10,7 @@ class ProductForm(forms.ModelForm):
 class BlogForm(forms.ModelForm):
     class Meta:
         model = Blog
-        fields = '__all__'
+        fields = ['title', 'image', 'content']
 
 class DeliveryDocumentForm(forms.ModelForm):
     

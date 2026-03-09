@@ -555,7 +555,7 @@ def add_blog(request):
         blog = form.save(commit=False)
         blog.supplier = request.user
         blog.save()
-        return redirect(supplier_dashboard)
+        return redirect('supplier_dashboard')
     return render(request, 'add_blog.html', {
         'form': form
     })
