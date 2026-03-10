@@ -1,0 +1,251 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Supplier Guidelines — ShopSphere</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icon.css' %}">
+    <link rel="stylesheet" href="{% static 'css/guideline.css' %}">
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">Shop Sphere</div>
+        <div class="nav-links">
+            <a href="{% url 'supplier_dashboard' %}">Dashboard</a>
+            <a href="{% url 'signout' %}">SignOut</a>
+        </div>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Supplier <span class="highlight">Guidelines</span></h1>
+        <p>Everything you need to manage your products and grow your sales on ShopSphere.</p>
+    </div>
+</section>
+
+<!-- GUIDELINE CARDS -->
+<section class="guidelines-section">
+    <h2 class="section-title"><i class="fas fa-book-open" style="margin-right:8px;"></i>How to Sell on ShopSphere</h2>
+    <div class="cards-grid">
+
+        <div class="guide-card green">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-store"></i></div>
+                <div><h3>Setting Up Your Store</h3><p>Get your supplier account ready</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> Register and request <strong>Supplier Permission</strong> from the Permissions page.</li>
+                    <li><span class="step-num">2</span> Wait for admin approval — you'll be notified once access is granted.</li>
+                    <li><span class="step-num">3</span> Complete your supplier profile with accurate business information.</li>
+                    <li><span class="step-num">4</span> Access your <strong>Supplier Dashboard</strong> to begin adding products.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-card blue">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-box"></i></div>
+                <div><h3>Adding Products</h3><p>List your items correctly</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> Go to <strong>Products</strong> and click <em>Add New Product</em>.</li>
+                    <li><span class="step-num">2</span> Write a clear, accurate product name and description.</li>
+                    <li><span class="step-num">3</span> Upload high-quality images — at least one front-facing photo.</li>
+                    <li><span class="step-num">4</span> Set the correct price, category, and initial stock quantity.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-card orange">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-warehouse"></i></div>
+                <div><h3>Managing Stock</h3><p>Keep inventory up to date</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> Regularly update stock levels to reflect actual availability.</li>
+                    <li><span class="step-num">2</span> Set a product to <strong>inactive</strong> if it's out of stock instead of deleting it.</li>
+                    <li><span class="step-num">3</span> Stock is automatically reduced when a customer's order is marked <em>Paid</em>.</li>
+                    <li><span class="step-num">4</span> Review your stock weekly to avoid overselling.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-card teal">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-clipboard-list"></i></div>
+                <div><h3>Handling Orders</h3><p>Stay on top of customer orders</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> Visit the <strong>Orders</strong> page to see all purchases of your products.</li>
+                    <li><span class="step-num">2</span> Filter orders by product, city, or amount to manage efficiently.</li>
+                    <li><span class="step-num">3</span> Ensure products are packed and ready when an order is marked <em>Assigned</em>.</li>
+                    <li><span class="step-num">4</span> Coordinate with the delivery team for smooth handoffs.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-card purple">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-coins"></i></div>
+                <div><h3>Tracking Earnings</h3><p>Monitor your revenue</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> Go to <strong>Earnings</strong> to see total revenue per product.</li>
+                    <li><span class="step-num">2</span> Filter by date range or product to analyse specific periods.</li>
+                    <li><span class="step-num">3</span> Only <em>Paid</em> and <em>Delivered</em> orders count as confirmed earnings.</li>
+                    <li><span class="step-num">4</span> Monitor pending and cancelled amounts to understand lost revenue.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-card red">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-star"></i></div>
+                <div><h3>Managing Reviews</h3><p>Build your reputation</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> Visit the <strong>Reviews</strong> page to read all customer feedback.</li>
+                    <li><span class="step-num">2</span> Take note of low ratings — they indicate areas to improve.</li>
+                    <li><span class="step-num">3</span> Consistently high-quality products lead to better reviews and more sales.</li>
+                    <li><span class="step-num">4</span> Never attempt to fake or manipulate reviews — this violates our policy.</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- DO & DON'T -->
+<section class="rules-section">
+    <h2 class="section-title"><i class="fas fa-balance-scale" style="margin-right:8px;"></i>Supplier Rules</h2>
+    <div class="rules-grid">
+        <div class="rules-card do">
+            <h3><i class="fas fa-check-circle"></i> Do's</h3>
+            <ul class="rules-list">
+                <li><i class="fas fa-check"></i> Upload accurate product descriptions and real images.</li>
+                <li><i class="fas fa-check"></i> Keep your stock quantity updated at all times.</li>
+                <li><i class="fas fa-check"></i> Respond quickly to order changes and delivery coordination.</li>
+                <li><i class="fas fa-check"></i> Price your products fairly and competitively.</li>
+                <li><i class="fas fa-check"></i> Pack orders securely to prevent damage during delivery.</li>
+                <li><i class="fas fa-check"></i> Use the Earnings page to track your income regularly.</li>
+            </ul>
+        </div>
+        <div class="rules-card dont">
+            <h3><i class="fas fa-times-circle"></i> Don'ts</h3>
+            <ul class="rules-list">
+                <li><i class="fas fa-times"></i> Do not list products with misleading descriptions or fake images.</li>
+                <li><i class="fas fa-times"></i> Do not oversell products you don't have in stock.</li>
+                <li><i class="fas fa-times"></i> Do not attempt to manipulate or fake customer reviews.</li>
+                <li><i class="fas fa-times"></i> Do not leave inactive products active — mark them correctly.</li>
+                <li><i class="fas fa-times"></i> Do not share your supplier credentials with unauthorised users.</li>
+                <li><i class="fas fa-times"></i> Do not ignore low ratings — use them to improve your products.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- QUICK TIPS -->
+<section class="tips-section">
+    <h2 class="section-title"><i class="fas fa-lightbulb" style="margin-right:8px;"></i>Quick Tips for Suppliers</h2>
+    <div class="tips-banner">
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-image"></i></div>
+            <div class="tip-text"><strong>Great Photos Sell More</strong><span>High-quality, well-lit product images dramatically increase click-through and sales.</span></div>
+        </div>
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-tag"></i></div>
+            <div class="tip-text"><strong>Price Competitively</strong><span>Check similar products and price fairly — customers compare before buying.</span></div>
+        </div>
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-sync-alt"></i></div>
+            <div class="tip-text"><strong>Update Stock Often</strong><span>Outdated stock leads to failed orders and bad reviews. Update weekly at minimum.</span></div>
+        </div>
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-chart-bar"></i></div>
+            <div class="tip-text"><strong>Analyse Your Earnings</strong><span>Use the Earnings page to identify your best-selling products and focus on them.</span></div>
+        </div>
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-comments"></i></div>
+            <div class="tip-text"><strong>Learn from Reviews</strong><span>Customer reviews are free feedback. Use them to improve quality and descriptions.</span></div>
+        </div>
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-shield-alt"></i></div>
+            <div class="tip-text"><strong>Keep Account Secure</strong><span>Use a strong password and never share your supplier login credentials.</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section">
+    <h2 class="section-title"><i class="fas fa-question-circle" style="margin-right:8px;"></i>Supplier FAQs</h2>
+    <div class="faq-list">
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">How do I get supplier access? <i class="fas fa-chevron-down"></i></button>
+            <div class="faq-answer">Go to the <strong>Permissions</strong> page and submit a supplier request. An admin will review and approve your account. You'll be notified once access is granted.</div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">When does my stock get reduced? <i class="fas fa-chevron-down"></i></button>
+            <div class="faq-answer">Stock is automatically deducted when a customer's order is marked as <strong>Paid</strong>. Pending or cancelled orders do not affect stock.</div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">How is my earnings calculated? <i class="fas fa-chevron-down"></i></button>
+            <div class="faq-answer">Earnings are calculated using <strong>item price × quantity</strong> for each of your products in Paid or Delivered orders. The Earnings page breaks this down by product, date, and status.</div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">Can I delete a product? <i class="fas fa-chevron-down"></i></button>
+            <div class="faq-answer">Yes, but we recommend setting a product to <strong>inactive</strong> instead of deleting it, especially if it has existing order history. Deleting a product may affect order records.</div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">What happens if a customer cancels an order? <i class="fas fa-chevron-down"></i></button>
+            <div class="faq-answer">Cancelled orders do not count toward your earnings and the stock deduction (if any) will be reversed. You can see cancelled order amounts on your Earnings page.</div>
+        </div>
+    </div>
+</section>
+
+<section class="contact-strip">
+    <div class="contact-box">
+        <div><h3>Need help with your supplier account?</h3><p>Our team is ready to assist you.</p></div>
+        <a href="mailto:support@shopsphere.com" class="contact-btn"><i class="fas fa-envelope" style="margin-right:8px;"></i>Contact Support</a>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>ShopSphere</h3>
+            <p>Shop Sphere — Where Your Style Comes Full Circle.</p>
+            <div class="social-icons">
+                <a href="https://www.facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com" target="_blank" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+        <div class="footer-section"><h3>Supplier</h3><ul><li><a href="{% url 'supplier_dashboard' %}">Dashboard</a></li><li><a href="{% url 'supplier_orders' %}">Orders</a></li><li><a href="{% url 'supplier_earnings' %}">Earnings</a></li></ul></div>
+        <div class="footer-section"><h3>Products</h3><ul><li><a href="{% url 'product_list' %}">All Products</a></li><li><a href="{% url 'supplier_product_reviews' %}">Reviews</a></li></ul></div>
+        <div class="footer-section"><h3>Quick Links</h3><ul><li><a href="{% url 'supplier_guidelines' %}">Guidelines</a></li><li><a href="{% url 'signout' %}">Sign Out</a></li></ul></div>
+        <div class="footer-section"><h3>About Us</h3><p>We create experiences, not just sales. Crafted with care for modern lifestyles.</p></div>
+    </div>
+    <div class="footer-bottom"><p>© ShopSphere...</p><a href="#">ShopSphere.com</a></div>
+</footer>
+
+<script>
+    function toggleFaq(btn) {
+        const answer = btn.nextElementSibling;
+        const isOpen = answer.classList.toggle('open');
+        btn.classList.toggle('open', isOpen);
+    }
+</script>
+</body>
+</html>

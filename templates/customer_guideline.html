@@ -1,0 +1,263 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Customer Guidelines — ShopSphere</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icon.css' %}">
+    <link rel="stylesheet" href="{% static 'css/guideline.css' %}">
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">Shop Sphere</div>
+        <div class="nav-links">
+            <a href="{% url 'customer_dashboard' %}">Dashboard</a>
+            <a href="{% url 'signout' %}" class="logout">Sign Out</a>
+
+        </div>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Customer <span class="highlight">Guidelines</span></h1>
+        <p>Your complete guide to shopping on ShopSphere — from browsing to delivery.</p>
+    </div>
+</section>
+
+<!-- GUIDELINE CARDS -->
+<section class="guidelines-section">
+    <h2 class="section-title"><i class="fas fa-book-open" style="margin-right:8px;"></i>How to Shop on ShopSphere</h2>
+    <div class="cards-grid">
+
+        <div class="guide-card green">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-user-plus"></i></div>
+                <div><h3>Creating Your Account</h3><p>Get started in minutes</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> Click <strong>Sign Up</strong> and fill in your name, email, and a strong password.</li>
+                    <li><span class="step-num">2</span> Verify your email address to fully activate your account.</li>
+                    <li><span class="step-num">3</span> Log in and save your default delivery address in your profile.</li>
+                    <li><span class="step-num">4</span> Use a real email — order confirmations and updates will be sent there.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-card blue">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-search"></i></div>
+                <div><h3>Browsing Products</h3><p>Find exactly what you need</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> Visit the <strong>Products</strong> page to see all available items.</li>
+                    <li><span class="step-num">2</span> Use category filters or the search bar to narrow results.</li>
+                    <li><span class="step-num">3</span> Click a product to see full images, description, price and stock.</li>
+                    <li><span class="step-num">4</span> Check customer reviews before buying to make informed choices.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-card orange">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-shopping-cart"></i></div>
+                <div><h3>Placing an Order</h3><p>Checkout with confidence</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> Add items to your cart and review quantities carefully.</li>
+                    <li><span class="step-num">2</span> Enter your correct shipping address and phone number.</li>
+                    <li><span class="step-num">3</span> Choose payment — <strong>Cash on Delivery</strong> or <strong>eSewa</strong>.</li>
+                    <li><span class="step-num">4</span> Confirm and save your Order ID for future reference.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-card teal">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-credit-card"></i></div>
+                <div><h3>Payments</h3><p>Safe &amp; easy transactions</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> <strong>COD:</strong> Pay in cash when your item arrives — no upfront payment needed.</li>
+                    <li><span class="step-num">2</span> <strong>eSewa:</strong> Pay digitally via eSewa wallet — quick and fully secure.</li>
+                    <li><span class="step-num">3</span> Never share your eSewa PIN or password with anyone including support.</li>
+                    <li><span class="step-num">4</span> Always keep your transaction ID as proof of payment.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-card purple">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-truck"></i></div>
+                <div><h3>Tracking Your Order</h3><p>Know where your parcel is</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> Go to <strong>My Orders</strong> to check the real-time status of all orders.</li>
+                    <li><span class="step-num">2</span> Order flow: <em>Pending → Paid → Assigned → Delivered</em>.</li>
+                    <li><span class="step-num">3</span> Click <strong>View</strong> on any order to see your delivery person's details.</li>
+                    <li><span class="step-num">4</span> Contact support if your order stays in <em>Pending</em> for over 48 hours.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-card red">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-star"></i></div>
+                <div><h3>Reviews &amp; Returns</h3><p>Your feedback matters</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> After delivery, go to the product page and leave an honest review.</li>
+                    <li><span class="step-num">2</span> Rate from 1–5 stars and describe your experience in the comment.</li>
+                    <li><span class="step-num">3</span> If you received a wrong or damaged item, contact support immediately.</li>
+                    <li><span class="step-num">4</span> Return requests must be raised within <strong>3 days</strong> of delivery.</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- QUICK TIPS -->
+<section class="tips-section">
+    <h2 class="section-title"><i class="fas fa-lightbulb" style="margin-right:8px;"></i>Quick Tips for Customers</h2>
+    <div class="tips-banner">
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-lock"></i></div>
+            <div class="tip-text"><strong>Keep Account Secure</strong><span>Use a unique strong password. Never share your login details.</span></div>
+        </div>
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="tip-text"><strong>Accurate Address</strong><span>Double-check your delivery address before confirming an order.</span></div>
+        </div>
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-camera"></i></div>
+            <div class="tip-text"><strong>Check Product Photos</strong><span>View all images carefully — screen colors may differ slightly from real life.</span></div>
+        </div>
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-undo"></i></div>
+            <div class="tip-text"><strong>Cancel Before Dispatch</strong><span>Cancel a Pending order before it's assigned to a delivery person.</span></div>
+        </div>
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="tip-text"><strong>Track Your Spending</strong><span>Use <strong>My Spending</strong> to monitor how much you spend per product.</span></div>
+        </div>
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-bell"></i></div>
+            <div class="tip-text"><strong>Check Your Email</strong><span>Order confirmations and delivery updates are sent to your registered email.</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section">
+    <h2 class="section-title"><i class="fas fa-question-circle" style="margin-right:8px;"></i>Customer FAQs</h2>
+    <div class="faq-list">
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">How long does delivery take? <i class="fas fa-chevron-down"></i></button>
+            <div class="faq-answer">Delivery typically takes <strong>2–5 business days</strong> depending on your location within Nepal. Kathmandu orders are usually faster.</div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">Can I change my order after placing it? <i class="fas fa-chevron-down"></i></button>
+            <div class="faq-answer">You can cancel a <strong>Pending</strong> order before it is assigned to a delivery person. Once dispatched, changes cannot be made.</div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">Is eSewa payment safe? <i class="fas fa-chevron-down"></i></button>
+            <div class="faq-answer">Yes. eSewa is a trusted digital wallet in Nepal. ShopSphere never stores your eSewa credentials — all payments go through eSewa's secure gateway.</div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">What if I receive a wrong or damaged item? <i class="fas fa-chevron-down"></i></button>
+            <div class="faq-answer">Contact support within <strong>3 days of delivery</strong> with your order ID and photos. We will arrange a replacement or refund promptly.</div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">Can I buy from multiple suppliers in one order? <i class="fas fa-chevron-down"></i></button>
+            <div class="faq-answer">Yes! You can add products from different suppliers to a single cart and check out in one order.</div>
+        </div>
+    </div>
+</section>
+
+<section class="contact-strip">
+    <div class="contact-box">
+        <div><h3>Need more help?</h3><p>Our support team is here for you anytime.</p></div>
+        <a href="mailto:support@shopsphere.com" class="contact-btn"><i class="fas fa-envelope" style="margin-right:8px;"></i>Contact Support</a>
+    </div>
+</section>
+
+<footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ShopSphere</h3>
+                <p>Shop Sphere — Where Your Style Comes Full Circle.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/YourPage" target="_blank" class="social-icon">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Information</h3>
+                <ul>
+                    <li><a href="{% url 'customer_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'customer_permission' %}">Permissions</a></li>
+                    <li><a href="{% url 'guidelines' %}">GuideLine</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>For Customer</h3>
+                <ul>
+                    <li><a href="{% url 'all_products' %}">Products</a></li>
+                    <li><a href="{% url 'customer_blog_list' %}">Blogs</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'cart_page' %}">Cart</a></li>
+                    <li><a href="{% url 'customer_spending' %}">My Spending</a></li>
+                    <li><a href="{% url 'customer_order_history' %}">My History</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>We don’t just sell clothes — we create experiences. Explore collections crafted with care, designed for confidence, and inspired by modern lifestyles.</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© ShopSphere...</p>
+            <a href="{% url 'customer_dashboard' %}">ShopSphere.com</a>
+        </div>
+    </footer>
+
+<script>
+    function toggleFaq(btn) {
+        const answer = btn.nextElementSibling;
+        const isOpen = answer.classList.toggle('open');
+        btn.classList.toggle('open', isOpen);
+    }
+</script>
+</body>
+</html>

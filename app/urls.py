@@ -78,4 +78,9 @@ urlpatterns = [
     path('delivery/order/cancel/<int:order_id>', delivery_cancel, name='delivery_cancel'),
     path('delivery/order/<int:order_id>/delivered/', delivery_mark_delivered, name='delivery_mark_delivered'),
     path('delivery/history/', delivery_history, name='delivery_history'),
+
+    path('guidelines', guidelines, name='guidelines'),  
+    path('customer/guidelines', customer_guidelines, name='customer_guidelines'),
+    path('supplier/guidelines', supplier_guidelines, name='supplier_guidelines'),
+    path('delivery/guidelines', delivery_guidelines, name='delivery_guidelines'),
 ]

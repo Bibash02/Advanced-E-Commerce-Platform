@@ -1,0 +1,321 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Delivery Guidelines — ShopSphere</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icon.css' %}">
+    <link rel="stylesheet" href="{% static 'css/guideline.css' %}">
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">Shop Sphere</div>
+        <div class="nav-links">
+                <a href="{% url 'delivery_personnel_dashboard' %}">Dashboard</a>
+                <a href="{% url 'signout' %}">Sign Out</a>
+        </div>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Delivery <span class="highlight">Guidelines</span></h1>
+        <p>Your complete guide to handling and completing deliveries on ShopSphere.</p>
+    </div>
+</section>
+
+<!-- ORDER STATUS FLOW -->
+<section class="flow-section" style="padding-top: 40px;">
+    <h2 class="section-title" style="margin: 0 0 20px 0;"><i class="fas fa-route" style="margin-right:8px;"></i>Order Status Flow</h2>
+    <div class="flow-box">
+        <div class="flow-track">
+            <div class="flow-step">
+                <div class="flow-dot pending"><i class="fas fa-clock"></i></div>
+                <div class="flow-label">Pending</div>
+                <div class="flow-desc">Customer placed the order</div>
+            </div>
+            <div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+            <div class="flow-step">
+                <div class="flow-dot paid"><i class="fas fa-check"></i></div>
+                <div class="flow-label">Paid</div>
+                <div class="flow-desc">Payment confirmed</div>
+            </div>
+            <div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+            <div class="flow-step">
+                <div class="flow-dot assigned"><i class="fas fa-user-check"></i></div>
+                <div class="flow-label">Assigned</div>
+                <div class="flow-desc">You are assigned — pick up the order</div>
+            </div>
+            <div class="flow-arrow"><i class="fas fa-chevron-right"></i></div>
+            <div class="flow-step">
+                <div class="flow-dot delivered"><i class="fas fa-box-open"></i></div>
+                <div class="flow-label">Delivered</div>
+                <div class="flow-desc">Mark as delivered after handoff</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- GUIDELINE CARDS -->
+<section class="guidelines-section">
+    <h2 class="section-title"><i class="fas fa-book-open" style="margin-right:8px;"></i>How to Handle Deliveries</h2>
+    <div class="cards-grid">
+
+        <div class="guide-card green">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-user-check"></i></div>
+                <div><h3>Getting Assigned</h3><p>When an order comes your way</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> An admin will assign orders to you based on your area and availability.</li>
+                    <li><span class="step-num">2</span> Once assigned, the order status changes to <strong>Assigned to Delivery</strong>.</li>
+                    <li><span class="step-num">3</span> Log into your dashboard and review all assigned order details.</li>
+                    <li><span class="step-num">4</span> Note the customer's name, phone, address, and city carefully.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-card blue">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-box"></i></div>
+                <div><h3>Picking Up the Order</h3><p>Collect from the supplier</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> Contact the supplier if needed to confirm the pickup location and time.</li>
+                    <li><span class="step-num">2</span> Verify the package matches the order — check product name and quantity.</li>
+                    <li><span class="step-num">3</span> Ensure the package is sealed and undamaged before accepting it.</li>
+                    <li><span class="step-num">4</span> Never accept damaged or tampered packages — report to admin immediately.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-card orange">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-truck"></i></div>
+                <div><h3>Delivering the Order</h3><p>Getting it to the customer</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> Contact the customer before arriving — use the phone number on the order.</li>
+                    <li><span class="step-num">2</span> Deliver to the exact address listed on the order — do not substitute.</li>
+                    <li><span class="step-num">3</span> For COD orders, collect the <strong>exact cash amount</strong> shown on the order.</li>
+                    <li><span class="step-num">4</span> Hand the package only to the customer or an authorised person at the address.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-card teal">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-money-bill-wave"></i></div>
+                <div><h3>COD Payments</h3><p>Handling cash on delivery</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> Check the order amount carefully before collecting payment from the customer.</li>
+                    <li><span class="step-num">2</span> Only collect the exact amount stated — do not accept partial payments.</li>
+                    <li><span class="step-num">3</span> Provide a receipt or confirmation to the customer upon collection.</li>
+                    <li><span class="step-num">4</span> Submit collected payments to the admin as instructed — never delay.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-card purple">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-check-circle"></i></div>
+                <div><h3>Confirming Delivery</h3><p>Mark orders as delivered</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> After handing over the package, log into your dashboard immediately.</li>
+                    <li><span class="step-num">2</span> Find the order and mark it as <strong>Delivered</strong>.</li>
+                    <li><span class="step-num">3</span> Do not mark an order as delivered if the customer was not home.</li>
+                    <li><span class="step-num">4</span> If delivery fails, contact admin and report the reason.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="guide-card red">
+            <div class="guide-card-header">
+                <div class="guide-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div><h3>Handling Problems</h3><p>What to do when things go wrong</p></div>
+            </div>
+            <div class="guide-card-body">
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> If a customer is unreachable, try at least <strong>3 times</strong> before reporting to admin.</li>
+                    <li><span class="step-num">2</span> If a customer refuses delivery, do not leave the package — return it and report.</li>
+                    <li><span class="step-num">3</span> Never open or tamper with any package under any circumstances.</li>
+                    <li><span class="step-num">4</span> Report any accidents, theft, or loss to admin immediately with full details.</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- DO & DON'T -->
+<section class="rules-section">
+    <h2 class="section-title"><i class="fas fa-balance-scale" style="margin-right:8px;"></i>Delivery Rules</h2>
+    <div class="rules-grid">
+        <div class="rules-card do">
+            <h3><i class="fas fa-check-circle"></i> Do's</h3>
+            <ul class="rules-list">
+                <li><i class="fas fa-check"></i> Always call the customer before arriving at the delivery address.</li>
+                <li><i class="fas fa-check"></i> Deliver within the timeframe given by the admin.</li>
+                <li><i class="fas fa-check"></i> Handle all packages with care — treat them as your own.</li>
+                <li><i class="fas fa-check"></i> Collect exact COD amounts and report all payments promptly.</li>
+                <li><i class="fas fa-check"></i> Mark orders as delivered immediately after handoff.</li>
+                <li><i class="fas fa-check"></i> Maintain professional and respectful conduct with customers at all times.</li>
+            </ul>
+        </div>
+        <div class="rules-card dont">
+            <h3><i class="fas fa-times-circle"></i> Don'ts</h3>
+            <ul class="rules-list">
+                <li><i class="fas fa-times"></i> Do not open, tamper with, or inspect the contents of any package.</li>
+                <li><i class="fas fa-times"></i> Do not mark an order as delivered if it was not actually delivered.</li>
+                <li><i class="fas fa-times"></i> Do not accept partial payments for COD orders.</li>
+                <li><i class="fas fa-times"></i> Do not leave packages unattended at a delivery location.</li>
+                <li><i class="fas fa-times"></i> Do not share customer personal information with anyone.</li>
+                <li><i class="fas fa-times"></i> Do not delay delivery without informing admin with a valid reason.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- QUICK TIPS -->
+<section class="tips-section">
+    <h2 class="section-title"><i class="fas fa-lightbulb" style="margin-right:8px;"></i>Quick Tips for Delivery</h2>
+    <div class="tips-banner">
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="tip-text"><strong>Plan Your Route</strong><span>Group nearby deliveries together to save time and fuel on your delivery runs.</span></div>
+        </div>
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-phone-alt"></i></div>
+            <div class="tip-text"><strong>Call Ahead</strong><span>A quick call before arrival reduces failed deliveries and saves everyone time.</span></div>
+        </div>
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-clock"></i></div>
+            <div class="tip-text"><strong>Deliver on Time</strong><span>Timely deliveries build customer trust and reflect well on your performance record.</span></div>
+        </div>
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-smile"></i></div>
+            <div class="tip-text"><strong>Be Professional</strong><span>Polite and friendly delivery builds ShopSphere's reputation and your own.</span></div>
+        </div>
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-shield-alt"></i></div>
+            <div class="tip-text"><strong>Protect Customer Data</strong><span>Never share customer addresses or phone numbers with anyone outside the platform.</span></div>
+        </div>
+        <div class="tip-item">
+            <div class="tip-icon"><i class="fas fa-mobile-alt"></i></div>
+            <div class="tip-text"><strong>Keep Dashboard Updated</strong><span>Update order status in real time — admins and customers are watching for updates.</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section">
+    <h2 class="section-title"><i class="fas fa-question-circle" style="margin-right:8px;"></i>Delivery FAQs</h2>
+    <div class="faq-list">
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">What do I do if the customer is not home? <i class="fas fa-chevron-down"></i></button>
+            <div class="faq-answer">Try calling the customer at least <strong>3 times</strong>. If there is still no response, do not leave the package. Return to base and report the failed delivery to admin with the time and number of attempts.</div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">What if the customer refuses to pay (COD)? <i class="fas fa-chevron-down"></i></button>
+            <div class="faq-answer">Do not hand over the package. Return the item and report the refusal to admin immediately with full details. Never leave a COD order without collecting payment.</div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">What if I notice the package is damaged before delivery? <i class="fas fa-chevron-down"></i></button>
+            <div class="faq-answer">Report it to admin before delivering. Take photos as evidence. Do not deliver a visibly damaged package without admin's instruction — the customer has the right to refuse damaged goods.</div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">How do I mark an order as delivered? <i class="fas fa-chevron-down"></i></button>
+            <div class="faq-answer">Log into your dashboard, find the order in <strong>My Deliveries</strong>, and update the status to <em>Delivered</em>. Do this immediately after the customer receives the package.</div>
+        </div>
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">Can I deliver to a different address than what's on the order? <i class="fas fa-chevron-down"></i></button>
+            <div class="faq-answer">No. Always deliver to the exact address listed on the order. If the customer requests a change of address, inform admin first and wait for approval before redirecting.</div>
+        </div>
+    </div>
+</section>
+
+<section class="contact-strip">
+    <div class="contact-box">
+        <div><h3>Have a delivery issue?</h3><p>Contact the admin team immediately for assistance.</p></div>
+        <a href="mailto:support@shopsphere.com" class="contact-btn"><i class="fas fa-envelope" style="margin-right:8px;"></i>Contact Admin</a>
+    </div>
+</section>
+
+<footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ShopSphere</h3>
+                <p>Shop Sphere — Where Your Style Comes Full Circle.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/YourPage" target="_blank" class="social-icon">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Information</h3>
+                <ul>
+                    <li><a href="{% url 'delivery_personnel_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'delivery_guidelines' %}">GuideLines</a></li>
+                    <li><a href="{% url 'signout' %}">SignOut</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>For Customer</h3>
+                <ul>
+                    <li><a href="{% url 'document_form' %}">Document</a></li>
+                    <li><a href="{% url 'delivery_order_list' %}">Orders</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'delivery_profile' %}">Profile</a></li>
+                    <li><a href="{% url 'delivery_history' %}">Delivery History</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>We don’t just sell clothes — we create experiences. Explore collections crafted with care, designed for confidence, and inspired by modern lifestyles.</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© ShopSphere...</p>
+            <a href="{% url 'delivery_personnel_dashboard' %}">ShopSphere.com</a>
+        </div>
+    </footer>
+
+<script>
+    function toggleFaq(btn) {
+        const answer = btn.nextElementSibling;
+        const isOpen = answer.classList.toggle('open');
+        btn.classList.toggle('open', isOpen);
+    }
+</script>
+</body>
+</html>

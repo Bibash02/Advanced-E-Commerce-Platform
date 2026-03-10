@@ -1560,3 +1560,15 @@ def customer_order_history(request):
         # Keep any other data you need
     }
     return render(request, "customer_order_history.html", context)
+
+def guidelines(request):
+    return render(request, 'guideline.html')
+
+def customer_guidelines(request):
+    return render(request, 'customer_guideline.html')
+
+def supplier_guidelines(request):
+    return render(request, 'supplier_guideline.html')
+
+def delivery_guidelines(request):
+    return render(request, 'delivery_guideline.html')
