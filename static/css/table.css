@@ -145,3 +145,47 @@ tbody tr td[colspan] {
         color: #222;
     }
 }
+
+/* Action buttons container */
+.action-cell{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+}
+
+/* Base button style */
+.action-btn{
+    padding:6px 12px;
+    text-decoration:none;
+    color:white;
+    font-size:14px;
+    font-weight:500;
+    transition:0.2s;
+}
+
+/* View button */
+.btn-view{
+    background:black;
+}
+
+.btn-view:hover{
+    background:rgb(150, 145, 145);
+}
+
+/* OK button */
+.btn-ok{
+    background:#27ae60;
+}
+
+.btn-ok:hover{
+    background:#1e8449;
+}
+
+/* Cancel button */
+.btn-cancel{
+    background:red;
+}
+
+.btn-cancel:hover{
+    background:#c0392b;
+}

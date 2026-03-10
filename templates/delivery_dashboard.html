@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shop Sphere - Fashion E-commerce</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/customer.css' %}">
     <link rel="stylesheet" href="{% static 'css/icon.css' %}">
     <link rel="stylesheet" href="{% static 'css/table.css' %}">
@@ -82,63 +81,131 @@
 
     <div class="section-header">
     <h2>Orders To Deliver</h2>
-</div>
-
-<section class="features">
-    <div class="feature" style="width:100%; max-width:1100px; margin:auto;">
-        <table style="width:100%; border-collapse: collapse;">
-
-            <thead>
-                <tr style="background:#f5f5f5;">
-                    <th style="padding:12px;">Order ID</th>
-                    <th style="padding:12px;">Customer</th>
-                    <th style="padding:12px;">Products</th>
-                    <th style="padding:12px;">Quantity</th>
-                    <th style="padding:12px;">Action</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for order in orders %}
-                <tr style="border-bottom:1px solid #ddd;">
-                    <td style="padding:12px;">#{{ order.id }}</td>
-
-                    <td style="padding:12px;">
-                        {{ order.full_name }}<br>
-                        {{ order.phone }}
-                    </td>
-
-                    <td style="padding:12px;">
-                        {% for item in order.items.all %}
-                            {{ item.product.name }}<br>
-                        {% endfor %}
-                    </td>
-
-                    <td style="padding:12px; text-align:center;">
-                        {% for item in order.items.all %}
-                            {{ item.quantity }}<br>
-                        {% endfor %}
-                    </td>
-
-                    <td style="padding:12px; text-align:center;">
-                        <a href="{% url 'order_detail' order.id %}"
-                           class="cta-button"
-                           style="padding:6px 14px;">
-                            View
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" style="text-align:center; padding:20px;">
-                        🚫 No orders available
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-
-        </table>
     </div>
-</section>
+
+    <section class="features">
+        <div class="feature" style="width:100%; max-width:1100px; margin:auto;">
+            <table style="width:100%; border-collapse: collapse;">
+
+                <thead>
+                    <tr style="background:#f5f5f5;">
+                        <th style="padding:12px;">Order ID</th>
+                        <th style="padding:12px;">Customer</th>
+                        <th style="padding:12px;">Products</th>
+                        <th style="padding:12px;">Quantity</th>
+                        <th style="padding:12px;">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for order in orders %}
+                    <tr style="border-bottom:1px solid #ddd;">
+                        <td style="padding:12px;">#{{ order.id }}</td>
+
+                        <td style="padding:12px;">
+                            {{ order.full_name }}<br>
+                            {{ order.phone }}
+                        </td>
+
+                        <td style="padding:12px;">
+                            {% for item in order.items.all %}
+                                {{ item.product.name }}<br>
+                            {% endfor %}
+                        </td>
+
+                        <td style="padding:12px; text-align:center;">
+                            {% for item in order.items.all %}
+                                {{ item.quantity }}<br>
+                            {% endfor %}
+                        </td>
+
+                        <td class="action-cell">
+
+                        <a href="{% url 'order_detail' order.id %}" class="action-btn btn-view">
+                        View
+                        </a>
+
+                        <a href="{% url 'delivery_accept' order.id %}" 
+                        class="action-btn btn-ok"
+                        onclick="return confirm('Mark this order as delivered?')">
+                        OK
+                        </a>
+
+                        <a href="{% url 'delivery_cancel' order.id %}"
+                        class="action-btn btn-cancel"
+                        onclick="return confirm('Are you sure?')">
+                        Cancel
+                        </a>
+
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding:20px;">
+                            🚫 No orders available
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </section>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ShopSphere</h3>
+                <p>Shop Sphere — Where Your Style Comes Full Circle.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/YourPage" target="_blank" class="social-icon">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Information</h3>
+                <ul>
+                    <li><a href="{% url 'delivery_personnel_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'signout' %}">SignOut</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>For Customer</h3>
+                <ul>
+                    <li><a href="{% url 'document_form' %}">Document</a></li>
+                    <li><a href="{% url 'delivery_order_list' %}">Orders</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'delivery_profile' %}">Profile</a></li>
+                    <li><a href="{% url 'delivery_history' %}">Delivery History</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>We don’t just sell clothes — we create experiences. Explore collections crafted with care, designed for confidence, and inspired by modern lifestyles.</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© ShopSphere...</p>
+            <a href="{% url 'delivery_personnel_dashboard' %}">ShopSphere.com</a>
+        </div>
+    </footer>
 </body>
 </html>

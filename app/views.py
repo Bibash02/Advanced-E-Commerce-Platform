@@ -186,7 +186,7 @@ def delivery_personnel_dashboard(request):
     orders = Order.objects.filter(
         delivery_person=request.user
     ).exclude(
-        status="DELIVERED"
+        status__in=["Delivered", "Cancelled"]
     ).order_by("-created_at")
 
     return render(request, 'delivery_dashboard.html', {'orders': orders})
@@ -531,16 +531,23 @@ def delivery_person_list(request):
         except DeliveryDocument.DoesNotExist:
             documents = None
 
-        assigned_orders = Order.objects.filter(delivery_person=user_profile.user)
+        # All orders for display
+        orders = Order.objects.filter(delivery_person=user_profile.user)
+
+        # Count only NOT delivered orders
+        active_orders = orders.exclude(status='Delivered')
+
         delivery_persons.append({
             'profile': user_profile,
             'documents': documents,
-            'orders': assigned_orders,
-            'assigned_count': assigned_orders.count()
+            'orders': orders,
+            'assigned_count': active_orders.count()
         })
 
-    # Unassigned orders for assigning
-    unassigned_orders = Order.objects.filter(delivery_person__isnull=True, status__in=['Paid', 'Pending']).order_by('-created_at')
+    unassigned_orders = Order.objects.filter(
+        delivery_person__isnull=True,
+        status__in=['Paid', 'Pending']
+    ).order_by('-created_at')
 
     return render(request, 'delivery_person_list.html', {
         'delivery_persons': delivery_persons,
@@ -1074,6 +1081,7 @@ def delivery_accept(request, order_id):
                     recipient_list=[order.email],
                     fail_silently=False,
                 )
+    
     return redirect('delivery_order_list')
 
 @delivery_required
@@ -1084,6 +1092,26 @@ def delivery_cancel(request, order_id):
     order = get_object_or_404(Order, id = order_id)
     order.status = 'Cancelled'
     order.save()
+
+    send_mail(
+        subject="Your Order is Out for Delivery",
+        message=f"""
+            Hello {order.full_name},
+
+            Your order #{order.id} has been cancled by delivery person.
+
+            I Am Sorry About That!...
+
+            Please wait a bit for your Orders!...
+
+            If Any Problem Contact Our Team...
+
+            Thank you for shopping with Shop Sphere!
+            """,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[order.email],
+                    fail_silently=False,
+                )
 
     return redirect('delivery_order_list')
 
