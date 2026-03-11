@@ -322,3 +322,34 @@
             .flow-track { flex-direction: column; align-items: flex-start; gap: 16px; }
             .flow-arrow { display: none; }
         }
+
+        .popup{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.5);
+}
+
+.popup-content{
+    background:white;
+    width:400px;
+    padding:20px;
+    margin:100px auto;
+    border-radius:8px;
+}
+
+.popup-content input,
+.popup-content textarea{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+}
+
+.close-btn{
+    float:right;
+    cursor:pointer;
+    font-size:22px;
+}

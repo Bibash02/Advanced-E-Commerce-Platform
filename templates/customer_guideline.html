@@ -187,10 +187,39 @@
 
 <section class="contact-strip">
     <div class="contact-box">
-        <div><h3>Need more help?</h3><p>Our support team is here for you anytime.</p></div>
-        <a href="mailto:support@shopsphere.com" class="contact-btn"><i class="fas fa-envelope" style="margin-right:8px;"></i>Contact Support</a>
+        <div>
+            <h3>Need more help?</h3>
+            <p>Our support team is here for you anytime.</p>
+        </div>
+
+        <button class="contact-btn" onclick="openContact()">
+            Contact Support
+        </button>
     </div>
 </section>
+
+<div id="contactPopup" class="popup">
+
+    <div class="popup-content">
+        <span class="close-btn" onclick="closeContact()">×</span>
+
+        <h2>Contact Support</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {{ form.name }}
+            {{ form.email }}
+            {{ form.phone }}
+            {{ form.subject }}
+            {{ form.message }}
+
+            <button type="submit">Send Message</button>
+
+        </form>
+    </div>
+
+</div>
 
 <footer>
         <div class="footer-content">
@@ -257,6 +286,14 @@
         const answer = btn.nextElementSibling;
         const isOpen = answer.classList.toggle('open');
         btn.classList.toggle('open', isOpen);
+    }
+
+    function openContact(){
+        document.getElementById("contactPopup").style.display = "block";
+    }
+
+    function closeContact(){
+        document.getElementById("contactPopup").style.display = "none";
     }
 </script>
 </body>

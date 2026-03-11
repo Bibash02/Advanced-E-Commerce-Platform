@@ -990,7 +990,6 @@ def document_edit(request):
 
     return render(request, 'document_edit.html', {'form': form})
 
-@customer_required
 def contact(request):
     if request.method == "POST":
         name = request.POST.get("name")
@@ -1565,10 +1564,32 @@ def guidelines(request):
     return render(request, 'guideline.html')
 
 def customer_guidelines(request):
-    return render(request, 'customer_guideline.html')
+    form = ContactMessageForm()
+
+    if request.method == "POST":
+        form = ContactMessageForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = ContactMessageForm()  
+
+    return render(request, 'customer_guideline.html', {'form': form})
 
 def supplier_guidelines(request):
-    return render(request, 'supplier_guideline.html')
+    form = ContactMessageForm()
+
+    if request.method == "POST":
+        form = ContactMessageForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = ContactMessageForm()  
+    return render(request, 'supplier_guideline.html', {'form': form})
 
 def delivery_guidelines(request):
-    return render(request, 'delivery_guideline.html')
+    form = ContactMessageForm()
+
+    if request.method == "POST":
+        form = ContactMessageForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = ContactMessageForm()  
+    return render(request, 'delivery_guideline.html', {'form': form})

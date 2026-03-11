@@ -89,3 +89,31 @@ class DeliveryDocumentForm(forms.ModelForm):
     class Meta:
         model = DeliveryDocument
         exclude = ['user', 'created_at', 'status']
+
+class ContactMessageForm(forms.ModelForm):
+    class Meta:
+        model = ContactMessage
+        fields = ['name', 'email', 'phone', 'subject', 'message']
+
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'placeholder': 'Your Full Name'
+            }),
+
+            'email': forms.EmailInput(attrs={
+                'placeholder': 'Your Email Address'
+            }),
+
+            'phone': forms.TextInput(attrs={
+                'placeholder': 'Phone Number'
+            }),
+
+            'subject': forms.TextInput(attrs={
+                'placeholder': 'Subject of your message'
+            }),
+
+            'message': forms.Textarea(attrs={
+                'placeholder': 'Write your message here...',
+                'rows': 4
+            }),
+        }

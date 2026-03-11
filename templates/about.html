@@ -17,8 +17,7 @@
         <div class="logo">Shop Sphere</div>
         <div class="nav-links">
             <a href="{% url 'home' %}">Dashboard</a>
-            <a href="{% url 'contact' %}">Contact</a>
-            <a href="{% url 'signin' %}">Sign In</a>
+            <a href="{% url 'signin' %}">SignIn</a>
         </div>
     </nav>
 </header>
@@ -128,15 +127,14 @@
                 <ul>
                     <li><a href="{% url 'about' %}">About Us</a></li>
                     <li><a href="{% url 'contact' %}">Contact Us</a></li>
-                    <li><a href="{% url 'home' %}">Home</a></li>
                 </ul>
             </div>
 
             <div class="footer-section">
                 <h3>Customer Service</h3>
                 <ul>
-                    <li><a href="#shipping">Shipping Policy</a></li>
-                    <li><a href="#returns">Returns & Exchanges</a></li>
+                    <li><a href="{% url 'home' %}">Shipping Policy</a></li>
+                    <li><a href="{% url 'home' %}">Returns & Exchanges</a></li>
                 </ul>
             </div>
 
@@ -145,7 +143,6 @@
                 <ul>
                     <li><a href="{% url 'signin' %}">SignIn</a></li>
                     <li><a href="{% url 'signup' %}">SignUp</a></li>
-                    <li><a href="{% url 'home' %}">Home</a></li>
                 </ul>
             </div>
 
