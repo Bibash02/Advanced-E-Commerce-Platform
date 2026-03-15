@@ -78,6 +78,8 @@
 </div>
 
 <!-- REVIEW FORM -->
+{% if has_purchased %}
+
 <div class="review-form">
     <h3>Leave a Review</h3>
 
@@ -101,6 +103,15 @@
     </form>
 </div>
 
+{% else %}
+
+<div class="review-form">
+    <p style="color:red;">
+        ⚠ Only customers who purchased this product can leave a review.
+    </p>
+</div>
+
+{% endif %}
 
 </body>
 </html>

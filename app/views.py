@@ -608,10 +608,24 @@ def category_list_customer(request):
 
 @customer_required
 def buy_product(request, product_id):
+
     product = get_object_or_404(Product, id=product_id)
     reviews = product.reviews.select_related('user').order_by('-created_at')
 
-    if request.method == 'POST' and request.user.is_authenticated:
+    has_purchased = False
+
+    if request.user.is_authenticated:
+        has_purchased = OrderItem.objects.filter(
+            order__user=request.user,
+            product_id=product,
+            order__status="Delivered"   # optional but recommended
+        ).exists()
+
+    if request.method == 'POST':
+
+        if not has_purchased:
+            return redirect('buy_product', product_id=product.id)
+
         rating = request.POST.get('rating')
         comment = request.POST.get('comment')
 
@@ -622,12 +636,15 @@ def buy_product(request, product_id):
                 rating=rating,
                 comment=comment
             )
-            return redirect('buy_product', product_id=product.id)
+
+        return redirect('buy_product', product_id=product.id)
 
     context = {
         'product': product,
-        'reviews': reviews
+        'reviews': reviews,
+        'has_purchased': has_purchased
     }
+
     return render(request, 'buy_product.html', context)
 
 @customer_required
