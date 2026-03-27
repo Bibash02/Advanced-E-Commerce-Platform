@@ -28,7 +28,7 @@ from django.views.decorators.http import require_POST
 from django.db.models.functions import TruncMonth, TruncDay
 from django.utils.timezone import now
 from collections import defaultdict
-from calendar import month_name
+from calendar import month_name, monthrange
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -1615,12 +1615,12 @@ def delivery_guidelines(request):
             form = ContactMessageForm()  
     return render(request, 'delivery_guideline.html', {'form': form})
 
+@customer_required
 def customer_graph(request):
     user = request.user
-
     orders = Order.objects.filter(user=user)
 
-    # ===== BASIC TOTALS =====
+    # BASIC TOTALS 
     total_orders = orders.count()
 
     current_date = now()
@@ -1631,7 +1631,7 @@ def customer_graph(request):
     last_month = last_month_date.month
     last_month_year = last_month_date.year
 
-    # ===== MONTH TOTALS =====
+    # MONTH TOTALS 
     current_month_total = orders.filter(
         created_at__year=current_year,
         created_at__month=current_month,
@@ -1647,7 +1647,7 @@ def customer_graph(request):
     current_month_name = month_name[current_month]
     last_month_name = month_name[last_month]
 
-    # ===== HIGHEST MONTH =====
+    # HIGHEST MONTH 
     monthly_data = (
         orders.filter(status__in=["Paid", "Delivered"])
         .annotate(month=TruncMonth('created_at'))
@@ -1664,7 +1664,7 @@ def customer_graph(request):
         highest_month_total = highest['total']
         highest_month_name = highest['month'].strftime("%B")
 
-    # ===== DAILY SPENDING =====
+    # DAILY SPENDING (simple chart) 
     daily_data = (
         orders.filter(
             created_at__year=current_year,
@@ -1680,46 +1680,117 @@ def customer_graph(request):
     daily_labels = [d['day'].strftime("%d") for d in daily_data]
     daily_values = [float(d['total']) for d in daily_data]
 
-    # ===== CATEGORY BREAKDOWN =====
-    category_map = defaultdict(float)
+    # MONTHLY TOTALS (FULL YEAR) 
+    yearly_data = (
+        orders.filter(
+            created_at__year=current_year,
+            status__in=["Paid", "Delivered"]
+        )
+        .annotate(month=TruncMonth('created_at'))
+        .values('month')
+        .annotate(total=Sum('amount'))
+        .order_by('month')
+    )
 
-    for order in orders.filter(status__in=["Paid", "Delivered"]):
-        for item in order.items.all():
-            category_name = item.product.category.name
-            category_map[category_name] += float(item.price) * item.quantity
+    month_map = {m['month'].month: float(m['total']) for m in yearly_data}
 
-    total_spent = sum(category_map.values())
+    monthly_labels = [month_name[i][:3] for i in range(1, 13)]
+    monthly_totals = [month_map.get(i, 0) for i in range(1, 13)]
 
-    category_breakdown = []
-    for name, total in category_map.items():
-        pct = (total / total_spent * 100) if total_spent > 0 else 0
-        category_breakdown.append({
-            'name': name,
-            'total': total,
-            'pct': round(pct, 1),
-            'color': "#%06x" % (hash(name) & 0xFFFFFF)
+    # ALL MONTHS DAILY DATA
+    all_months_data = []
+
+    months = (
+        orders.filter(status__in=["Paid", "Delivered"])
+        .annotate(month=TruncMonth('created_at'))
+        .values('month')
+        .distinct()
+        .order_by('month')
+    )
+
+    for m in months:
+        month_date = m['month']
+        year = month_date.year
+        month = month_date.month
+
+        days_in_month = monthrange(year, month)[1]
+        day_values = [0] * days_in_month
+
+        daily = (
+            orders.filter(
+                created_at__year=year,
+                created_at__month=month,
+                status__in=["Paid", "Delivered"]
+            )
+            .annotate(day=TruncDay('created_at'))
+            .values('day')
+            .annotate(total=Sum('amount'))
+        )
+
+        for d in daily:
+            day_index = d['day'].day - 1
+            day_values[day_index] = float(d['total'])
+
+        all_months_data.append({
+            "label": month_date.strftime("%b %Y"),
+            "year": year,
+            "month": month,
+            "days": day_values,
+            "total": sum(day_values)
         })
 
-    # ===== TOP PRODUCTS =====
-    product_map = defaultdict(float)
+    # CURRENT & LAST MONTH DAYS 
+    def get_month_days(year, month):
+        days_in_month = monthrange(year, month)[1]
+        data = [0] * days_in_month
 
-    for order in orders.filter(status__in=["Paid", "Delivered"]):
-        for item in order.items.all():
-            product_map[item.product.name] += float(item.price) * item.quantity
+        daily = (
+            orders.filter(
+                created_at__year=year,
+                created_at__month=month,
+                status__in=["Paid", "Delivered"]
+            )
+            .annotate(day=TruncDay('created_at'))
+            .values('day')
+            .annotate(total=Sum('amount'))
+        )
 
-    sorted_products = sorted(product_map.items(), key=lambda x: x[1], reverse=True)[:5]
+        for d in daily:
+            data[d['day'].day - 1] = float(d['total'])
 
-    top_products = []
-    for name, total in sorted_products:
-        pct = (total / total_spent * 100) if total_spent > 0 else 0
-        top_products.append({
-            'name': name,
-            'total': total,
-            'pct': round(pct, 1)
-        })
+        return data
 
-    # ===== RECENT ORDERS =====
-    recent_orders = orders.prefetch_related('items__product').order_by('-created_at')[:5]
+    current_month_days = get_month_days(current_year, current_month)
+    last_month_days = get_month_days(last_month_year, last_month)
+
+    category_map = defaultdict(float) 
+    for order in orders.filter(status__in=["Paid", "Delivered"]): 
+        for item in order.items.all(): category_name = item.product.category.name 
+        category_map[category_name] += float(item.price) * item.quantity 
+        total_spent = sum(category_map.values()) 
+
+        category_breakdown = [] 
+
+        for name, total in category_map.items(): 
+            pct = (total / total_spent * 100) if total_spent > 0 else 0 
+            category_breakdown.append({ 'name': name, 'total': total, 'pct': round(pct, 1), 'color': "#%06x" % (hash(name) & 0xFFFFFF) })
+
+        product_map = defaultdict(float) 
+        for order in orders.filter(status__in=["Paid", "Delivered"]): 
+            for item in order.items.all(): 
+                product_map[item.product.name] += float(item.price) * item.quantity
+
+        sorted_products = sorted(product_map.items(), key=lambda x: x[1], reverse=True)[:5]
+
+        top_products = [] 
+        for name, total in sorted_products: 
+            pct = (total / total_spent * 100) if total_spent > 0 else 0 
+            top_products.append({ 
+                'name': name, 
+                'total': total, 
+                'pct': round(pct, 1) })
+        
+        recent_orders = orders.prefetch_related('items__product').order_by('-created_at')[:5]
 
     context = {
         'current_month_total': current_month_total,
@@ -1729,11 +1800,18 @@ def customer_graph(request):
         'highest_month_name': highest_month_name,
         'current_month_name': current_month_name,
         'last_month_name': last_month_name,
-        'recent_orders': recent_orders,
-        'category_breakdown': category_breakdown,
-        'top_products': top_products,
         'daily_labels': daily_labels,
         'daily_values': daily_values,
+        'recent_orders': recent_orders, 
+        'category_breakdown': category_breakdown, 
+        'top_products': top_products,
+
+        # GRAPH DATA
+        'all_months_data': json.dumps(all_months_data),
+        'monthly_labels': json.dumps(monthly_labels),
+        'monthly_totals': json.dumps(monthly_totals),
+        'current_month_days': json.dumps(current_month_days),
+        'last_month_days': json.dumps(last_month_days),
     }
 
     return render(request, 'customer_graph.html', context)
