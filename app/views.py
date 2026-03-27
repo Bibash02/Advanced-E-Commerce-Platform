@@ -25,6 +25,10 @@ from django.utils import timezone
 from datetime import timedelta
 from django.core.paginator import Paginator
 from django.views.decorators.http import require_POST
+from django.db.models.functions import TruncMonth, TruncDay
+from django.utils.timezone import now
+from collections import defaultdict
+from calendar import month_name
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -1610,3 +1614,126 @@ def delivery_guidelines(request):
             form.save()
             form = ContactMessageForm()  
     return render(request, 'delivery_guideline.html', {'form': form})
+
+def customer_graph(request):
+    user = request.user
+
+    orders = Order.objects.filter(user=user)
+
+    # ===== BASIC TOTALS =====
+    total_orders = orders.count()
+
+    current_date = now()
+    current_month = current_date.month
+    current_year = current_date.year
+
+    last_month_date = current_date - timedelta(days=30)
+    last_month = last_month_date.month
+    last_month_year = last_month_date.year
+
+    # ===== MONTH TOTALS =====
+    current_month_total = orders.filter(
+        created_at__year=current_year,
+        created_at__month=current_month,
+        status__in=["Paid", "Delivered"]
+    ).aggregate(total=Sum('amount'))['total'] or 0
+
+    last_month_total = orders.filter(
+        created_at__year=last_month_year,
+        created_at__month=last_month,
+        status__in=["Paid", "Delivered"]
+    ).aggregate(total=Sum('amount'))['total'] or 0
+
+    current_month_name = month_name[current_month]
+    last_month_name = month_name[last_month]
+
+    # ===== HIGHEST MONTH =====
+    monthly_data = (
+        orders.filter(status__in=["Paid", "Delivered"])
+        .annotate(month=TruncMonth('created_at'))
+        .values('month')
+        .annotate(total=Sum('amount'))
+        .order_by('-total')
+    )
+
+    highest_month_total = 0
+    highest_month_name = ""
+
+    if monthly_data:
+        highest = monthly_data[0]
+        highest_month_total = highest['total']
+        highest_month_name = highest['month'].strftime("%B")
+
+    # ===== DAILY SPENDING =====
+    daily_data = (
+        orders.filter(
+            created_at__year=current_year,
+            created_at__month=current_month,
+            status__in=["Paid", "Delivered"]
+        )
+        .annotate(day=TruncDay('created_at'))
+        .values('day')
+        .annotate(total=Sum('amount'))
+        .order_by('day')
+    )
+
+    daily_labels = [d['day'].strftime("%d") for d in daily_data]
+    daily_values = [float(d['total']) for d in daily_data]
+
+    # ===== CATEGORY BREAKDOWN =====
+    category_map = defaultdict(float)
+
+    for order in orders.filter(status__in=["Paid", "Delivered"]):
+        for item in order.items.all():
+            category_name = item.product.category.name
+            category_map[category_name] += float(item.price) * item.quantity
+
+    total_spent = sum(category_map.values())
+
+    category_breakdown = []
+    for name, total in category_map.items():
+        pct = (total / total_spent * 100) if total_spent > 0 else 0
+        category_breakdown.append({
+            'name': name,
+            'total': total,
+            'pct': round(pct, 1),
+            'color': "#%06x" % (hash(name) & 0xFFFFFF)
+        })
+
+    # ===== TOP PRODUCTS =====
+    product_map = defaultdict(float)
+
+    for order in orders.filter(status__in=["Paid", "Delivered"]):
+        for item in order.items.all():
+            product_map[item.product.name] += float(item.price) * item.quantity
+
+    sorted_products = sorted(product_map.items(), key=lambda x: x[1], reverse=True)[:5]
+
+    top_products = []
+    for name, total in sorted_products:
+        pct = (total / total_spent * 100) if total_spent > 0 else 0
+        top_products.append({
+            'name': name,
+            'total': total,
+            'pct': round(pct, 1)
+        })
+
+    # ===== RECENT ORDERS =====
+    recent_orders = orders.prefetch_related('items__product').order_by('-created_at')[:5]
+
+    context = {
+        'current_month_total': current_month_total,
+        'last_month_total': last_month_total,
+        'total_orders': total_orders,
+        'highest_month_total': highest_month_total,
+        'highest_month_name': highest_month_name,
+        'current_month_name': current_month_name,
+        'last_month_name': last_month_name,
+        'recent_orders': recent_orders,
+        'category_breakdown': category_breakdown,
+        'top_products': top_products,
+        'daily_labels': daily_labels,
+        'daily_values': daily_values,
+    }
+
+    return render(request, 'customer_graph.html', context)

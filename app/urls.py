@@ -62,6 +62,8 @@ urlpatterns = [
     path('customer/spending', customer_spending, name='customer_spending'),
     path('customer/order/history', customer_order_history, name='customer_order_history'),
 
+    path('customer/graph', customer_graph, name='customer_graph'),
+
     path('customer/chekout', checkout, name='checkout'),
     path('customer/esewa/process', process_payment, name='process_payment'),
     path('customer/esewa/success', payment_success, name='payment_success'),

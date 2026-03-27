@@ -1,0 +1,522 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My Dashboard — ShopSphere</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icon.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/customer_graph.css' %}">
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+    <nav>
+        <div class="logo">Shop Sphere</div>
+        <div class="nav-links">
+            <a href="{% url 'customer_dashboard' %}">Dashboard</a>
+            <a href="{% url 'signout' %}">SignOut</a>
+        </div>
+    </nav>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>My <span class="highlight">Graph</span></h1>
+        <p>Your personal spending overview — track every rupee, every month.</p>
+    </div>
+</section>
+
+<!-- ===== SUMMARY CARDS ===== -->
+<section class="summary-section">
+
+    <div class="summary-card green">
+        <p>This Month</p>
+        <h2>Rs. {{ current_month_total|floatformat:0 }}</h2>
+        <small>{{ current_month_name }}</small>
+    </div>
+
+    <div class="summary-card orange">
+        <p>Last Month</p>
+        <h2>Rs. {{ last_month_total|floatformat:0 }}</h2>
+        <small>{{ last_month_name }}</small>
+    </div>
+
+    <div class="summary-card blue">
+        <p>Total Orders</p>
+        <h2>{{ total_orders }}</h2>
+    </div>
+
+    <div class="summary-card red">
+        <p>Highest Month</p>
+        <h2>Rs. {{ highest_month_total|floatformat:0 }}</h2>
+        <small>{{ highest_month_name }}</small>
+    </div>
+
+</section>
+
+<!-- ===== CHARTS ===== -->
+<section class="charts-section">
+
+    <!-- LEFT: Daily spending line/bar chart with month navigation -->
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3><i class="fas fa-chart-line" style="margin-right:8px; color:#e67e22;"></i>Daily Spending</h3>
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                <!-- Chart type toggle -->
+                <div class="chart-toggle">
+                    <button class="toggle-btn active" id="btn-line" onclick="setChartType('line')">
+                        <i class="fas fa-chart-line"></i> Line
+                    </button>
+                    <button class="toggle-btn" id="btn-bar" onclick="setChartType('bar')">
+                        <i class="fas fa-chart-bar"></i> Bar
+                    </button>
+                </div>
+                <!-- Month navigator -->
+                <div class="month-nav">
+                    <button class="nav-btn" id="prev-btn" onclick="changeMonth(-1)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span class="month-label" id="month-label">Loading...</span>
+                    <button class="nav-btn" id="next-btn" onclick="changeMonth(1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="chart-wrap">
+            <canvas id="dailyChart"></canvas>
+        </div>
+    </div>
+
+    <!-- RIGHT: Current vs Previous month bar comparison -->
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3><i class="fas fa-chart-bar" style="margin-right:8px; color:#2980b9;"></i>Month Comparison</h3>
+        </div>
+        <div class="legend-row">
+            <div class="legend-item">
+                <span class="legend-dot" style="background:#111;"></span>
+                {{ current_month_name }}
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot" style="background:#bbb;"></span>
+                {{ last_month_name }}
+            </div>
+        </div>
+        <div class="compare-chart-wrap">
+            <canvas id="compareChart"></canvas>
+        </div>
+    </div>
+
+</section>
+
+<!-- ===== MONTHLY SPENDING BAR (full year) ===== -->
+<section style="padding: 0 40px 24px 40px;">
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3><i class="fas fa-calendar-alt" style="margin-right:8px; color:#27ae60;"></i>Spending This Year — Monthly Overview</h3>
+        </div>
+        <div style="position:relative; height:220px;">
+            <canvas id="monthlyChart"></canvas>
+        </div>
+    </div>
+</section>
+
+<!-- ===== RECENT ORDERS TABLE ===== -->
+<section class="table-section">
+    <h2 class="section-title"><i class="fas fa-list" style="margin-right:8px;"></i>Recent Orders</h2>
+    <table width="100%">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th style="text-align:left;">Product(s)</th>
+                <th>Amount</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for order in recent_orders %}
+            <tr>
+                <td style="font-weight:700;">#{{ order.id }}</td>
+                <td style="text-align:left; font-size:13px; color:#555;">
+                    {% for item in order.items.all|slice:":2" %}
+                        {{ item.product.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                    {% if order.items.count > 2 %} +{{ order.items.count|add:"-2" }} more{% endif %}
+                </td>
+                <td class="amount-positive">Rs. {{ order.amount|floatformat:0 }}</td>
+                <td>
+                    {% if order.payment_type == 'cod' %}
+                        <span class="badge badge-orange">COD</span>
+                    {% else %}
+                        <span class="badge badge-blue">eSewa</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if order.status == 'Delivered' or order.status == 'Paid' %}
+                        <span class="badge badge-green">{{ order.status }}</span>
+                    {% elif order.status == 'Pending' %}
+                        <span class="badge badge-orange">Pending</span>
+                    {% elif order.status == 'Cancelled' %}
+                        <span class="badge badge-red">Cancelled</span>
+                    {% else %}
+                        <span class="badge badge-blue">{{ order.status }}</span>
+                    {% endif %}
+                </td>
+                <td style="color:#aaa; font-size:13px;">{{ order.created_at|date:"M d, Y" }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6" style="text-align:center; padding:40px; color:#aaa;">No orders yet.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<!-- ===== BOTTOM GRID: Category + Top Products ===== -->
+<section class="bottom-grid">
+
+    <!-- Category spending breakdown -->
+    <div class="chart-card">
+        <h3 style="font-size:16px; font-weight:700; color:#111; margin-bottom:6px;">
+            <i class="fas fa-tags" style="margin-right:8px; color:#8e44ad;"></i>Spend by Category
+        </h3>
+        <div class="pie-list">
+            {% for cat in category_breakdown %}
+            <div>
+                <div class="pie-item">
+                    <span class="pie-dot" style="background:{{ cat.color }};"></span>
+                    <span class="pie-label">{{ cat.name }}</span>
+                    <span class="pie-val">Rs. {{ cat.total|floatformat:0 }}</span>
+                    <span class="pie-pct">({{ cat.pct }}%)</span>
+                </div>
+                <div class="mini-bar-track">
+                    <div class="mini-bar-fill" style="width:{{ cat.pct }}%;"></div>
+                </div>
+            </div>
+            {% empty %}
+                <p style="color:#aaa; font-size:14px; margin-top:12px;">No data yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Top 5 products -->
+    <div class="chart-card">
+        <h3 style="font-size:16px; font-weight:700; color:#111; margin-bottom:6px;">
+            <i class="fas fa-fire" style="margin-right:8px; color:#e74c3c;"></i>Top Products You Buy
+        </h3>
+        <div class="pie-list">
+            {% for item in top_products %}
+            <div>
+                <div class="pie-item">
+                    <span class="pie-dot" style="background:#111;"></span>
+                    <span class="pie-label">{{ item.name }}</span>
+                    <span class="pie-val">Rs. {{ item.total|floatformat:0 }}</span>
+                </div>
+                <div class="mini-bar-track">
+                    <div class="mini-bar-fill" style="width:{{ item.pct }}%;"></div>
+                </div>
+            </div>
+            {% empty %}
+                <p style="color:#aaa; font-size:14px; margin-top:12px;">No data yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ShopSphere</h3>
+                <p>Shop Sphere — Where Your Style Comes Full Circle.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/YourPage" target="_blank" class="social-icon">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/YourProfile" target="_blank" class="social-icon">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Information</h3>
+                <ul>
+                    <li><a href="{% url 'customer_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'customer_permission' %}">Permissions</a></li>
+                    <li><a href="{% url 'customer_guidelines' %}">GuideLine</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>For Customer</h3>
+                <ul>
+                    <li><a href="{% url 'all_products' %}">Products</a></li>
+                    <li><a href="{% url 'customer_blog_list' %}">Blogs</a></li>
+                    <li><a href="{% url 'customer_dashboard' %}">Dashboard</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'cart_page' %}">Cart</a></li>
+                    <li><a href="{% url 'customer_spending' %}">My Spending</a></li>
+                    <li><a href="{% url 'customer_order_history' %}">My History</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>We don’t just sell clothes — we create experiences. Explore collections crafted with care, designed for confidence, and inspired by modern lifestyles.</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© ShopSphere...</p>
+            <a href="{% url 'customer_dashboard' %}">ShopSphere.com</a>
+        </div>
+    </footer>
+
+<!-- ===== CHART SCRIPTS ===== -->
+<script>
+    // ── Data injected from Django view (SAFE) ───────────────────────────
+    const allMonthsData = {{ all_months_data|default:"[]"|safe }};
+    
+    const monthlyLabels = {{ monthly_labels|default:"[]"|safe }};
+    const monthlyTotals = {{ monthly_totals|default:"[]"|safe }};
+
+    const currentMonthDays  = {{ current_month_days|default:"[]"|safe }};
+    const lastMonthDays     = {{ last_month_days|default:"[]"|safe }};
+    const currentMonthLabel = "{{ current_month_name|default:'Current' }}";
+    const lastMonthLabel    = "{{ last_month_name|default:'Last' }}";
+
+    // ── State ───────────────────────────────────────────────────────────
+    let currentIndex  = allMonthsData.length - 1;
+    let currentType   = 'line';
+    let dailyChart    = null;
+
+    // Prevent crash if no data
+    if (allMonthsData.length === 0) {
+        console.warn("No monthly data available");
+    }
+
+    // ── Daily Chart ─────────────────────────────────────────────────────
+    function buildDailyChart(monthData, type) {
+        if (!monthData) return;
+
+        const ctx = document.getElementById('dailyChart').getContext('2d');
+        if (dailyChart) dailyChart.destroy();
+
+        const labels = (monthData.days || []).map((_, i) => `${i + 1}`);
+        const isLine = (type === 'line');
+
+        dailyChart = new Chart(ctx, {
+            type: type,
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: `Rs. spent — ${monthData.label || ''}`,
+                    data: monthData.days || [],
+                    borderColor: '#111',
+                    backgroundColor: isLine
+                        ? 'rgba(17,17,17,0.07)'
+                        : 'rgba(17,17,17,0.12)',
+                    borderWidth: isLine ? 2 : 0,
+                    pointBackgroundColor: '#111',
+                    pointRadius: isLine ? 4 : 0,
+                    pointHoverRadius: isLine ? 6 : 0,
+                    fill: isLine,
+                    tension: 0.4,
+                    borderRadius: isLine ? 0 : 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => ` Rs. ${ctx.parsed.y.toLocaleString()}`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 11 }, color: '#aaa' }
+                    },
+                    y: {
+                        grid: { color: '#f5f5f5' },
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#aaa',
+                            callback: v => `Rs.${v.toLocaleString()}`
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    function updateMonthNav() {
+        if (!allMonthsData.length) return;
+
+        const monthData = allMonthsData[currentIndex];
+
+        document.getElementById('month-label').textContent = monthData.label || '';
+
+        document.getElementById('prev-btn').disabled = (currentIndex === 0);
+        document.getElementById('next-btn').disabled = (currentIndex === allMonthsData.length - 1);
+
+        buildDailyChart(monthData, currentType);
+    }
+
+    function changeMonth(dir) {
+        currentIndex = Math.max(0, Math.min(allMonthsData.length - 1, currentIndex + dir));
+        updateMonthNav();
+    }
+
+    function setChartType(type) {
+        currentType = type;
+
+        document.getElementById('btn-line').classList.toggle('active', type === 'line');
+        document.getElementById('btn-bar').classList.toggle('active', type === 'bar');
+
+        buildDailyChart(allMonthsData[currentIndex], currentType);
+    }
+
+    // ── Monthly Year Overview Chart ─────────────────────────────────────
+    new Chart(document.getElementById('monthlyChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: monthlyLabels,
+            datasets: [{
+                label: 'Monthly Spend',
+                data: monthlyTotals,
+                backgroundColor: monthlyTotals.map((_, i) =>
+                    i === monthlyTotals.length - 1
+                        ? 'rgba(17,17,17,0.85)'
+                        : 'rgba(17,17,17,0.18)'
+                ),
+                borderRadius: 6,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ` Rs. ${ctx.parsed.y.toLocaleString()}`
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { size: 12 }, color: '#888' }
+                },
+                y: {
+                    grid: { color: '#f5f5f5' },
+                    ticks: {
+                        font: { size: 11 },
+                        color: '#aaa',
+                        callback: v => `Rs.${v.toLocaleString()}`
+                    },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // ── Compare Chart (weekly buckets safe) ─────────────────────────────
+    function weeklyBuckets(days = []) {
+        const weeks = [0, 0, 0, 0];
+
+        days.forEach((v, i) => {
+            const w = Math.min(3, Math.floor(i / 7));
+            weeks[w] += v;
+        });
+
+        return weeks;
+    }
+
+    new Chart(document.getElementById('compareChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            datasets: [
+                {
+                    label: currentMonthLabel,
+                    data: weeklyBuckets(currentMonthDays),
+                    backgroundColor: 'rgba(17,17,17,0.85)',
+                    borderRadius: 5,
+                    borderSkipped: false,
+                },
+                {
+                    label: lastMonthLabel,
+                    data: weeklyBuckets(lastMonthDays),
+                    backgroundColor: 'rgba(17,17,17,0.2)',
+                    borderRadius: 5,
+                    borderSkipped: false,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ` Rs. ${ctx.parsed.y.toLocaleString()}`
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { size: 11 }, color: '#888' }
+                },
+                y: {
+                    grid: { color: '#f5f5f5' },
+                    ticks: {
+                        font: { size: 11 },
+                        color: '#aaa',
+                        callback: v => `Rs.${v.toLocaleString()}`
+                    },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // ── Init ───────────────────────────────────────────────────────────
+    if (allMonthsData.length > 0) {
+        updateMonthNav();
+    }
+</script>
+
+</body>
+</html>
