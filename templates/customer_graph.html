@@ -296,25 +296,27 @@
 
 <!-- ===== CHART SCRIPTS ===== -->
 <script>
-    // ── Data injected from Django view (SAFE) ───────────────────────────
-    const allMonthsData = {{ all_months_data|default:"[]"|safe }};
+    // ── SAFE DATA INJECTION (FIXED) ───────────────────────────
+    const allMonthsData = JSON.parse('{{ all_months_data|default:"[]"|escapejs }}');
     
-    const monthlyLabels = {{ monthly_labels|default:"[]"|safe }};
-    const monthlyTotals = {{ monthly_totals|default:"[]"|safe }};
+    const monthlyLabels = JSON.parse('{{ monthly_labels|default:"[]"|escapejs }}');
+    const monthlyTotals = JSON.parse('{{ monthly_totals|default:"[]"|escapejs }}');
 
-    const currentMonthDays  = {{ current_month_days|default:"[]"|safe }};
-    const lastMonthDays     = {{ last_month_days|default:"[]"|safe }};
-    const currentMonthLabel = "{{ current_month_name|default:'Current' }}";
-    const lastMonthLabel    = "{{ last_month_name|default:'Last' }}";
+    const currentMonthDays = JSON.parse('{{ current_month_days|default:"[]"|escapejs }}');
+    const lastMonthDays    = JSON.parse('{{ last_month_days|default:"[]"|escapejs }}');
 
-    // ── State ───────────────────────────────────────────────────────────
-    let currentIndex  = allMonthsData.length - 1;
-    let currentType   = 'line';
-    let dailyChart    = null;
+    const currentMonthLabel = "{{ current_month_name|default:'Current'|escapejs }}";
+    const lastMonthLabel    = "{{ last_month_name|default:'Last'|escapejs }}";
+
+    // ── STATE ────────────────────────────────────────────────
+    let currentIndex = allMonthsData.length - 1;
+    let currentType  = 'line';
+    let dailyChart   = null;
 
     // Prevent crash if no data
-    if (allMonthsData.length === 0) {
+    if (!Array.isArray(allMonthsData) || allMonthsData.length === 0) {
         console.warn("No monthly data available");
+        currentIndex = 0;
     }
 
     // ── Daily Chart ─────────────────────────────────────────────────────

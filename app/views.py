@@ -1815,3 +1815,220 @@ def customer_graph(request):
     }
 
     return render(request, 'customer_graph.html', context)
+
+def supplier_graph(request):
+    user = request.user
+
+    # ===== SUPPLIER PRODUCTS =====
+    products = Product.objects.filter(supplier=user)
+    total_products = products.count()
+    active_products = products.filter(is_active=True).count()
+
+    # ===== ORDERS WITH SUPPLIER PRODUCTS =====
+    order_items = OrderItem.objects.filter(product__supplier=user)
+    orders = Order.objects.filter(items__in=order_items).distinct()
+
+    current_date = now()
+    current_month = current_date.month
+    current_year = current_date.year
+
+    last_month_date = current_date - timedelta(days=30)
+    last_month = last_month_date.month
+    last_month_year = last_month_date.year
+
+    # ===== REVENUE CALCULATION =====
+    def get_revenue(year, month):
+        return order_items.filter(
+            order__created_at__year=year,
+            order__created_at__month=month,
+            order__status__in=["Paid", "Delivered"]
+        ).aggregate(total=Sum('price'))['total'] or 0
+
+    current_month_revenue = get_revenue(current_year, current_month)
+    last_month_revenue = get_revenue(last_month_year, last_month)
+
+    # ===== ORDERS COUNT =====
+    current_month_orders = orders.filter(
+        created_at__year=current_year,
+        created_at__month=current_month
+    ).count()
+
+    last_month_orders = orders.filter(
+        created_at__year=last_month_year,
+        created_at__month=last_month
+    ).count()
+
+    # ===== TRENDS =====
+    def calc_trend(current, previous):
+        if previous == 0:
+            return 100 if current > 0 else 0
+        return ((current - previous) / previous) * 100
+
+    revenue_trend = calc_trend(current_month_revenue, last_month_revenue)
+    orders_trend = calc_trend(current_month_orders, last_month_orders)
+
+    # ===== BEST MONTH =====
+    monthly_data = (
+        order_items.filter(order__status__in=["Paid", "Delivered"])
+        .annotate(month=TruncMonth('order__created_at'))
+        .values('month')
+        .annotate(total=Sum('price'))
+        .order_by('-total')
+    )
+
+    best_month_revenue = 0
+    best_month_name = ""
+
+    if monthly_data:
+        best = monthly_data[0]
+        best_month_revenue = best['total']
+        best_month_name = best['month'].strftime("%B")
+
+    # ===== DAILY GRAPH DATA =====
+    all_months_data = []
+
+    months = (
+        order_items.annotate(month=TruncMonth('order__created_at'))
+        .values('month')
+        .distinct()
+        .order_by('month')
+    )
+
+    for m in months:
+        month_date = m['month']
+        year = month_date.year
+        month = month_date.month
+
+        days_in_month = monthrange(year, month)[1]
+        day_values = [0] * days_in_month
+
+        daily = (
+            order_items.filter(
+                order__created_at__year=year,
+                order__created_at__month=month,
+                order__status__in=["Paid", "Delivered"]
+            )
+            .annotate(day=TruncDay('order__created_at'))
+            .values('day')
+            .annotate(total=Sum('price'))
+        )
+
+        for d in daily:
+            day_values[d['day'].day - 1] = float(d['total'])
+
+        all_months_data.append({
+            "label": month_date.strftime("%b %Y"),
+            "days": day_values
+        })
+
+    # ===== MONTHLY TOTALS =====
+    monthly_labels = [month_name[i][:3] for i in range(1, 13)]
+    monthly_totals = []
+
+    for i in range(1, 13):
+        total = get_revenue(current_year, i)
+        monthly_totals.append(float(total))
+
+    # ===== CURRENT & LAST MONTH DAYS =====
+    def get_days(year, month):
+        days_in_month = monthrange(year, month)[1]
+        data = [0] * days_in_month
+
+        daily = (
+            order_items.filter(
+                order__created_at__year=year,
+                order__created_at__month=month,
+                order__status__in=["Paid", "Delivered"]
+            )
+            .annotate(day=TruncDay('order__created_at'))
+            .values('day')
+            .annotate(total=Sum('price'))
+        )
+
+        for d in daily:
+            data[d['day'].day - 1] = float(d['total'])
+
+        return data
+
+    current_month_days = get_days(current_year, current_month)
+    last_month_days = get_days(last_month_year, last_month)
+
+    # ===== ORDER STATUS =====
+    status_counts = orders.values('status').annotate(count=Count('id'))
+    status_data = {s['status']: s['count'] for s in status_counts}
+
+    # ===== PAYMENT METHODS =====
+    payment_counts = orders.values('payment_type').annotate(count=Count('id'))
+    payment_data = {p['payment_type']: p['count'] for p in payment_counts}
+
+    # ===== TOP PRODUCTS =====
+    product_sales = (
+        order_items.values('product__name')
+        .annotate(total=Sum('price'), qty_sold=Sum('quantity'))
+        .order_by('-total')[:5]
+    )
+
+    top_products = []
+    total_sales = sum([p['total'] for p in product_sales]) or 1
+
+    for p in product_sales:
+        pct = (p['total'] / total_sales) * 100
+        top_products.append({
+            'name': p['product__name'],
+            'total': p['total'],
+            'qty_sold': p['qty_sold'],
+            'pct': round(pct, 1)
+        })
+
+    # ===== CATEGORY BREAKDOWN =====
+    category_map = defaultdict(float)
+
+    for item in order_items:
+        cat = item.product.category.name
+        category_map[cat] += float(item.price) * item.quantity
+
+    category_breakdown = []
+    total_cat = sum(category_map.values()) or 1
+
+    for name, total in category_map.items():
+        pct = (total / total_cat) * 100
+        category_breakdown.append({
+            'name': name,
+            'total': total,
+            'pct': round(pct, 1),
+            'color': "#%06x" % (hash(name) & 0xFFFFFF)
+        })
+
+    # ===== LOW STOCK =====
+    low_stock_products = products.filter(stock__lte=5)
+
+    # ===== RECENT ORDERS =====
+    recent_orders = orders.order_by('-created_at')[:5]
+
+    # ===== CONTEXT =====
+    context = {
+        'current_month_revenue': current_month_revenue,
+        'last_month_name': month_name[last_month],
+        'current_month_name': month_name[current_month],
+        'current_month_orders': current_month_orders,
+        'revenue_trend': revenue_trend,
+        'orders_trend': orders_trend,
+        'total_products': total_products,
+        'active_products': active_products,
+        'best_month_revenue': best_month_revenue,
+        'best_month_name': best_month_name,
+
+        'recent_orders': recent_orders,
+        'top_products': top_products,
+        'category_breakdown': category_breakdown,
+        'low_stock_products': low_stock_products,
+
+        # GRAPH DATA
+        'all_months_data': json.dumps(all_months_data),
+        'monthly_labels': json.dumps(monthly_labels),
+        'monthly_totals': json.dumps(monthly_totals),
+        'current_month_days': json.dumps(current_month_days),
+        'last_month_days': json.dumps(last_month_days),
+    }
+
+    return render(request, 'supplier_graph.html', context)
