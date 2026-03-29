@@ -626,6 +626,9 @@ def buy_product(request, product_id):
         ).exists()
 
     if request.method == 'POST':
+        size = request.POST.get('size')  # <-- get the selected size
+        # now save 'size' in cart model or use as needed
+        print("Selected size:", size)
 
         if not has_purchased:
             return redirect('buy_product', product_id=product.id)
@@ -683,7 +686,8 @@ def rate_product(request, product_id):
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart, created = Cart.objects.get_or_create(user=request.user)
-    cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=product)
+    size = request.POST.get('size')
+    cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=product, size = size)
 
     if not item_created:
         cart_item.quantity += 1
