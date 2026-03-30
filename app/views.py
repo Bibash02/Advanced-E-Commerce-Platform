@@ -29,6 +29,8 @@ from django.db.models.functions import TruncMonth, TruncDay
 from django.utils.timezone import now
 from collections import defaultdict
 from calendar import month_name, monthrange
+from itertools import chain
+from django.views.decorators.csrf import csrf_exempt
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -335,7 +337,7 @@ def supplier_product_reviews(request):
     # Reviews only from last 7 days
     reviews = ProductReview.objects.filter(
         product__in=supplier_products,
-        created_at__gte=seven_days_ago   # ✅ 7 days filter
+        created_at__gte=seven_days_ago  
     ).select_related(
         'product',
         'user'
@@ -480,7 +482,7 @@ def supplier_orders(request):
         .distinct()
     )
 
-    # 🔥 DELIVERY USERS
+    # DELIVERY USERS
     delivery_users = UserProfile.objects.filter(role="DELIVERY")
 
     context = {
@@ -491,22 +493,93 @@ def supplier_orders(request):
 
     return render(request, "supplier_ordered.html", context)
 
-# @supplier_required
-# def assign_delivery(request, order_id):
-#     if request.method == "POST":
-#         delivery_person_id = request.POST.get("delivery_person")
-#         if delivery_person_id:
-#             order = get_object_or_404(Order, id=order_id)
-#             delivery_user = get_object_or_404(User, id=delivery_person_id, userprofile__role='DELIVERY')
+@supplier_required
+def supplier_cancel_orders(request):
+    supplier = request.user
+    seven_days_ago = timezone.now() - timedelta(days=7)
 
-#             # Assign delivery person
-#             order.delivery_person = delivery_user
-#             order.status = "Assigned"
-#             order.save(update_fields=["delivery_person", "status"])
+    # Base queryset: last 7 days orders for this supplier
+    base_orders = OrderItem.objects.filter(
+        product__supplier=supplier,
+        order__created_at__gte=seven_days_ago
+    ).select_related(
+        "order", "product", "order__user", "order__delivery_person"
+    )
 
-#             # Redirect back to supplier orders page
-#             return redirect("supplier_orders")
-#     return redirect("supplier_orders")
+    # GET filters
+    product_id = request.GET.get("product")
+    city = request.GET.get("city")
+    min_amount = request.GET.get("min_amount")
+    max_amount = request.GET.get("max_amount")
+    delivery_person_id = request.GET.get("delivery_person")  # optional filter for cancelled orders
+
+    # Filter Cancelled orders
+    cancelled_orders = base_orders.filter(order__status="Cancelled")
+    if delivery_person_id:
+        cancelled_orders = cancelled_orders.filter(order__delivery_person__id=delivery_person_id)
+
+    # Filter other orders (Pending, Assigned, Delivered)
+    other_orders = base_orders.filter(order__status__in=["Pending", "Delivered"])
+    if product_id:
+        other_orders = other_orders.filter(product__id=product_id)
+    if city:
+        other_orders = other_orders.filter(order__city__icontains=city)
+    if min_amount:
+        other_orders = other_orders.filter(order__amount__gte=min_amount)
+    if max_amount:
+        other_orders = other_orders.filter(order__amount__lte=max_amount)
+
+    # Combine both querysets
+    orders = list(chain(cancelled_orders, other_orders))
+    orders.sort(key=lambda x: x.order.created_at, reverse=True)
+
+    # Products for filter dropdown
+    supplier_products = base_orders.values("product__id", "product__name").distinct()
+
+    # Delivery users for assign dropdown
+    delivery_users = UserProfile.objects.filter(role="DELIVERY")
+
+    context = {
+        "orders": orders,
+        "supplier_products": supplier_products,
+        "delivery_users": delivery_users,
+    }
+
+    return render(request, "supplier_cancel_ordered.html", context)
+
+@supplier_required
+@csrf_exempt
+def assign_delivery(request, order_id):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            delivery_person_id = data.get("delivery_person_id")
+            
+            # Get order that belongs to this supplier
+            order = Order.objects.get(id=order_id, items__product__supplier=request.user)
+            
+            # Get delivery person (UserProfile)
+            delivery_person = UserProfile.objects.get(user__id=delivery_person_id, role="DELIVERY")
+            
+            # Assign delivery person
+            order.delivery_person = delivery_person.user
+            
+            # Update order status if it was Cancelled or Pending
+            if order.status in ["Cancelled", "Pending"]:
+                order.status = "Assigned"
+            
+            order.save()
+            
+            return JsonResponse({"success": True})
+        
+        except UserProfile.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Delivery person not found"})
+        except Order.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Order not found"})
+        except Exception as e:
+            return JsonResponse({"success": False, "message": str(e)})
+    
+    return JsonResponse({"success": False, "message": "Invalid request"})
 
 @supplier_required
 @require_POST
@@ -521,6 +594,14 @@ def assign_delivery_ajax(request):
     order.delivery_person = delivery_user
     order.status = "Assigned"
     order.save(update_fields=["delivery_person", "status"])
+
+    send_mail(
+            subject="New Delivery Assigned",
+            message=f"You have been assigned to deliver Order #{order.id}.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[delivery_user.user.email],
+            fail_silently=False
+        )
 
     return JsonResponse({"success": True})
 
@@ -1118,20 +1199,20 @@ def delivery_cancel(request, order_id):
     order.save()
 
     send_mail(
-        subject="Your Order is Out for Delivery",
+        subject="Order Delivery Cancelled",
         message=f"""
-            Hello {order.full_name},
+        Hello {order.full_name},
 
-            Your order #{order.id} has been cancled by delivery person.
+        Your order #{order.id} delivery has been cancelled by the delivery person.
 
-            I Am Sorry About That!...
+        Don't worry! We are reassigning a new delivery person.
 
-            Please wait a bit for your Orders!...
+        You will receive your order soon.
 
-            If Any Problem Contact Our Team...
+        If you have any issues, please contact our support team.
 
-            Thank you for shopping with Shop Sphere!
-            """,
+        Thank you for shopping with Shop Sphere!
+                """,
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[order.email],
                     fail_silently=False,

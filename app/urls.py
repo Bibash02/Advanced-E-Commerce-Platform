@@ -31,8 +31,9 @@ urlpatterns = [
     path('supplier/products/category/<int:category_id>', supplier_products_by_category, name = 'supplier_products_by_category'),
     path('supplier/product/reviews', supplier_product_reviews, name='supplier_product_reviews'),
     path('supplier/orders', supplier_orders, name='supplier_orders'),
+    path('supplier/cancel-orders', supplier_cancel_orders, name='supplier_cancel_orders'),
     path('supplier/earnings', supplier_earning, name='supplier_earnings'),
-    # path('supplier/assign-delivery/<int:order_id>', assign_delivery, name='assign_delivery'),
+    path('supplier/assign-delivery/<int:order_id>', assign_delivery, name='assign_delivery'),
     path('supplier/delivery-list', delivery_person_list, name='delivery_person_list'),
     path('supplier/orders/assign-ajax/', assign_delivery_ajax, name='assign_delivery_ajax'),
 

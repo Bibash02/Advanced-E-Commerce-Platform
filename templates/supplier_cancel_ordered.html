@@ -139,7 +139,7 @@
         <div class="logo">Shop Sphere</div>
         <div class="nav-links">
             <a href="{% url 'supplier_dashboard' %}">Dashboard</a>
-            <a href="{% url 'supplier_cancel_orders' %}">Cancelled Orders</a>
+            <a href="{% url 'supplier_orders' %}">Orders</a>
             <a href="{% url 'delivery_person_list' %}">Delivery Persons</a>
             <a href="{% url 'signout' %}">Sign Out</a>
         </div>
@@ -255,16 +255,24 @@
                 <td>
 
                 <td>
-                {% if not item.order.delivery_person %}
+                {% if item.order.status in "Cancelled,Pending,Assigned" %}
                     <select class="delivery-select" data-order-id="{{ item.order.id }}" required>
                         <option value="">Select Delivery</option>
                         {% for delivery in delivery_users %}
-                            <option value="{{ delivery.user.id }}">{{ delivery.user.username }}</option>
+                            {% if item.order.delivery_person and item.order.delivery_person.id == delivery.user.id %}
+                                {# skip current assigned delivery person #}
+                            {% else %}
+                                <option value="{{ delivery.user.id }}">{{ delivery.user.username }}</option>
+                            {% endif %}
                         {% endfor %}
                     </select>
                     <button class="assign-btn" data-order-id="{{ item.order.id }}">Assign</button>
+                {% elif item.order.delivery_person %}
+                    {{ item.order.delivery_person.username }}
+                {% else %}
+                    -
                 {% endif %}
-                </td>
+            </td>
             </tr>
         {% empty %}
             <tr>
@@ -276,34 +284,26 @@
 </section>
 <script>
 document.querySelectorAll('.assign-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const orderId = btn.dataset.orderId;
+    btn.addEventListener('click', function() {
+        const orderId = this.dataset.orderId;
         const select = document.querySelector(`.delivery-select[data-order-id="${orderId}"]`);
         const deliveryId = select.value;
 
-        if(!deliveryId){
-            alert("Please select a delivery person!");
-            return;
-        }
-
-        fetch("{% url 'assign_delivery_ajax' %}", {
+        fetch(`/assign-delivery/${orderId}/`, {
             method: "POST",
             headers: {
-                "X-CSRFToken": "{{ csrf_token }}",
-                "Content-Type": "application/x-www-form-urlencoded"
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken()
             },
-            body: `order_id=${orderId}&delivery_person_id=${deliveryId}`
+            body: JSON.stringify({ delivery_person_id: deliveryId })
         })
         .then(res => res.json())
         .then(data => {
-            if(data.success){
-                // Remove the table row
-                const row = btn.closest('tr');
-                row.remove();
-            } else {
-                alert("Error assigning order!");
+            if (data.success) {
+                // remove row instantly
+                this.closest("tr").remove();
             }
-        })
+        });
     });
 });
 </script>
