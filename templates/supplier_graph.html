@@ -111,8 +111,8 @@
                 <h3><i class="fas fa-chart-bar" style="color:#2980b9;"></i> Month Comparison</h3>
             </div>
             <div class="legend-row">
-                <div class="legend-item"><span class="legend-dot" style="background:var(--ink);"></span>{{ current_month_name }}</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#bbb;"></span>{{ last_month_name }}</div>
+                <div class="legend-item"><span class="legend-dot" style="background:skyblue;"></span>{{ current_month_name }}</div>
+                <div class="legend-item"><span class="legend-dot" style="background:pink;"></span>{{ last_month_name }}</div>
             </div>
             <div class="chart-wrap"><canvas id="compareChart"></canvas></div>
         </div>
@@ -333,200 +333,95 @@
     </footer>
 
 <!-- CHART SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-    const allMonthsData = JSON.parse('{{ all_months_data|default:"[]"|escapejs }}');
-    const monthlyLabels = JSON.parse('{{ monthly_labels|default:"[]"|escapejs }}');
-    const monthlyTotals = JSON.parse('{{ monthly_totals|default:"[]"|escapejs }}');
-    const currentMonthDays = JSON.parse('{{ current_month_days|default:"[]"|escapejs }}');
-    const lastMonthDays = JSON.parse('{{ last_month_days|default:"[]"|escapejs }}');
+const allMonths = {{ all_months_data|safe }};
+const monthlyLabels = {{ monthly_labels|safe }};
+const monthlyTotals = {{ monthly_totals|safe }};
 
-    const currentMonthLabel = "{{ current_month_name|default:'Current'|escapejs }}";
-    const lastMonthLabel = "{{ last_month_name|default:'Last'|escapejs }}";
+let currentIndex = allMonths.length - 1;
+let chartType = 'line';
+let chart = null;
 
-    const statusDelivered  = Number("{{ status_delivered|default:'0' }}");
-    const statusPending    = Number("{{ status_pending|default:'0' }}");
-    const statusProcessing = Number("{{ status_processing|default:'0' }}");
-    const statusCancelled  = Number("{{ status_cancelled|default:'0' }}");
+// DAILY
+function renderChart(){
+    if(!allMonths.length){
+        document.getElementById('month-label').innerText="No Data";
+        return;
+    }
 
-    const paymentEsewa = Number("{{ payment_esewa|default:'0' }}");
-    const paymentCod   = Number("{{ payment_cod|default:'0' }}");
+    const data = allMonths[currentIndex];
+    document.getElementById('month-label').innerText=data.label;
 
+    const labels = data.days.map((_,i)=>i+1);
 
-    const topProductNames = JSON.parse('{{ top_product_names|default:"[]"|escapejs }}');
-    const topProductQtys  = JSON.parse('{{ top_product_qtys|default:"[]"|escapejs }}');
+    if(chart) chart.destroy();
 
-    // ── State ──────────────────────────────────────────────────────────
-    let currentIndex = allMonthsData.length - 1;
-    let currentType  = 'line';
-    let dailyChart   = null;
+    chart = new Chart(document.getElementById('dailyChart'),{
+        type:chartType,
+        data:{
+            labels:labels,
+            datasets:[{
+                label:"Revenue",
+                data:data.days,
+                borderWidth:2,
+                fill:true
+            }]
+        }
+    });
+}
 
-    Chart.defaults.font.family = "'DM Sans', sans-serif";
+function setChartType(type){
+    chartType=type;
 
-    // ── Daily Revenue ──────────────────────────────────────────────────
-    function buildDailyChart(monthData, type) {
-        if (!monthData) return;
-        const ctx = document.getElementById('dailyChart').getContext('2d');
-        if (dailyChart) dailyChart.destroy();
-        const labels = (monthData.days || []).map((_, i) => `${i + 1}`);
-        const isLine = type === 'line';
+    document.getElementById('btn-line').classList.remove('active');
+    document.getElementById('btn-bar').classList.remove('active');
+    document.getElementById('btn-'+type).classList.add('active');
 
-        dailyChart = new Chart(ctx, {
-            type,
-            data: {
-                labels,
-                datasets: [{
-                    label: `Revenue — ${monthData.label || ''}`,
-                    data: monthData.days || [],
-                    borderColor: '#1a1a18',
-                    backgroundColor: isLine ? 'rgba(26,26,24,0.06)' : 'rgba(26,26,24,0.14)',
-                    borderWidth: isLine ? 2 : 0,
-                    pointBackgroundColor: '#1a1a18',
-                    pointRadius: isLine ? 4 : 0,
-                    pointHoverRadius: isLine ? 6 : 0,
-                    fill: isLine,
-                    tension: 0.4,
-                    borderRadius: isLine ? 0 : 5,
-                }]
+    renderChart();
+}
+
+function changeMonth(step){
+    currentIndex+=step;
+    if(currentIndex<0) currentIndex=0;
+    if(currentIndex>=allMonths.length) currentIndex=allMonths.length-1;
+    renderChart();
+}
+
+// MONTHLY
+if(monthlyLabels.length){
+    new Chart(document.getElementById('monthlyChart'),{
+        type:'bar',
+        data:{
+            labels:monthlyLabels,
+            datasets:[{
+                label:"Revenue",
+                data:monthlyTotals
+            }]
+        }
+    });
+}
+
+// COMPARE
+new Chart(document.getElementById('compareChart'),{
+    type:'bar',
+    data:{
+        labels:["Comparison"],
+        datasets:[
+            {
+                label:"{{ current_month_name }}",
+                data:[{{ current_month_revenue|default:0 }}]
             },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { callbacks: { label: c => ` Rs. ${c.parsed.y.toLocaleString()}` } }
-                },
-                scales: {
-                    x: { grid: { display: false }, ticks: { font: { size: 11 }, color: '#b0ada6' } },
-                    y: {
-                        grid: { color: '#f0ede8' },
-                        ticks: { font: { size: 11 }, color: '#b0ada6', callback: v => `Rs.${v.toLocaleString()}` },
-                        beginAtZero: true
-                    }
-                }
+            {
+                label:"{{ last_month_name }}",
+                data:[{{ last_month_revenue|default:0 }}]
             }
-        });
+        ]
     }
+});
 
-    function updateMonthNav() {
-        if (!allMonthsData.length) return;
-        const md = allMonthsData[currentIndex];
-        document.getElementById('month-label').textContent = md.label || '';
-        document.getElementById('prev-btn').disabled = currentIndex === 0;
-        document.getElementById('next-btn').disabled = currentIndex === allMonthsData.length - 1;
-        buildDailyChart(md, currentType);
-    }
-
-    function changeMonth(dir) {
-        currentIndex = Math.max(0, Math.min(allMonthsData.length - 1, currentIndex + dir));
-        updateMonthNav();
-    }
-
-    function setChartType(type) {
-        currentType = type;
-        document.getElementById('btn-line').classList.toggle('active', type === 'line');
-        document.getElementById('btn-bar').classList.toggle('active', type === 'bar');
-        buildDailyChart(allMonthsData[currentIndex], currentType);
-    }
-
-    // ── Week buckets ───────────────────────────────────────────────────
-    function weeklyBuckets(days = []) {
-        const w = [0,0,0,0];
-        days.forEach((v, i) => { w[Math.min(3, Math.floor(i/7))] += v; });
-        return w;
-    }
-
-    // ── Month Comparison ───────────────────────────────────────────────
-    new Chart(document.getElementById('compareChart').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: ['Week 1','Week 2','Week 3','Week 4'],
-            datasets: [
-                { label: currentMonthLabel, data: weeklyBuckets(currentMonthDays), backgroundColor: 'rgba(26,26,24,0.85)', borderRadius: 5, borderSkipped: false },
-                { label: lastMonthLabel,    data: weeklyBuckets(lastMonthDays),    backgroundColor: 'rgba(26,26,24,0.18)', borderRadius: 5, borderSkipped: false }
-            ]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` Rs. ${c.parsed.y.toLocaleString()}` } } },
-            scales: {
-                x: { grid: { display: false }, ticks: { font: { size: 11 }, color: '#888' } },
-                y: { grid: { color: '#f0ede8' }, ticks: { font: { size: 11 }, color: '#b0ada6', callback: v => `Rs.${v.toLocaleString()}` }, beginAtZero: true }
-            }
-        }
-    });
-
-    // ── Annual Monthly ─────────────────────────────────────────────────
-    new Chart(document.getElementById('monthlyChart').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: monthlyLabels,
-            datasets: [{
-                label: 'Monthly Revenue',
-                data: monthlyTotals,
-                backgroundColor: monthlyTotals.map((_, i) => i === monthlyTotals.length - 1 ? 'rgba(26,26,24,0.9)' : 'rgba(26,26,24,0.16)'),
-                borderRadius: 5, borderSkipped: false,
-            }]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` Rs. ${c.parsed.y.toLocaleString()}` } } },
-            scales: {
-                x: { grid: { display: false }, ticks: { font: { size: 12 }, color: '#888' } },
-                y: { grid: { color: '#f0ede8' }, ticks: { font: { size: 11 }, color: '#b0ada6', callback: v => `Rs.${v.toLocaleString()}` }, beginAtZero: true }
-            }
-        }
-    });
-
-    // ── Status Donut ───────────────────────────────────────────────────
-    new Chart(document.getElementById('statusDonut').getContext('2d'), {
-        type: 'doughnut',
-        data: {
-            labels: ['Delivered','Pending','Processing','Cancelled'],
-            datasets: [{ data: [statusDelivered, statusPending, statusProcessing, statusCancelled], backgroundColor: ['#2d6a4f','#b45309','#1e4d8c','#9b1c1c'], borderWidth: 0, hoverOffset: 6 }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, cutout: '72%', plugins: { legend: { display: false } } }
-    });
-
-    // ── Payment Donut ──────────────────────────────────────────────────
-    new Chart(document.getElementById('paymentDonut').getContext('2d'), {
-        type: 'doughnut',
-        data: {
-            labels: ['eSewa','COD'],
-            datasets: [{ data: [paymentEsewa, paymentCod], backgroundColor: ['#1a1a18','#d1cec8'], borderWidth: 0, hoverOffset: 6 }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, cutout: '72%', plugins: { legend: { display: false } } }
-    });
-
-    // ── Product Sales Horizontal Bar ───────────────────────────────────
-    new Chart(document.getElementById('productSalesChart').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: topProductNames,
-            datasets: [{
-                label: 'Units Sold',
-                data: topProductQtys,
-                backgroundColor: topProductQtys.map((_, i) =>
-                    i === 0 ? 'rgba(26,26,24,0.9)'
-                    : i === 1 ? 'rgba(26,26,24,0.7)'
-                    : i === 2 ? 'rgba(26,26,24,0.5)'
-                    : 'rgba(26,26,24,0.22)'
-                ),
-                borderRadius: 5, borderSkipped: false,
-            }]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            indexAxis: 'y',
-            plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.parsed.x} units sold` } } },
-            scales: {
-                x: { grid: { color: '#f0ede8' }, ticks: { font: { size: 11 }, color: '#b0ada6' }, beginAtZero: true },
-                y: { grid: { display: false }, ticks: { font: { size: 12, weight: '500' }, color: '#1a1a18' } }
-            }
-        }
-    });
-
-    // ── Init ───────────────────────────────────────────────────────────
-    if (allMonthsData.length > 0) updateMonthNav();
-
+renderChart();
 </script>
 
 </body>
