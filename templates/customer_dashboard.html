@@ -26,9 +26,6 @@
             <!-- Shop -->
             <a href="{% url 'all_products' %}">Shop</a>
 
-            <!-- Blog -->
-            <a href="{% url 'customer_blog_list' %}">Blog</a>
-
             <!-- My Account Dropdown -->
             <div class="dropdown">
                 <button class="dropbtn" onclick="toggleDropdown()">
@@ -36,7 +33,7 @@
                 </button>
 
                 <div id="myDropdown" class="dropdown-content">
-                    <a href="{% url 'customer_profile' %}">My Profile</a>
+                    <a href="{% url 'customer_blog_list' %}">Blog</a>
                     <a href="{% url 'add_address' %}">Add Address</a>
                     <a href="{% url 'top_rated_products' %}">Rating Products</a>
                     <a href="{% url 'customer_order_history' %}">Order History</a>
@@ -44,6 +41,12 @@
                     <a href="{% url 'customer_graph' %}">Graph</a>
                 </div>
             </div>
+
+            <a href="{% url 'customer_profile' %}">
+                <div class="icons">
+                    <button class="icon-btn">👤</button>
+                </div>
+            </a>
 
             <!-- Cart -->
             <a href="{% url 'cart_page' %}">Cart 🛒</a>

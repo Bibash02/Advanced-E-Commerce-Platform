@@ -6,8 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supplier Profile</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
 </head>
 <body>
+
     <!-- Header -->
     <header>
         <nav>
@@ -19,32 +21,96 @@
         </nav>
     </header>
 
-    <!-- Supplier Profile Section -->
-    <section class="profile-section" style="padding: 50px;">
-        <div class="profile-card" style="max-width: 600px; margin: auto; background: #f8f8f8; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-            
-            <div style="text-align:center;">
-                {% if profile.profile_image %}
-                    <img src="{{ profile.profile_image.url }}" alt="Profile Image" style="width:150px; height:150px; border-radius:50%; object-fit:cover;">
-                {% else %}
-                    <img src="{% static 'images/default_profile.jpg' %}" alt="Profile Image" style="width:150px; height:150px; border-radius:50%; object-fit:cover;">
-                {% endif %}
-            </div>
-
-            <h2 style="text-align:center; margin-top: 15px;">{{ request.user.get_full_name }}</h2>
-            <p style="text-align:center; color: gray;">{{ profile.get_role_display }}</p>
-
-            <div class="profile-info" style="margin-top: 30px;">
-                <p><strong>Username:</strong> {{ request.user.username }}</p>
-                <p><strong>Email:</strong> {{ request.user.email }}</p>
-                <p><strong>Phone:</strong> {{ profile.phone|default:"Not Provided" }}</p>
-                <p><strong>Role:</strong> {{ profile.get_role_display }}</p>
-            </div>
-
-            <div style="text-align:center; margin-top:20px;">
-                <a href="{% url 'edit_supplier_profile' %}" class="cta-button">Edit Profile</a>
-            </div>
+    <!-- Profile Hero (matches .hero gradient) -->
+    <section class="profile-hero">
+        {% if profile.profile_image %}
+            <img src="{{ profile.profile_image.url }}" alt="Profile Image" class="profile-avatar">
+        {% else %}
+            <img src="{% static 'images/default_profile.jpg' %}" alt="Profile Image" class="profile-avatar">
+        {% endif %}
+        <div class="profile-hero-info">
+            <h1>{{ request.user.get_full_name }}</h1>
+            <span class="role-badge">{{ profile.get_role_display }}</span>
         </div>
     </section>
+
+    <!-- Profile Body -->
+    <div class="profile-body">
+
+        <!-- Main Info Card -->
+        <div class="profile-card">
+            <div class="profile-card-header">
+                <h2>Account Details</h2>
+            </div>
+            <div class="profile-card-body">
+
+                <div class="info-row">
+                    <div class="info-icon">👤</div>
+                    <div class="info-text">
+                        <label>Username</label>
+                        <span>{{ request.user.username }}</span>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-icon">✉️</div>
+                    <div class="info-text">
+                        <label>Email Address</label>
+                        <span>{{ request.user.email }}</span>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-icon">📞</div>
+                    <div class="info-text">
+                        <label>Phone</label>
+                        <span class="{% if not profile.phone %}empty{% endif %}">
+                            {{ profile.phone|default:"Not provided" }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-icon">🏷️</div>
+                    <div class="info-text">
+                        <label>Role</label>
+                        <span>{{ profile.get_role_display }}</span>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <a href="{% url 'edit_supplier_profile' %}" class="cta-button">Edit Profile</a>
+                    <a href="{% url 'supplier_dashboard' %}" class="btn-outline">Dashboard</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar-card">
+            <div class="sidebar-card-header">
+                <h3>Account Status</h3>
+            </div>
+            <div class="sidebar-card-body">
+                <div class="sidebar-stat">
+                    <span class="stat-label">Status</span>
+                    <span class="stat-value"><span class="status-dot"></span>Active</span>
+                </div>
+                <div class="sidebar-stat">
+                    <span class="stat-label">Account Type</span>
+                    <span class="stat-value">{{ profile.get_role_display }}</span>
+                </div>
+                <div class="sidebar-stat">
+                    <span class="stat-label">Member Since</span>
+                    <span class="stat-value">{{ request.user.date_joined|date:"M Y" }}</span>
+                </div>
+                <div class="sidebar-stat">
+                    <span class="stat-label">Last Login</span>
+                    <span class="stat-value">{{ request.user.last_login|date:"d M Y" }}</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 </body>
 </html>
