@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,6 +44,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
+
 ]
 
 MIDDLEWARE = [
@@ -161,3 +164,11 @@ REST_FRAMEWORK = {
 }
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880
+
+
+JAZZMIN_SETTINGS = {
+    "site_title": "My Admin",
+    "site_header": "My Dashboard",
+    "welcome_sign": "Welcome Bro 😎",
+    "theme": "darkly",
+}
