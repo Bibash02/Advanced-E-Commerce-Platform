@@ -11,28 +11,29 @@
 
 <!-- Sidebar -->
 <aside class="sidebar">
-  <div class="logo">Admin<span>.</span></div>
+  <div class="logo">{{ request.user}}<span></span></div>
 
   <div class="nav-section-label">Main</div>
   <div class="nav-links">
-    <a href="#"><span>🏠</span> Dashboard</a>
+    <a href="{% url 'admin:index' %}"><span>🏠</span> Dashboard</a>
     <a href="#" class="active"><span>📊</span> Sales</a>
-    <a href="#"><span>📦</span> Orders</a>
-    <a href="#"><span>👥</span> Customers</a>
+    <a href="{% url 'admin:app_order_changelist' %}"><span>📦</span> Orders</a>
+    <a href="{% url 'admin:app_userprofile_changelist' %}"><span>👥</span> Users</a>
   </div>
 
   <div class="nav-section-label">Catalog</div>
   <div class="nav-links">
-    <a href="#"><span>🏭</span> Suppliers</a>
-    <a href="#"><span>🛍️</span> Products</a>
-    <a href="#"><span>⭐</span> Reviews</a>
+    <a href="{% url 'admin:app_deliverydocument_changelist' %}"><span>🏭</span> Delivery Documents</a>
+    <a href="{% url 'admin:app_product_changelist' %}"><span>🛍️</span> Products</a>
+    <a href="{% url 'admin:app_blog_changelist' %}"><span>🛍️</span> Blogs</a>
   </div>
 
   <div class="nav-section-label">System</div>
   <div class="nav-links">
-    <a href="#"><span>⚙️</span> Settings</a>
-    <a href="#"><span>🔔</span> Notifications</a>
-    <a href="#"><span>🚪</span> Logout</a>
+    <a href="{% url 'admin:app_productreview_changelist' %}"><span>⭐</span> Reviews</a>
+    
+    <a href="{% url 'admin:app_searchhistory_changelist' %}"><span>🔔</span> Search</a>
+    <a href="{% url 'admin:logout' %}"><span>🚪</span> Logout</a>
   </div>
 </aside>
 
@@ -42,7 +43,6 @@
   <header>
     <div class="header-left">
       <h1>Sales Overview</h1>
-      <p>Last updated: just now</p>
     </div>
     <div class="header-right">
       <div class="period-tabs">
@@ -51,7 +51,6 @@
         <button onclick="setPeriod('90d',this)">90d</button>
         <button onclick="setPeriod('1y',this)">1y</button>
       </div>
-      <button class="icon-btn">🔔</button>
       <button class="icon-btn">👤</button>
     </div>
   </header>
