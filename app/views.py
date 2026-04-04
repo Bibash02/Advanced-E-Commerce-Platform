@@ -1701,207 +1701,6 @@ def delivery_guidelines(request):
             form = ContactMessageForm()  
     return render(request, 'delivery_guideline.html', {'form': form})
 
-# @customer_required
-# def customer_graph(request):
-#     user = request.user
-#     orders = Order.objects.filter(user=user)
-
-#     # BASIC TOTALS 
-#     total_orders = orders.count()
-
-#     current_date = now()
-#     current_month = current_date.month
-#     current_year = current_date.year
-
-#     last_month_date = current_date - timedelta(days=30)
-#     last_month = last_month_date.month
-#     last_month_year = last_month_date.year
-
-#     # MONTH TOTALS 
-#     current_month_total = orders.filter(
-#         created_at__year=current_year,
-#         created_at__month=current_month,
-#         status__in=["Paid", "Delivered"]
-#     ).aggregate(total=Sum('amount'))['total'] or 0
-
-#     last_month_total = orders.filter(
-#         created_at__year=last_month_year,
-#         created_at__month=last_month,
-#         status__in=["Paid", "Delivered"]
-#     ).aggregate(total=Sum('amount'))['total'] or 0
-
-#     current_month_name = month_name[current_month]
-#     last_month_name = month_name[last_month]
-
-#     # HIGHEST MONTH 
-#     monthly_data = (
-#         orders.filter(status__in=["Paid", "Delivered"])
-#         .annotate(month=TruncMonth('created_at'))
-#         .values('month')
-#         .annotate(total=Sum('amount'))
-#         .order_by('-total')
-#     )
-
-#     highest_month_total = 0
-#     highest_month_name = ""
-
-#     if monthly_data:
-#         highest = monthly_data[0]
-#         highest_month_total = highest['total']
-#         highest_month_name = highest['month'].strftime("%B")
-
-#     # DAILY SPENDING (simple chart) 
-#     daily_data = (
-#         orders.filter(
-#             created_at__year=current_year,
-#             created_at__month=current_month,
-#             status__in=["Paid", "Delivered"]
-#         )
-#         .annotate(day=TruncDay('created_at'))
-#         .values('day')
-#         .annotate(total=Sum('amount'))
-#         .order_by('day')
-#     )
-
-#     daily_labels = [d['day'].strftime("%d") for d in daily_data]
-#     daily_values = [float(d['total']) for d in daily_data]
-
-#     # MONTHLY TOTALS (FULL YEAR) 
-#     yearly_data = (
-#         orders.filter(
-#             created_at__year=current_year,
-#             status__in=["Paid", "Delivered"]
-#         )
-#         .annotate(month=TruncMonth('created_at'))
-#         .values('month')
-#         .annotate(total=Sum('amount'))
-#         .order_by('month')
-#     )
-
-#     month_map = {m['month'].month: float(m['total']) for m in yearly_data}
-
-#     monthly_labels = [month_name[i][:3] for i in range(1, 13)]
-#     monthly_totals = [month_map.get(i, 0) for i in range(1, 13)]
-
-#     # ALL MONTHS DAILY DATA
-#     all_months_data = []
-
-#     months = (
-#         orders.filter(status__in=["Paid", "Delivered"])
-#         .annotate(month=TruncMonth('created_at'))
-#         .values('month')
-#         .distinct()
-#         .order_by('month')
-#     )
-
-#     for m in months:
-#         month_date = m['month']
-#         year = month_date.year
-#         month = month_date.month
-
-#         days_in_month = monthrange(year, month)[1]
-#         day_values = [0] * days_in_month
-
-#         daily = (
-#             orders.filter(
-#                 created_at__year=year,
-#                 created_at__month=month,
-#                 status__in=["Paid", "Delivered"]
-#             )
-#             .annotate(day=TruncDay('created_at'))
-#             .values('day')
-#             .annotate(total=Sum('amount'))
-#         )
-
-#         for d in daily:
-#             day_index = d['day'].day - 1
-#             day_values[day_index] = float(d['total'])
-
-#         all_months_data.append({
-#             "label": month_date.strftime("%b %Y"),
-#             "year": year,
-#             "month": month,
-#             "days": day_values,
-#             "total": sum(day_values)
-#         })
-
-#     # CURRENT & LAST MONTH DAYS 
-#     def get_month_days(year, month):
-#         days_in_month = monthrange(year, month)[1]
-#         data = [0] * days_in_month
-
-#         daily = (
-#             orders.filter(
-#                 created_at__year=year,
-#                 created_at__month=month,
-#                 status__in=["Paid", "Delivered"]
-#             )
-#             .annotate(day=TruncDay('created_at'))
-#             .values('day')
-#             .annotate(total=Sum('amount'))
-#         )
-
-#         for d in daily:
-#             data[d['day'].day - 1] = float(d['total'])
-
-#         return data
-
-#     current_month_days = get_month_days(current_year, current_month)
-#     last_month_days = get_month_days(last_month_year, last_month)
-
-#     category_map = defaultdict(float) 
-#     for order in orders.filter(status__in=["Paid", "Delivered"]): 
-#         for item in order.items.all(): category_name = item.product.category.name 
-#         category_map[category_name] += float(item.price) * item.quantity 
-#         total_spent = sum(category_map.values()) 
-
-#         category_breakdown = [] 
-
-#         for name, total in category_map.items(): 
-#             pct = (total / total_spent * 100) if total_spent > 0 else 0 
-#             category_breakdown.append({ 'name': name, 'total': total, 'pct': round(pct, 1), 'color': "#%06x" % (hash(name) & 0xFFFFFF) })
-
-#         product_map = defaultdict(float) 
-#         for order in orders.filter(status__in=["Paid", "Delivered"]): 
-#             for item in order.items.all(): 
-#                 product_map[item.product.name] += float(item.price) * item.quantity
-
-#         sorted_products = sorted(product_map.items(), key=lambda x: x[1], reverse=True)[:5]
-
-#         top_products = [] 
-#         for name, total in sorted_products: 
-#             pct = (total / total_spent * 100) if total_spent > 0 else 0 
-#             top_products.append({ 
-#                 'name': name, 
-#                 'total': total, 
-#                 'pct': round(pct, 1) })
-        
-#         recent_orders = orders.prefetch_related('items__product').order_by('-created_at')[:5]
-
-#     context = {
-#         'current_month_total': current_month_total,
-#         'last_month_total': last_month_total,
-#         'total_orders': total_orders,
-#         'highest_month_total': highest_month_total,
-#         'highest_month_name': highest_month_name,
-#         'current_month_name': current_month_name,
-#         'last_month_name': last_month_name,
-#         'daily_labels': daily_labels,
-#         'daily_values': daily_values,
-#         'recent_orders': recent_orders, 
-#         'category_breakdown': category_breakdown, 
-#         'top_products': top_products,
-
-#         # GRAPH DATA
-#         'all_months_data': json.dumps(all_months_data),
-#         'monthly_labels': json.dumps(monthly_labels),
-#         'monthly_totals': json.dumps(monthly_totals),
-#         'current_month_days': json.dumps(current_month_days),
-#         'last_month_days': json.dumps(last_month_days),
-#     }
-
-#     return render(request, 'customer_graph.html', context)
-
 @customer_required
 def customer_graph(request):
     user = request.user
@@ -2043,223 +1842,6 @@ def customer_graph(request):
     }
 
     return render(request, 'customer_graph.html', context)
-
-# def supplier_graph(request):
-#     user = request.user
-
-#     # ===== SUPPLIER PRODUCTS =====
-#     products = Product.objects.filter(supplier=user)
-#     total_products = products.count()
-#     active_products = products.filter(is_active=True).count()
-
-#     # ===== ORDERS WITH SUPPLIER PRODUCTS =====
-#     order_items = OrderItem.objects.filter(product__supplier=user)
-#     orders = Order.objects.filter(items__in=order_items).distinct()
-
-#     current_date = now()
-#     current_month = current_date.month
-#     current_year = current_date.year
-
-#     last_month_date = current_date - timedelta(days=30)
-#     last_month = last_month_date.month
-#     last_month_year = last_month_date.year
-
-#     # ===== REVENUE CALCULATION =====
-#     def get_revenue(year, month):
-#         return order_items.filter(
-#             order__created_at__year=year,
-#             order__created_at__month=month,
-#             order__status__in=["Paid", "Delivered"]
-#         ).aggregate(total=Sum('price'))['total'] or 0
-
-#     current_month_revenue = get_revenue(current_year, current_month)
-#     last_month_revenue = get_revenue(last_month_year, last_month)
-
-#     # ===== ORDERS COUNT =====
-#     current_month_orders = orders.filter(
-#         created_at__year=current_year,
-#         created_at__month=current_month
-#     ).count()
-
-#     last_month_orders = orders.filter(
-#         created_at__year=last_month_year,
-#         created_at__month=last_month
-#     ).count()
-
-#     # ===== TRENDS =====
-#     def calc_trend(current, previous):
-#         if previous == 0:
-#             return 100 if current > 0 else 0
-#         return ((current - previous) / previous) * 100
-
-#     revenue_trend = calc_trend(current_month_revenue, last_month_revenue)
-#     orders_trend = calc_trend(current_month_orders, last_month_orders)
-
-#     # ===== BEST MONTH =====
-#     monthly_data = (
-#         order_items.filter(order__status__in=["Paid", "Delivered"])
-#         .annotate(month=TruncMonth('order__created_at'))
-#         .values('month')
-#         .annotate(total=Sum('price'))
-#         .order_by('-total')
-#     )
-
-#     best_month_revenue = 0
-#     best_month_name = ""
-
-#     if monthly_data:
-#         best = monthly_data[0]
-#         best_month_revenue = best['total']
-#         best_month_name = best['month'].strftime("%B")
-
-#     # ===== DAILY GRAPH DATA =====
-#     all_months_data = []
-
-#     months = (
-#         order_items.annotate(month=TruncMonth('order__created_at'))
-#         .values('month')
-#         .distinct()
-#         .order_by('month')
-#     )
-
-#     for m in months:
-#         month_date = m['month']
-#         year = month_date.year
-#         month = month_date.month
-
-#         days_in_month = monthrange(year, month)[1]
-#         day_values = [0] * days_in_month
-
-#         daily = (
-#             order_items.filter(
-#                 order__created_at__year=year,
-#                 order__created_at__month=month,
-#                 order__status__in=["Paid", "Delivered"]
-#             )
-#             .annotate(day=TruncDay('order__created_at'))
-#             .values('day')
-#             .annotate(total=Sum('price'))
-#         )
-
-#         for d in daily:
-#             day_values[d['day'].day - 1] = float(d['total'])
-
-#         all_months_data.append({
-#             "label": month_date.strftime("%b %Y"),
-#             "days": day_values
-#         })
-
-#     # ===== MONTHLY TOTALS =====
-#     monthly_labels = [month_name[i][:3] for i in range(1, 13)]
-#     monthly_totals = []
-
-#     for i in range(1, 13):
-#         total = get_revenue(current_year, i)
-#         monthly_totals.append(float(total))
-
-#     # ===== CURRENT & LAST MONTH DAYS =====
-#     def get_days(year, month):
-#         days_in_month = monthrange(year, month)[1]
-#         data = [0] * days_in_month
-
-#         daily = (
-#             order_items.filter(
-#                 order__created_at__year=year,
-#                 order__created_at__month=month,
-#                 order__status__in=["Paid", "Delivered"]
-#             )
-#             .annotate(day=TruncDay('order__created_at'))
-#             .values('day')
-#             .annotate(total=Sum('price'))
-#         )
-
-#         for d in daily:
-#             data[d['day'].day - 1] = float(d['total'])
-
-#         return data
-
-#     current_month_days = get_days(current_year, current_month)
-#     last_month_days = get_days(last_month_year, last_month)
-
-#     # ===== ORDER STATUS =====
-#     status_counts = orders.values('status').annotate(count=Count('id'))
-#     status_data = {s['status']: s['count'] for s in status_counts}
-
-#     # ===== PAYMENT METHODS =====
-#     payment_counts = orders.values('payment_type').annotate(count=Count('id'))
-#     payment_data = {p['payment_type']: p['count'] for p in payment_counts}
-
-#     # ===== TOP PRODUCTS =====
-#     product_sales = (
-#         order_items.values('product__name')
-#         .annotate(total=Sum('price'), qty_sold=Sum('quantity'))
-#         .order_by('-total')[:5]
-#     )
-
-#     top_products = []
-#     total_sales = sum([p['total'] for p in product_sales]) or 1
-
-#     for p in product_sales:
-#         pct = (p['total'] / total_sales) * 100
-#         top_products.append({
-#             'name': p['product__name'],
-#             'total': p['total'],
-#             'qty_sold': p['qty_sold'],
-#             'pct': round(pct, 1)
-#         })
-
-#     # ===== CATEGORY BREAKDOWN =====
-#     category_map = defaultdict(float)
-
-#     for item in order_items:
-#         cat = item.product.category.name
-#         category_map[cat] += float(item.price) * item.quantity
-
-#     category_breakdown = []
-#     total_cat = sum(category_map.values()) or 1
-
-#     for name, total in category_map.items():
-#         pct = (total / total_cat) * 100
-#         category_breakdown.append({
-#             'name': name,
-#             'total': total,
-#             'pct': round(pct, 1),
-#             'color': "#%06x" % (hash(name) & 0xFFFFFF)
-#         })
-
-#     # ===== LOW STOCK =====
-#     low_stock_products = products.filter(stock__lte=5)
-
-#     # ===== RECENT ORDERS =====
-#     recent_orders = orders.order_by('-created_at')[:5]
-
-#     # ===== CONTEXT =====
-#     context = {
-#         'current_month_revenue': current_month_revenue,
-#         'last_month_name': month_name[last_month],
-#         'current_month_name': month_name[current_month],
-#         'current_month_orders': current_month_orders,
-#         'revenue_trend': revenue_trend,
-#         'orders_trend': orders_trend,
-#         'total_products': total_products,
-#         'active_products': active_products,
-#         'best_month_revenue': best_month_revenue,
-#         'best_month_name': best_month_name,
-
-#         'recent_orders': recent_orders,
-#         'top_products': top_products,
-#         'category_breakdown': category_breakdown,
-#         'low_stock_products': low_stock_products,
-
-#         # GRAPH DATA
-#         'all_months_data': json.dumps(all_months_data),
-#         'monthly_labels': json.dumps(monthly_labels),
-#         'monthly_totals': json.dumps(monthly_totals),
-#         'current_month_days': json.dumps(current_month_days),
-#         'last_month_days': json.dumps(last_month_days),
-#     }
-
-#     return render(request, 'supplier_graph.html', context)
 
 @login_required
 def supplier_graph(request):
@@ -2433,3 +2015,67 @@ def supplier_graph(request):
     }
 
     return render(request, "supplier_graph.html", context)
+
+def sales_dashboard(request):
+    # --- Metrics ---
+    total_revenue = Order.objects.filter(status='Paid').aggregate(total=Sum('amount'))['total'] or 0
+    total_orders = Order.objects.filter(status='Paid').count()
+    avg_review = ProductReview.objects.aggregate(avg=Avg('rating'))['avg'] or 0
+    total_supplier_products = Product.objects.filter(is_active=True).count()
+    active_customers = UserProfile.objects.filter(role='CUSTOMER').count()
+
+    # --- Line Chart (last 30 days) ---
+    today = now().date()
+    last_30_days = [today - timedelta(days=i) for i in range(29, -1, -1)]
+    labels = [d.strftime('%d %b') for d in last_30_days]
+    revenue_data, orders_data = [], []
+
+    for day in last_30_days:
+        daily_orders = Order.objects.filter(status='Paid', created_at__date=day)
+        orders_data.append(daily_orders.count())
+        revenue_data.append(float(daily_orders.aggregate(total=Sum('amount'))['total'] or 0))
+
+    # --- Donut Chart: Sales by Category ---
+    categories = Category.objects.all()
+    category_names = []
+    category_sales = []
+    for cat in categories:
+        qty = OrderItem.objects.filter(
+            product__category=cat,
+            order__status='Paid'
+        ).aggregate(total=Sum('quantity'))['total'] or 0
+        category_names.append(cat.name)
+        category_sales.append(qty)
+
+    # --- Top Products ---
+    top_products = OrderItem.objects.filter(order__status='Paid')\
+        .values('product__name', 'product__supplier__username', 'product__is_active')\
+        .annotate(units_sold=Sum('quantity'))\
+        .order_by('-units_sold')[:5]
+
+    # --- Review distribution ---
+    review_distribution = []
+    for i in range(5, 0, -1):
+        review_distribution.append(ProductReview.objects.filter(rating=i).count())
+
+    context = {
+        'metrics': {
+            'total_revenue': total_revenue,
+            'total_orders': total_orders,
+            'avg_review': round(avg_review, 1),
+            'total_supplier_products': total_supplier_products,
+            'active_customers': active_customers
+        },
+        'line_chart': {
+            'labels': labels,
+            'revenue': revenue_data,
+            'orders': orders_data
+        },
+        'donut_chart': {
+            'categories': category_names,
+            'sales': category_sales
+        },
+        'top_products': top_products,
+        'review_distribution': review_distribution
+    }
+    return render(request, 'admin/index.html', context)

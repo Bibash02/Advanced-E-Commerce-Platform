@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Sales Dashboard</title>
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="logo">Admin<span>.</span></div>
+
+  <div class="nav-section-label">Main</div>
+  <div class="nav-links">
+    <a href="#"><span>🏠</span> Dashboard</a>
+    <a href="#" class="active"><span>📊</span> Sales</a>
+    <a href="#"><span>📦</span> Orders</a>
+    <a href="#"><span>👥</span> Customers</a>
+  </div>
+
+  <div class="nav-section-label">Catalog</div>
+  <div class="nav-links">
+    <a href="#"><span>🏭</span> Suppliers</a>
+    <a href="#"><span>🛍️</span> Products</a>
+    <a href="#"><span>⭐</span> Reviews</a>
+  </div>
+
+  <div class="nav-section-label">System</div>
+  <div class="nav-links">
+    <a href="#"><span>⚙️</span> Settings</a>
+    <a href="#"><span>🔔</span> Notifications</a>
+    <a href="#"><span>🚪</span> Logout</a>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+
+  <header>
+    <div class="header-left">
+      <h1>Sales Overview</h1>
+      <p>Last updated: just now</p>
+    </div>
+    <div class="header-right">
+      <div class="period-tabs">
+        <button onclick="setPeriod('7d',this)">7d</button>
+        <button onclick="setPeriod('30d',this)" class="active">30d</button>
+        <button onclick="setPeriod('90d',this)">90d</button>
+        <button onclick="setPeriod('1y',this)">1y</button>
+      </div>
+      <button class="icon-btn">🔔</button>
+      <button class="icon-btn">👤</button>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- Metrics -->
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-icon">💰</div>
+        <div class="lbl">Total Revenue</div>
+        <div class="val" id="m-rev">$84,320</div>
+        <div class="chg up" id="m-rev-c">▲ 12.4% vs last period</div>
+      </div>
+      <div class="metric">
+        <div class="metric-icon">🛒</div>
+        <div class="lbl">Orders Sold</div>
+        <div class="val" id="m-ord">2,148</div>
+        <div class="chg up" id="m-ord-c">▲ 8.1%</div>
+      </div>
+      <div class="metric">
+        <div class="metric-icon">⭐</div>
+        <div class="lbl">Avg Review</div>
+        <div class="val">4.3</div>
+        <div class="chg up">▲ 0.2 pts</div>
+      </div>
+      <div class="metric">
+        <div class="metric-icon">🏭</div>
+        <div class="lbl">Supplier Products</div>
+        <div class="val">312</div>
+        <div class="chg dn">▼ 5 this period</div>
+      </div>
+      <div class="metric">
+        <div class="metric-icon">👥</div>
+        <div class="lbl">Active Customers</div>
+        <div class="val">1,041</div>
+        <div class="chg up">▲ 3.6%</div>
+      </div>
+    </div>
+
+    <!-- Charts row -->
+    <div class="charts-row">
+
+      <div class="chart-card">
+        <div class="card-header">
+          <div>
+            <h3>Sales &amp; Orders Over Time</h3>
+            <div class="sub">Revenue vs units sold</div>
+          </div>
+          <button class="view-all">Export</button>
+        </div>
+        <div class="legend">
+          <span><b style="background:#7c7fad"></b> Revenue</span>
+          <span><b style="background:#3d8b3d"></b> Orders</span>
+        </div>
+        <div style="position:relative;height:240px;">
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="card-header">
+          <div>
+            <h3>Sales by Category</h3>
+            <div class="sub">Revenue share</div>
+          </div>
+        </div>
+        <div style="position:relative;height:190px;margin-bottom:1rem;">
+          <canvas id="donutChart"></canvas>
+        </div>
+        <div class="legend" id="donut-legend"></div>
+      </div>
+
+    </div>
+
+    <!-- Bottom row -->
+    <div class="bottom-row">
+
+      <div class="chart-card">
+        <div class="card-header">
+          <div>
+            <h3>Customer Reviews</h3>
+            <div class="sub">Rating distribution</div>
+          </div>
+        </div>
+        <div style="position:relative;height:180px;">
+          <canvas id="reviewChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="card-header">
+          <div>
+            <h3>Top Supplier Products</h3>
+            <div class="sub">By units sold</div>
+          </div>
+          <button class="view-all">View All</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Product</th><th>Supplier</th><th>Units</th><th>Status</th></tr>
+            </thead>
+            <tbody id="prod-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const PERIODS = {
+    '30d': {
+        rev: '{{ metrics.total_revenue }}',
+        ord: '{{ metrics.total_orders }}',
+        revChg: '▲ 12.4% vs last period',  // optional: calculate dynamically
+        ordChg: '▲ 8.1%',                  // optional
+        labels: {{ line_chart.labels|safe }},
+        revenue: {{ line_chart.revenue|safe }},
+        orders: {{ line_chart.orders|safe }}
+    }
+};
+
+const CATS = {{ donut_chart.categories|safe }};
+const CAT_VALS = {{ donut_chart.sales|safe }};
+</script>
+</body>
+</html>
