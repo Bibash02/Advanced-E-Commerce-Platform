@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,38 +57,35 @@
   </header>
 
   <div class="content">
-
-    <!-- Metrics -->
     <div class="metrics">
       <div class="metric">
         <div class="metric-icon">💰</div>
         <div class="lbl">Total Revenue</div>
-        <div class="val" id="m-rev">$84,320</div>
-        <div class="chg up" id="m-rev-c">▲ 12.4% vs last period</div>
+        <div class="val" id="m-rev">Rs.{{ metrics.total_revenue|intcomma }}</div>
       </div>
+
       <div class="metric">
         <div class="metric-icon">🛒</div>
         <div class="lbl">Orders Sold</div>
-        <div class="val" id="m-ord">2,148</div>
-        <div class="chg up" id="m-ord-c">▲ 8.1%</div>
+        <div class="val" id="m-ord">{{ metrics.total_orders }}</div>
       </div>
+
       <div class="metric">
         <div class="metric-icon">⭐</div>
         <div class="lbl">Avg Review</div>
-        <div class="val">4.3</div>
-        <div class="chg up">▲ 0.2 pts</div>
+        <div class="val">{{ metrics.avg_review }}</div>
       </div>
+
       <div class="metric">
         <div class="metric-icon">🏭</div>
         <div class="lbl">Supplier Products</div>
-        <div class="val">312</div>
-        <div class="chg dn">▼ 5 this period</div>
+        <div class="val">{{ metrics.total_supplier_products }}</div>
       </div>
+
       <div class="metric">
         <div class="metric-icon">👥</div>
         <div class="lbl">Active Customers</div>
-        <div class="val">1,041</div>
-        <div class="chg up">▲ 3.6%</div>
+        <div class="val">{{ metrics.active_customers }}</div>
       </div>
     </div>
 
