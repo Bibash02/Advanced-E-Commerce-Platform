@@ -216,6 +216,15 @@ def customer_dashboard(request):
     query = request.GET.get('q')
 
     recommended_products = recommend_products_for_user(request.user)
+    
+    item_based_products = None
+
+    last_view = ProductView.objects.filter(
+        user=request.user
+    ).order_by('-viewed_at').first()
+
+    if last_view:
+        item_based_products = get_item_based_recommendations(last_view.product_id)
 
     categories = Category.objects.all().order_by('-created_at')[:3]
 
@@ -242,6 +251,7 @@ def customer_dashboard(request):
 
     context = {
         'recommended_products': recommended_products,
+        'item_based_products': item_based_products,
         'categories': categories,
         'products': products,
         'productss': productss,
@@ -774,6 +784,18 @@ def add_to_cart(request, product_id):
     if not item_created:
         cart_item.quantity += 1
         cart_item.save()
+    
+    # Give default time_spent = 1 for "add to cart" action
+    pv, created = ProductView.objects.get_or_create(
+        user=request.user,
+        product=product,
+        defaults={'time_spent': 1}
+    )
+    
+    if not created:
+        # Increment slightly to reflect additional interest
+        pv.time_spent += 1
+        pv.save()
 
     return redirect('cart_page')
 

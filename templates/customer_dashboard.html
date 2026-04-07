@@ -162,7 +162,36 @@
 
     <!-- RECOMMENDED FOR YOU -->
     <div class="section-header">
-        <h2>Recommended for You</h2>
+        <h2>Recommended for You - Item-based Collaborative filtering</h2>
+        <a href="{% url 'all_products' %}">
+            <button class="view-all">View All →</button>
+        </a>
+    </div>
+
+    <section class="product-grid">
+    {% for product in item_based_products %}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{ product.image.url }}">
+            </div>
+
+            <div class="product-info">
+                <div class="product-name">{{ product.name }}</div>
+                <div class="price-container">Rs. {{ product.price }}</div>
+                <div class="price-container">Stock: {{ product.stock }}</div>
+
+                <a href="{% url 'product_detail' product.id %}" class="buy-btn">
+                    View
+                </a>
+            </div>
+        </div>
+    {% empty %}
+        <p>No recommendations yet.</p>
+    {% endfor %}
+    </section>
+
+    <div class="section-header">
+        <h2>Recommended for You - Content-Based filtering</h2>
         <a href="{% url 'all_products' %}">
             <button class="view-all">View All →</button>
         </a>
