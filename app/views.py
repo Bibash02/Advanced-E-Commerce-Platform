@@ -817,11 +817,24 @@ def cart_page(request):
         'grand_total': grand_total
     })
 
-
 @customer_required
 def remove_from_cart(request, item_id):
     item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
+    product = item.product
+
+    # Update or remove ProductView
+    pv = ProductView.objects.filter(user=request.user, product=product).first()
+
+    if pv:
+        if pv.time_spent > 1:
+            pv.time_spent -= 1   
+            pv.save()
+        else:
+            pv.delete()        
+
+    # Delete cart item
     item.delete()
+
     return redirect('cart_page')
 
 @customer_required
