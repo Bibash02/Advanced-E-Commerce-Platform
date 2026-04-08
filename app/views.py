@@ -2039,65 +2039,94 @@ def supplier_graph(request):
     return render(request, "supplier_graph.html", context)
 
 def sales_dashboard(request):
-    # --- Metrics ---
-    total_revenue = Order.objects.filter(status='Paid').aggregate(total=Sum('amount'))['total'] or 0
-    total_orders = Order.objects.filter(status='Paid').count()
-    avg_review = ProductReview.objects.aggregate(avg=Avg('rating'))['avg'] or 0
+    # ── Metrics ──────────────────────────────────────────────────────────────
+    paid_orders = Order.objects.filter(status__in=['Paid', 'Delivered'])
+
+    total_revenue = paid_orders.aggregate(total=Sum('amount'))['total'] or 0
+    total_orders  = paid_orders.count()
+    avg_review    = ProductReview.objects.aggregate(avg=Avg('rating'))['avg'] or 0
     total_supplier_products = Product.objects.filter(is_active=True).count()
-    active_customers = UserProfile.objects.filter(role='CUSTOMER').count()
+    active_customers = paid_orders.values('user').distinct().count()
 
-    # --- Line Chart (last 30 days) ---
-    today = now().date()
-    last_30_days = [today - timedelta(days=i) for i in range(29, -1, -1)]
-    labels = [d.strftime('%d %b') for d in last_30_days]
-    revenue_data, orders_data = [], []
+    # ── Period filter (default 30d) ───────────────────────────────────────────
+    period = request.GET.get('period', '30d')
+    days_map = {'7d': 7, '30d': 30, '90d': 90, '1y': 365}
+    days = days_map.get(period, 30)
+    since = timezone.now() - timedelta(days=days)
 
-    for day in last_30_days:
-        daily_orders = Order.objects.filter(status='Paid', created_at__date=day)
-        orders_data.append(daily_orders.count())
-        revenue_data.append(float(daily_orders.aggregate(total=Sum('amount'))['total'] or 0))
+    period_orders = paid_orders.filter(created_at__gte=since)
 
-    # --- Donut Chart: Sales by Category ---
-    categories = Category.objects.all()
-    category_names = []
-    category_sales = []
-    for cat in categories:
-        qty = OrderItem.objects.filter(
-            product__category=cat,
-            order__status='Paid'
-        ).aggregate(total=Sum('quantity'))['total'] or 0
-        category_names.append(cat.name)
-        category_sales.append(qty)
+    # ── Line chart: daily revenue + orders ───────────────────────────────────
+    daily = (
+        period_orders
+        .annotate(day=TruncDate('created_at'))
+        .values('day')
+        .annotate(rev=Sum('amount'), cnt=Count('id'))
+        .order_by('day')
+    )
 
-    # --- Top Products ---
-    top_products = OrderItem.objects.filter(order__status='Paid')\
-        .values('product__name', 'product__supplier__username', 'product__is_active')\
-        .annotate(units_sold=Sum('quantity'))\
-        .order_by('-units_sold')[:5]
+    line_labels  = [str(d['day']) for d in daily]
+    line_revenue = [float(d['rev']) for d in daily]
+    line_orders  = [d['cnt'] for d in daily]
 
-    # --- Review distribution ---
-    review_distribution = []
-    for i in range(5, 0, -1):
-        review_distribution.append(ProductReview.objects.filter(rating=i).count())
+    # ── Donut chart: revenue by category ─────────────────────────────────────
+    cat_data = (
+        OrderItem.objects
+        .filter(order__in=period_orders)
+        .values('product__category__name')
+        .annotate(total=Sum('price'))
+        .order_by('-total')
+    )
+
+    donut_categories = [c['product__category__name'] or 'Uncategorized' for c in cat_data]
+    donut_sales      = [float(c['total']) for c in cat_data]
+
+    # ── Review distribution ───────────────────────────────────────────────────
+    review_dist = (
+        ProductReview.objects
+        .values('rating')
+        .annotate(count=Count('id'))
+        .order_by('rating')
+    )
+    review_labels = [str(r['rating']) + '★' for r in review_dist]
+    review_counts = [r['count'] for r in review_dist]
+
+    # ── Top supplier products ─────────────────────────────────────────────────
+    top_products = (
+        OrderItem.objects
+        .filter(order__in=period_orders)
+        .values(
+            'product__name',
+            'product__supplier__username',
+            'product__is_active'
+        )
+        .annotate(units=Sum('quantity'))
+        .order_by('-units')[:10]
+    )
 
     context = {
         'metrics': {
-            'total_revenue': total_revenue,
-            'total_orders': total_orders,
-            'avg_review': round(avg_review, 1),
+            'total_revenue':           total_revenue,
+            'total_orders':            total_orders,
+            'avg_review':              round(avg_review, 1),
             'total_supplier_products': total_supplier_products,
-            'active_customers': active_customers
+            'active_customers':        active_customers,
         },
         'line_chart': {
-            'labels': labels,
-            'revenue': revenue_data,
-            'orders': orders_data
+            'labels':  json.dumps(line_labels),
+            'revenue': json.dumps(line_revenue),
+            'orders':  json.dumps(line_orders),
         },
         'donut_chart': {
-            'categories': category_names,
-            'sales': category_sales
+            'categories': json.dumps(donut_categories),
+            'sales':      json.dumps(donut_sales),
+        },
+        'review_chart': {
+            'labels': json.dumps(review_labels),
+            'counts': json.dumps(review_counts),
         },
         'top_products': top_products,
-        'review_distribution': review_distribution
+        'active_period': period,
     }
+
     return render(request, 'admin/index.html', context)

@@ -12,7 +12,7 @@
 
 <!-- Sidebar -->
 <aside class="sidebar">
-  <div class="logo">{{ request.user}}<span></span></div>
+  <div class="logo">{{ request.user }}<span></span></div>
 
   <div class="nav-section-label">Main</div>
   <div class="nav-links">
@@ -32,7 +32,6 @@
   <div class="nav-section-label">System</div>
   <div class="nav-links">
     <a href="{% url 'admin:app_productreview_changelist' %}"><span>⭐</span> Reviews</a>
-    
     <a href="{% url 'admin:app_searchhistory_changelist' %}"><span>🔔</span> Search</a>
     <a href="{% url 'admin:logout' %}"><span>🚪</span> Logout</a>
   </div>
@@ -47,41 +46,39 @@
     </div>
     <div class="header-right">
       <div class="period-tabs">
-        <button onclick="setPeriod('7d',this)">7d</button>
-        <button onclick="setPeriod('30d',this)" class="active">30d</button>
-        <button onclick="setPeriod('90d',this)">90d</button>
-        <button onclick="setPeriod('1y',this)">1y</button>
+        <button onclick="setPeriod('7d',  this)">7d</button>
+        <button onclick="setPeriod('30d', this)" class="active">30d</button>
+        <button onclick="setPeriod('90d', this)">90d</button>
+        <button onclick="setPeriod('1y',  this)">1y</button>
       </div>
       <button class="icon-btn">👤</button>
     </div>
   </header>
 
   <div class="content">
+
+    <!-- ── Metric cards ── -->
     <div class="metrics">
       <div class="metric">
         <div class="metric-icon">💰</div>
         <div class="lbl">Total Revenue</div>
-        <div class="val" id="m-rev">Rs.{{ metrics.total_revenue|intcomma }}</div>
+        <div class="val">Rs.{{ metrics.total_revenue|intcomma }}</div>
       </div>
-
       <div class="metric">
         <div class="metric-icon">🛒</div>
         <div class="lbl">Orders Sold</div>
-        <div class="val" id="m-ord">{{ metrics.total_orders }}</div>
+        <div class="val">{{ metrics.total_orders }}</div>
       </div>
-
       <div class="metric">
         <div class="metric-icon">⭐</div>
         <div class="lbl">Avg Review</div>
         <div class="val">{{ metrics.avg_review }}</div>
       </div>
-
       <div class="metric">
         <div class="metric-icon">🏭</div>
         <div class="lbl">Supplier Products</div>
         <div class="val">{{ metrics.total_supplier_products }}</div>
       </div>
-
       <div class="metric">
         <div class="metric-icon">👥</div>
         <div class="lbl">Active Customers</div>
@@ -89,7 +86,7 @@
       </div>
     </div>
 
-    <!-- Charts row -->
+    <!-- ── Charts row ── -->
     <div class="charts-row">
 
       <div class="chart-card">
@@ -124,7 +121,7 @@
 
     </div>
 
-    <!-- Bottom row -->
+    <!-- ── Bottom row ── -->
     <div class="bottom-row">
 
       <div class="chart-card">
@@ -152,7 +149,24 @@
             <thead>
               <tr><th>Product</th><th>Supplier</th><th>Units</th><th>Status</th></tr>
             </thead>
-            <tbody id="prod-table"></tbody>
+            <tbody id="prod-table">
+              {% for p in top_products %}
+              <tr>
+                <td>{{ p.product__name }}</td>
+                <td>{{ p.product__supplier__username }}</td>
+                <td>{{ p.units }}</td>
+                <td>
+                  {% if p.product__is_active %}
+                    <span style="color:#3d8b3d;font-weight:600;">Active</span>
+                  {% else %}
+                    <span style="color:#c0392b;font-weight:600;">Inactive</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4" style="text-align:center;color:#999;">No data available</td></tr>
+              {% endfor %}
+            </tbody>
           </table>
         </div>
       </div>
@@ -161,22 +175,154 @@
   </div>
 </div>
 
+<!-- ── Chart.js ── -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-const PERIODS = {
-    '30d': {
-        rev: '{{ metrics.total_revenue }}',
-        ord: '{{ metrics.total_orders }}',
-        revChg: '▲ 12.4% vs last period',  // optional: calculate dynamically
-        ordChg: '▲ 8.1%',                  // optional
-        labels: {{ line_chart.labels|safe }},
-        revenue: {{ line_chart.revenue|safe }},
-        orders: {{ line_chart.orders|safe }}
-    }
-};
+  // ── Data injected from Django ──────────────────────────────────────────────
+  const LINE_LABELS  = {{ line_chart.labels|safe }};
+  const LINE_REVENUE = {{ line_chart.revenue|safe }};
+  const LINE_ORDERS  = {{ line_chart.orders|safe }};
 
-const CATS = {{ donut_chart.categories|safe }};
-const CAT_VALS = {{ donut_chart.sales|safe }};
+  const DONUT_CATS = {{ donut_chart.categories|safe }};
+  const DONUT_VALS = {{ donut_chart.sales|safe }};
+
+  const REVIEW_LABELS = {{ review_chart.labels|safe }};
+  const REVIEW_COUNTS = {{ review_chart.counts|safe }};
+
+  // ── Colour palette ─────────────────────────────────────────────────────────
+  const PALETTE = [
+    '#7c7fad','#3d8b3d','#e67e22','#e74c3c',
+    '#9b59b6','#1abc9c','#f39c12','#2980b9'
+  ];
+
+  // ── 1. Line chart ──────────────────────────────────────────────────────────
+  const lineCtx = document.getElementById('lineChart').getContext('2d');
+  const lineChart = new Chart(lineCtx, {
+    type: 'line',
+    data: {
+      labels: LINE_LABELS,
+      datasets: [
+        {
+          label: 'Revenue (Rs.)',
+          data: LINE_REVENUE,
+          borderColor: '#7c7fad',
+          backgroundColor: 'rgba(124,127,173,0.15)',
+          borderWidth: 2,
+          pointRadius: 3,
+          fill: true,
+          tension: 0.4,
+          yAxisID: 'yRev'
+        },
+        {
+          label: 'Orders',
+          data: LINE_ORDERS,
+          borderColor: '#3d8b3d',
+          backgroundColor: 'rgba(61,139,61,0.10)',
+          borderWidth: 2,
+          pointRadius: 3,
+          fill: true,
+          tension: 0.4,
+          yAxisID: 'yOrd'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { maxTicksLimit: 10, maxRotation: 0 }
+        },
+        yRev: {
+          type: 'linear', position: 'left',
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { callback: v => 'Rs.' + v.toLocaleString() }
+        },
+        yOrd: {
+          type: 'linear', position: 'right',
+          grid: { drawOnChartArea: false },
+          ticks: { stepSize: 1 }
+        }
+      }
+    }
+  });
+
+  // ── 2. Donut chart ─────────────────────────────────────────────────────────
+  const donutCtx = document.getElementById('donutChart').getContext('2d');
+  new Chart(donutCtx, {
+    type: 'doughnut',
+    data: {
+      labels: DONUT_CATS,
+      datasets: [{
+        data: DONUT_VALS,
+        backgroundColor: PALETTE,
+        borderWidth: 2,
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ' Rs.' + ctx.parsed.toLocaleString()
+          }
+        }
+      }
+    }
+  });
+
+  // Build custom donut legend
+  const legendEl = document.getElementById('donut-legend');
+  DONUT_CATS.forEach((cat, i) => {
+    const span = document.createElement('span');
+    span.innerHTML = `<b style="background:${PALETTE[i % PALETTE.length]}"></b> ${cat}`;
+    legendEl.appendChild(span);
+  });
+
+  // ── 3. Review bar chart ────────────────────────────────────────────────────
+  const reviewCtx = document.getElementById('reviewChart').getContext('2d');
+  new Chart(reviewCtx, {
+    type: 'bar',
+    data: {
+      labels: REVIEW_LABELS,
+      datasets: [{
+        label: 'Reviews',
+        data: REVIEW_COUNTS,
+        backgroundColor: PALETTE[0],
+        borderRadius: 4,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false } },
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1 },
+          grid: { color: 'rgba(0,0,0,0.05)' }
+        }
+      }
+    }
+  });
+
+  // ── Period tab switcher (page reload) ──────────────────────────────────────
+  function setPeriod(period, btn) {
+    document.querySelectorAll('.period-tabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const url = new URL(window.location.href);
+    url.searchParams.set('period', period);
+    window.location.href = url.toString();
+  }
 </script>
 </body>
 </html>
