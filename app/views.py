@@ -783,7 +783,39 @@ def add_to_cart(request, product_id):
 
     if not item_created:
         cart_item.quantity += 1
-        cart_item.save()
+    else:
+        cart_item.quantity = 1
+    cart_item.save()
+    
+    # Reduce product stock < 5
+    if product.stock > 0:
+        product.stock -= 1
+        product.save()
+    
+    # Send email if stock < 5
+    if product.stock < 5:
+        try:
+            supplier_profile = UserProfile.objects.get(user = product.supplier)
+            if supplier_profile.role == "SUPPLIER":
+                send_mail(
+                    subject="Low Stock Alert",
+                    message=f"""
+                        Hello {product.supplier.username},
+
+                        Your product "{product.name}" is running low in stock.
+
+                        Remaining stock: {product.stock}
+
+                        Please restock the product soon.
+
+                        Thank you.
+                        """,
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[product.supplier.email],
+                    fail_silently=True,
+                )
+        except UserProfile.DoesNotExist:
+            pass
     
     # Give default time_spent = 1 for "add to cart" action
     pv, created = ProductView.objects.get_or_create(
