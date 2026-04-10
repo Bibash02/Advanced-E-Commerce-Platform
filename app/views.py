@@ -16,7 +16,7 @@ from .utils import generate_signature
 from django.core.mail import send_mail
 from .recommendation import *
 from django.db.models import Q, Sum, Count, F
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 import pandas as pd
 import base64
 import json
@@ -32,6 +32,7 @@ from collections import defaultdict
 from calendar import month_name, monthrange
 from itertools import chain
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models.functions import TruncDate
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -2084,7 +2085,7 @@ def supplier_graph(request):
     return render(request, "supplier_graph.html", context)
 
 def sales_dashboard(request):
-    # ── Metrics ──────────────────────────────────────────────────────────────
+    #  Metrics
     paid_orders = Order.objects.filter(status__in=['Paid', 'Delivered'])
 
     total_revenue = paid_orders.aggregate(total=Sum('amount'))['total'] or 0
@@ -2093,7 +2094,7 @@ def sales_dashboard(request):
     total_supplier_products = Product.objects.filter(is_active=True).count()
     active_customers = paid_orders.values('user').distinct().count()
 
-    # ── Period filter (default 30d) ───────────────────────────────────────────
+    # Period filter (default 30d) 
     period = request.GET.get('period', '30d')
     days_map = {'7d': 7, '30d': 30, '90d': 90, '1y': 365}
     days = days_map.get(period, 30)
@@ -2101,7 +2102,7 @@ def sales_dashboard(request):
 
     period_orders = paid_orders.filter(created_at__gte=since)
 
-    # ── Line chart: daily revenue + orders ───────────────────────────────────
+    # Line chart: daily revenue + orders 
     daily = (
         period_orders
         .annotate(day=TruncDate('created_at'))
@@ -2114,7 +2115,7 @@ def sales_dashboard(request):
     line_revenue = [float(d['rev']) for d in daily]
     line_orders  = [d['cnt'] for d in daily]
 
-    # ── Donut chart: revenue by category ─────────────────────────────────────
+    # Donut chart: revenue by category 
     cat_data = (
         OrderItem.objects
         .filter(order__in=period_orders)
@@ -2126,7 +2127,7 @@ def sales_dashboard(request):
     donut_categories = [c['product__category__name'] or 'Uncategorized' for c in cat_data]
     donut_sales      = [float(c['total']) for c in cat_data]
 
-    # ── Review distribution ───────────────────────────────────────────────────
+    # Review distribution 
     review_dist = (
         ProductReview.objects
         .values('rating')
@@ -2136,7 +2137,7 @@ def sales_dashboard(request):
     review_labels = [str(r['rating']) + '★' for r in review_dist]
     review_counts = [r['count'] for r in review_dist]
 
-    # ── Top supplier products ─────────────────────────────────────────────────
+    # Top supplier products 
     top_products = (
         OrderItem.objects
         .filter(order__in=period_orders)
@@ -2175,3 +2176,4 @@ def sales_dashboard(request):
     }
 
     return render(request, 'admin/index.html', context)
+

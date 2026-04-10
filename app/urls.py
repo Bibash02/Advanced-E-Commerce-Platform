@@ -89,5 +89,5 @@ urlpatterns = [
     path('supplier/guidelines', supplier_guidelines, name='supplier_guidelines'),
     path('delivery/guidelines', delivery_guidelines, name='delivery_guidelines'),
 
-    path('admin/sales-dashboard', sales_dashboard, name='admin_sale'),
+    path('admin/sales-dashboard', sales_dashboard, name='sales_dashboard'),
 ]

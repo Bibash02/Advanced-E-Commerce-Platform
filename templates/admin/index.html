@@ -16,7 +16,7 @@
 
   <div class="nav-section-label">Main</div>
   <div class="nav-links">
-    <a href="{% url 'admin:index' %}"><span>🏠</span> Dashboard</a>
+    <a href="{% url 'sales_dashboard' %}"><span>🏠</span> Dashboard</a>
     <a href="#" class="active"><span>📊</span> Sales</a>
     <a href="{% url 'admin:app_order_changelist' %}"><span>📦</span> Orders</a>
     <a href="{% url 'admin:app_userprofile_changelist' %}"><span>👥</span> Users</a>
@@ -179,15 +179,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
   // ── Data injected from Django ──────────────────────────────────────────────
-  const LINE_LABELS  = {{ line_chart.labels|safe }};
-  const LINE_REVENUE = {{ line_chart.revenue|safe }};
-  const LINE_ORDERS  = {{ line_chart.orders|safe }};
+  const LINE_LABELS  = JSON.parse('{{ line_chart.labels|escapejs }}');
+  const LINE_REVENUE = JSON.parse('{{ line_chart.revenue|escapejs }}');
+  const LINE_ORDERS  = JSON.parse('{{ line_chart.orders|escapejs }}');
 
-  const DONUT_CATS = {{ donut_chart.categories|safe }};
-  const DONUT_VALS = {{ donut_chart.sales|safe }};
+  const DONUT_CATS = JSON.parse('{{ donut_chart.categories|escapejs }}');
+  const DONUT_VALS = JSON.parse('{{ donut_chart.sales|escapejs }}');
 
-  const REVIEW_LABELS = {{ review_chart.labels|safe }};
-  const REVIEW_COUNTS = {{ review_chart.counts|safe }};
+  const REVIEW_LABELS = JSON.parse('{{ review_chart.labels|escapejs }}');
+  const REVIEW_COUNTS = JSON.parse('{{ review_chart.counts|escapejs }}');
 
   // ── Colour palette ─────────────────────────────────────────────────────────
   const PALETTE = [
