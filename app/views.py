@@ -1307,6 +1307,57 @@ def delivery_mark_delivered(request, order_id):
         order.status = "Delivered"
         order.save()
 
+        # ─────────────────────────────────────
+        # EMAIL NOTIFICATION
+        # ─────────────────────────────────────
+
+        customer_email = order.user.email if order.user else None
+
+        supplier_email_list = OrderItem.objects.filter(
+            order=order
+        ).values_list('product__supplier__email', flat=True).distinct()
+
+        subject = "Order Delivered Successfully 🎉"
+
+        message = f"""
+            Hi,
+
+            Your order (ID: {order.id}) has been successfully delivered.
+
+            Thank you for using our platform.
+
+            Regards,
+            Delivery Team
+        """
+
+        # send email to customer
+        if customer_email:
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [customer_email],
+                fail_silently=True,
+            )
+
+        # send email to suppliers
+        for email in supplier_email_list:
+            if email:
+                send_mail(
+                    subject,
+                    f"""
+                        Hi Supplier,
+
+                        Your product from Order ID: {order.id} has been successfully delivered to the customer.
+
+                        Regards,
+                        Delivery System
+                    """,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [email],
+                    fail_silently=True,
+                )
+
         return redirect('delivery_order_list')
 
     return redirect('order_detail', order_id=order.id)
