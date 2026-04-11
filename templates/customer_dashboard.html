@@ -15,7 +15,7 @@
     <header>
     <nav class="navbar">
         <div class="logo">Shop Sphere</div>
-        <form method="GET" action="{% url 'customer_dashboard' %}">
+        <form method="GET" action="{% url 'search_products' %}">
             <div class="search-bar">
                 <input type="text" name="q" placeholder="Find what you want..." value="{{ request.GET.q }}">
                 <button type="submit">🔍</button>

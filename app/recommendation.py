@@ -38,6 +38,7 @@ def get_similar_products(product_id, limit=6):
 
     return Product.objects.filter(id__in=similar_ids)
 
+# content based recommendation system using text similarity
 # recommends products based on the search text using TF-IDF and cosine similarity
 def get_similar_products_by_text(search_text, limit=6):
     products = Product.objects.all()
