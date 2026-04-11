@@ -17,7 +17,6 @@
   <div class="nav-section-label">Main</div>
   <div class="nav-links">
     <a href="{% url 'sales_dashboard' %}"><span>🏠</span> Dashboard</a>
-    <a href="#" class="active"><span>📊</span> Sales</a>
     <a href="{% url 'admin:app_order_changelist' %}"><span>📦</span> Orders</a>
     <a href="{% url 'admin:app_userprofile_changelist' %}"><span>👥</span> Users</a>
   </div>
@@ -47,7 +46,7 @@
     <div class="header-right">
       <div class="period-tabs">
         <button onclick="setPeriod('7d',  this)">7d</button>
-        <button onclick="setPeriod('30d', this)" class="active">30d</button>
+        <button onclick="setPeriod('30d', this)">30d</button>
         <button onclick="setPeriod('90d', this)">90d</button>
         <button onclick="setPeriod('1y',  this)">1y</button>
       </div>
@@ -94,7 +93,7 @@
             <h3>Sales &amp; Orders Over Time</h3>
             <div class="sub">Revenue vs units sold</div>
           </div>
-          <button class="view-all">Export</button>
+          <button class="view-all" id="exportChart">Export</button>
         </div>
         <div class="legend">
           <span><b style="background:#7c7fad"></b> Revenue</span>
@@ -141,7 +140,6 @@
             <h3>Top Supplier Products</h3>
             <div class="sub">By units sold</div>
           </div>
-          <button class="view-all">View All</button>
         </div>
         <div class="table-wrap">
           <table>
@@ -322,6 +320,23 @@
     url.searchParams.set('period', period);
     window.location.href = url.toString();
   }
+</script>
+<script>
+document.getElementById("exportChart").addEventListener("click", function () {
+
+    const canvas = document.getElementById("lineChart");
+
+    // Convert chart canvas to image
+    const image = canvas.toDataURL("image/png");
+
+    // Create download link
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = "sales_chart.png";
+
+    // Trigger download
+    link.click();
+});
 </script>
 </body>
 </html>
