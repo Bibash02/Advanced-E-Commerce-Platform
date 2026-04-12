@@ -715,11 +715,11 @@ def buy_product(request, product_id):
         has_purchased = OrderItem.objects.filter(
             order__user=request.user,
             product_id=product,
-            order__status="Delivered"   # optional but recommended
+            order__status="Delivered"  
         ).exists()
 
     if request.method == 'POST':
-        size = request.POST.get('size')  # <-- get the selected size
+        size = request.POST.get('size')  # get the selected size
         # now save 'size' in cart model or use as needed
         print("Selected size:", size)
 
@@ -730,13 +730,25 @@ def buy_product(request, product_id):
         comment = request.POST.get('comment')
 
         if rating:
-            ProductReview.objects.create(
-                product=product,
-                user=request.user,
-                rating=rating,
-                comment=comment
-            )
+            ProductReview.objects.update_or_create(
+            product=product,
+            user=request.user,
+            defaults={
+                'rating': rating,
+                'comment': comment
+            }
+        )
+            
+            pv, created = ProductView.objects.get_or_create(
+            user=request.user,
+            product=product,
+            defaults={'time_spent': 0}
+        )
 
+        if not created:
+            pv.time_spent += 1
+            pv.save()
+            
         return redirect('buy_product', product_id=product.id)
 
     context = {
@@ -759,21 +771,6 @@ def all_products(request):
     return render(request, 'all_products.html', {
         'products': products
     })
-
-@customer_required
-def rate_product(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-
-    if request.method == "POST":
-        rating = int(request.POST.get("rating"))
-
-        ProductReview.objects.update_or_create(
-            product=product,
-            user=request.user,
-            defaults={'rating': rating}
-        )
-
-        return redirect('product_detail', product_id=product.id)
 
 @customer_required
 def add_to_cart(request, product_id):
@@ -817,18 +814,6 @@ def add_to_cart(request, product_id):
                 )
         except UserProfile.DoesNotExist:
             pass
-    
-    # Give default time_spent = 1 for "add to cart" action
-    pv, created = ProductView.objects.get_or_create(
-        user=request.user,
-        product=product,
-        defaults={'time_spent': 1}
-    )
-    
-    if not created:
-        # Increment slightly to reflect additional interest
-        pv.time_spent += 1
-        pv.save()
 
     return redirect('cart_page')
 
