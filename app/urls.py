@@ -38,7 +38,7 @@ urlpatterns = [
     path('supplier/orders/assign-ajax/', assign_delivery_ajax, name='assign_delivery_ajax'),
 
     path('supplier/graph', supplier_graph, name='supplier_graph'),
-
+ 
     path('supplier/blog/list', supplier_blogs, name='blog_list'),
     path('supplier/blog/add', add_blog, name='add_blog'),
     path('supplier/blog/edit/<int:pk>', edit_blog, name='edit_blog'),
