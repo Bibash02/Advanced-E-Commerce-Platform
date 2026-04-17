@@ -1292,10 +1292,7 @@ def delivery_mark_delivered(request, order_id):
         order.status = "Delivered"
         order.save()
 
-        # ─────────────────────────────────────
         # EMAIL NOTIFICATION
-        # ─────────────────────────────────────
-
         customer_email = order.user.email if order.user else None
 
         supplier_email_list = OrderItem.objects.filter(
