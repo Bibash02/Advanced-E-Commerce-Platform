@@ -155,7 +155,11 @@
         {% for product in products %}
             <tr>
                 <td>
+                    {% if product.image %}
                     <img src="{{ product.image.url }}" class="product-img">
+                    {% else %}
+                    <img src="{% static 'profile_images/profile1.jpg' %}" class="product-img">
+                    {% endif %}
                 </td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.category.name }}</td>

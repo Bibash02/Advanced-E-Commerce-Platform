@@ -132,6 +132,32 @@ def signup(request):
             profile_image=profile_image
         )
 
+        subject = "SignUp - Welcome to ShopSphere"
+        message = f"""
+Hi {first_name},
+
+Your account has been successfully created.
+
+Username: {username}
+
+You can now login and start using our platform.
+
+Thank you,
+ShopSphere Team
+"""
+        recipient_list = [email]
+
+        try:
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                recipient_list,
+                fail_silently=False,
+            )
+        except Exception as e:
+            print("Email sending failed:", e)
+
         messages.success(request, "Account created successfully. Please sign in.")
         return redirect('signin')
 
@@ -238,7 +264,7 @@ def customer_dashboard(request):
 
     productss = Product.objects.filter(stock__gt=0).order_by('-created_at')[:4]
 
-    latest_blogs = Blog.objects.filter(stock__gt=0).order_by('-created_at')[:4]
+    latest_blogs = Blog.objects.all().order_by('-created_at')[:4]
 
 
     # SEARCH ALGORITHM
@@ -675,7 +701,9 @@ def edit_blog(request, pk):
     form = BlogForm(request.POST or None, request.FILES or None)
 
     if form.is_valid():
-        form.save()
+        blog = form.save(commit=False)
+        blog.supplier = request.user
+        blog.save()
         return redirect('supplier_dashboard')
     return render(request, 'edit_blog.html', {
         'form': form,
