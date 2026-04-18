@@ -5,7 +5,7 @@ import re
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['category', 'name', 'description', 'price', 'stock', 'image', 'attribute_type']
+        exclude = ['supplier']
 
 class BlogForm(forms.ModelForm):
     class Meta:

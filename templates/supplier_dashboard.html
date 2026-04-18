@@ -206,7 +206,11 @@
         {% for product in products %}
         <div class="product-card">
             <div class="product-image">
-                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" width="100">
+                {% else %}
+                    <img src="/static/profile_images/profile1.jpg" width="100">
+                {% endif %}
             </div>
 
             <div class="product-info">

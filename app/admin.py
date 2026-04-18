@@ -17,9 +17,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['id', 'supplier', 'category', 'name', 'description', 'price', 'attribute_type', 'image', 'created_at']
+    list_display = ['id', 'supplier', 'category', 'name', 'description', 'stock','price', 'attribute_type', 'image', 'created_at']
     list_filter = ['supplier', 'category', 'name']
-    search_fields = ['category', 'name']
+    search_fields = ['category__name', 'name']
     list_per_page = 5
 
 @admin.register(Blog)
@@ -54,7 +54,7 @@ class CartItemAdmin(admin.ModelAdmin):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'full_name', 'email', 'phone', 'address', 'city', 'country', 'amount', 'payment_type', 'transaction_uuid', 'status', 'delivery_person', 'created_at']
     list_filter = ['user', 'address', 'payment_type']
-    search_fields = ['payment_type', 'user']
+    search_fields = ['payment_type', 'user__username']
     list_per_page = 5
 
 @admin.register(OrderItem)

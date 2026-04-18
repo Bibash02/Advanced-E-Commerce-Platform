@@ -232,12 +232,13 @@ def customer_dashboard(request):
     products = Product.objects.annotate(
         total_orders=Count('orderitem')
     ).filter(
-        total_orders__gt=0
+        total_orders__gt=0,
+        stock__gt=0,
     ).order_by('-total_orders')[:4]
 
-    productss = Product.objects.order_by('-created_at')[:4]
+    productss = Product.objects.filter(stock__gt=0).order_by('-created_at')[:4]
 
-    latest_blogs = Blog.objects.order_by('-created_at')[:4]
+    latest_blogs = Blog.objects.filter(stock__gt=0).order_by('-created_at')[:4]
 
 
     # SEARCH ALGORITHM
@@ -247,7 +248,7 @@ def customer_dashboard(request):
             Q(name__icontains=query) |
             Q(description__icontains=query) |
             Q(category__name__icontains=query)
-        ).distinct()
+        ).filter(stock__gt=0).distinct()
 
 
     context = {
@@ -435,8 +436,12 @@ def edit_product(request, pk):
     )
 
     if form.is_valid():
-        form.save()
+        product = form.save(commit=False)
+        product.supplier = request.user
+        product.save()
         return redirect('supplier_dashboard')
+    else:
+        print(form.errors)
 
     return render(request, 'edit_product.html', {
         'form': form,
@@ -763,7 +768,7 @@ def buy_product(request, product_id):
 def all_products(request):
     products = (
         Product.objects
-        .all()
+        .filter(stock__gt=0, is_active=True)
         .annotate(avg_rating=Avg('reviews__rating'))
         .order_by('-created_at')
     )

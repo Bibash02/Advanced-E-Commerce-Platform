@@ -172,7 +172,11 @@
     {% for product in item_based_products %}
         <div class="product-card">
             <div class="product-image">
-                <img src="{{ product.image.url }}">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" width="100">
+                {% else %}
+                    <img src="/static/profile_images/profile1.jpg" width="100">
+                {% endif %}
             </div>
 
             <div class="product-info">
