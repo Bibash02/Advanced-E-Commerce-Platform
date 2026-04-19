@@ -794,12 +794,14 @@ def buy_product(request, product_id):
 
 @customer_required
 def all_products(request):
-    products = (
-        Product.objects
-        .filter(stock__gt=0, is_active=True)
-        .annotate(avg_rating=Avg('reviews__rating'))
-        .order_by('-created_at')
-    )
+    # products = (
+    #     Product.objects.all()
+    #     .filter(stock__gt=0, is_active=True)
+    #     .annotate(avg_rating=Avg('reviews__rating'))
+    #     .order_by('-created_at')
+    # )
+
+    products = Product.objects.all()
 
     return render(request, 'all_products.html', {
         'products': products

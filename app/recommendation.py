@@ -156,5 +156,8 @@ def get_item_based_recommendations(product_id, limit=6):
         .sort_values(ascending=False)[1:limit+1]
 
     similar_ids = similar_items.index.tolist()
+    print(item_matrix)
+    print(similar_ids)
+    print(similarity_df.loc[product_id, similar_ids])
 
     return Product.objects.filter(id__in=similar_ids)
