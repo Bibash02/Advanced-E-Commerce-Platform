@@ -1,3 +1,4 @@
+import email
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -13,7 +14,8 @@ import uuid
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import SearchFilter
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from django.core.mail import send_mail
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -33,6 +35,32 @@ class RegisterAPIView(APIView):
         user = serializer.save()
 
         token, _ = Token.objects.get_or_create(user=user)
+
+        subject = "SignUp - Welcome to ShopSphere"
+        message = f"""
+Hi {user.first_name},
+
+Your account has been successfully created.
+
+Username: {user.username}
+
+You can now login and start using our platform.
+
+Thank you,
+ShopSphere Team
+"""
+        recipient_list = [email]
+
+        try:
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                recipient_list,
+                fail_silently=False,
+            )
+        except Exception as e:
+            print("Email sending failed:", e)
         return Response({
             "message": "Account created successfully",
             "token": token.key,
@@ -77,6 +105,12 @@ class CustomerProductListAPIView(ListAPIView):
 
     filter_backends = [SearchFilter]
     search_fields = ['name', 'supplier__username', 'category__name']
+
+class CustomerProductDetailAPIView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Product.objects.filter(stock__gt=0)
+    serializer_class = ProductDetailSerializer
+    lookup_field = 'pk'
 
 class CustomerProfileAPIView(APIView):
     permission_classes = [isAuthenticated]
@@ -231,7 +265,12 @@ class SupplierProductAPIView(APIView):
         return Response(serialzer.data, status=201)
 
 class SupplierProductDetailAPIView(APIView):
-    permission_classes = [IsSupplier]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        product = get_object_or_404(Product, pk = pk, supplier = request.user)
+        serializer = SupplierProductSerializer(product)
+        return Response(serializer.data)
 
     def put(self, request, pk):
         product = get_object_or_404(Product, pk = pk, supplier = request.user)
@@ -311,14 +350,79 @@ class DeliveryAssignedOrdersAPIView(APIView):
 class DeliveryUpdateOrderStatusAPIView(APIView):
     permission_classes = [IsDeliveryPersonnel]
 
-    def put(self, request, pk):
-        order = get_object_or_404(Order, pk=pk, delivery_personnel=request.user)
+    def get(self, request, pk):
+        order = get_object_or_404(Order, pk = pk, delivery_person = request.user)
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)
+    
+    def patch(self, request, pk):
+        order = get_object_or_404(Order, pk = pk, delivery_person = request.user)
         status = request.data.get('status')
 
-        if status not in ['Delivered', 'Failed']:
-            return Response({"error": "Invalid status"}, status=400)
+        allowed_status = ['Delivered', 'Failed', 'Cancelled']
+
+        # check valid status
+        if status not in allowed_status:
+            return Response({"error": f"Invalid status. Allowed status like {allowed_status}"}, status=400)
         
+        if status == 'Delivered':
+            if 'delivery_proof' not in request.FILES:
+                return Response({"error": "Delivery proof image is required for Delivered status"}, status=400)
+            order.delivery_proof = request.FILES['delivery_proof']
+
         order.status = status
         order.save()
 
-        return Response({"message": "Order status updated successfully"})
+        # EMAIL NOTIFICATION
+        customer_email = order.user.email if order.user else None
+
+        supplier_email_list = OrderItem.objects.filter(
+            order=order
+        ).values_list('product__supplier__email', flat=True).distinct()
+
+        subject = "Order Delivered Successfully 🎉"
+
+        message = f"""
+            Hi,
+
+            Your order (ID: {order.id}) has been successfully delivered.
+
+            Thank you for using our platform.
+
+            Regards,
+            Delivery Team
+        """
+
+        # send email to customer
+        if customer_email:
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [customer_email],
+                fail_silently=True,
+            )
+
+        # send email to suppliers
+        for email in supplier_email_list:
+            if email:
+                send_mail(
+                    subject,
+                    f"""
+                        Hi Supplier,
+
+                        Your product from Order ID: {order.id} has been successfully delivered to the customer.
+
+                        Regards,
+                        Delivery System
+                    """,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [email],
+                    fail_silently=True,
+                )
+
+        return Response({
+            "message": "Order status updated successfully",
+            "new_status": order.status
+        })
+

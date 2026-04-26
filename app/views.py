@@ -16,7 +16,7 @@ from .utils import generate_signature
 from django.core.mail import send_mail
 from .recommendation import *
 from django.db.models import Q, Sum, Count, F
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 import pandas as pd
 import base64
 import json
@@ -26,7 +26,6 @@ from django.utils import timezone
 from datetime import timedelta
 from django.core.paginator import Paginator
 from django.views.decorators.http import require_POST
-from django.db.models.functions import TruncMonth, TruncDay
 from django.utils.timezone import now
 from collections import defaultdict
 from calendar import month_name, monthrange

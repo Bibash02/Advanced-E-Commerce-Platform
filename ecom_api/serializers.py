@@ -62,9 +62,19 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     supplier = serializers.CharField(source='supplier.username')
+    category = serializers.CharField(source='category.name')
+
     class Meta:
         model = Product
-        fields = ['id', 'name', 'supplier', 'price', 'stock', 'image', 'created_at']
+        fields = ['id', 'name', 'category', 'supplier', 'price', 'stock', 'image', 'created_at']
+
+class ProductDetailSerializer(serializers.ModelSerializer):
+    supplier = serializers.CharField(source='supplier.username')
+    category = serializers.CharField(source='category.name')
+
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'description', 'category', 'supplier', 'price', 'stock', 'image', 'created_at']
 
 class CartItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
@@ -116,6 +126,7 @@ class SupplierBlogSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at']
 
 class SupplierProfileSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source = 'user.username')
     class Meta:
         model = UserProfile
         fields = '__all__'

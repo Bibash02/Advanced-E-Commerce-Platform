@@ -10,6 +10,7 @@ urlpatterns = [
     path('register/', RegisterAPIView.as_view(), name='register'),
     path('login/', LoginAPIView.as_view(), name='login'),
     path('customer/products', CustomerProductListAPIView.as_view()),
+    path('customer/products/<int:pk>', CustomerProductDetailAPIView.as_view()),
     path('customer/blogs', CustomerBlogListAPIView.as_view()),
     path('customer/orders', CustomerOrderCreateAPIView.as_view()),
     path('customer/profile', CustomerProfileAPIView.as_view()),
