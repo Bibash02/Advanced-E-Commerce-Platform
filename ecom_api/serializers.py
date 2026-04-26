@@ -61,9 +61,10 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ProductSerializer(serializers.ModelSerializer):
+    supplier = serializers.CharField(source='supplier.username')
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'image']
+        fields = ['id', 'name', 'supplier', 'price', 'stock', 'image', 'created_at']
 
 class CartItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)

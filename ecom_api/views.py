@@ -12,6 +12,8 @@ from .permissions import *
 import uuid
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.filters import SearchFilter
+from rest_framework.generics import ListAPIView
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -68,14 +70,13 @@ class LoginAPIView(APIView):
             "role": user.userprofile.role
         })
 
+class CustomerProductListAPIView(ListAPIView):
+    queryset = Product.objects.filter(stock__gt=0)
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
 
-class CustomerProductListAPIView(APIView):
-    permission_classes = [isAuthenticated]
-
-    def get(self, request):
-        products = Product.objects.filter(is_active=True)
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
+    filter_backends = [SearchFilter]
+    search_fields = ['name', 'supplier__username', 'category__name']
 
 class CustomerProfileAPIView(APIView):
     permission_classes = [isAuthenticated]
