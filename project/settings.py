@@ -45,7 +45,8 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
-
+    'drf_yasg',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -162,6 +163,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880
@@ -172,4 +174,10 @@ JAZZMIN_SETTINGS = {
     "site_header": "My Dashboard",
     "welcome_sign": "Welcome Bro 😎",
     "theme": "darkly",
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Ecommerce API',
+    'DESCRIPTION': 'Advanced E-commerce Platform',
+    'VERSION': '1.0.0',
 }
